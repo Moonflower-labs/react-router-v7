@@ -22,7 +22,7 @@ export async function getStripeEvent(request: Request) {
   }
 }
 
-export async function createWebhookEndpoint(endpoint: string, description: string) {
+export async function createWebhookEndpoint(url: string | null, endpoint: string, description: string) {
   const webhookEndpoint = await stripe.webhookEndpoints.create({
     enabled_events: [
       "customer.subscription.created",
@@ -38,7 +38,7 @@ export async function createWebhookEndpoint(endpoint: string, description: strin
       "invoice.finalized",
       "invoice.finalization_failed"
     ],
-    url: `https://laflorblanca.vercel.app/${endpoint}`,
+    url: !url ? `https://laflorblanca.vercel.app/${endpoint}` : `${url}/${endpoint}`,
     description
   });
   return webhookEndpoint;

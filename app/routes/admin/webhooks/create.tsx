@@ -12,6 +12,7 @@ export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const desciption = formData.get("desciption") as string;
     const endpoint = formData.get("endpoint") as string;
+    const url = formData.get("url") as string;
 
     let errors: Errors = {};
     if (!endpoint) {
@@ -23,7 +24,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     try {
-        const webhook = await createWebhookEndpoint(endpoint, desciption);
+        const webhook = await createWebhookEndpoint(url, endpoint, desciption);
         console.log(webhook?.secret)
         return { success: true, secret: webhook?.secret }
     } catch (error) {
@@ -44,6 +45,7 @@ export default function CreateEndpoint({ actionData }: Route.ComponentProps) {
                 {actionData?.success && <div className='text-2xl font-semibold'>{actionData?.secret}</div>}
                 <Form method="post" className="w-full md:w-1/2 mx-auto pb-4 flex flex-col">
                     <input type="text" name={"desciption"} className="input input-bordered input-primary w-full mb-4" placeholder="Descripción" />
+                    <input type="text" name={"url"} className="input input-bordered input-primary w-full mb-4" placeholder="Full url" />
                     <input type="text" name={"endpoint"} className="input input-bordered input-primary w-full mb-4" placeholder="Endpoint" />
                     {errors?.endpoint && <ActionError actionData={{ error: errors.endpoint }} />}
                     <div className="flex justify-end gap-3 mt-8">
