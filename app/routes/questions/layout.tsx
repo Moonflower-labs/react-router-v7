@@ -1,16 +1,21 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigation } from "react-router";
 import { FaQuestion } from "react-icons/fa";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
+import GlobalSpinner from "~/components/shared/GlobalSpinner";
 
 export async function loader({ request }: Route.LoaderArgs) {
   return requireUserId(request)
 }
 
 export default function Layout() {
+
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
+
   return (
     <>
       <div
@@ -66,6 +71,7 @@ export default function Layout() {
         </div>
       </div>
       <div className="px-3">
+        {isNavigating && <GlobalSpinner />}
         <Outlet />
       </div>
     </>

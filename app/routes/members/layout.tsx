@@ -1,9 +1,10 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigation } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
+import GlobalSpinner from "~/components/shared/GlobalSpinner";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -11,6 +12,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MembersLayout() {
+
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
+
   return (
     <>
       <div
@@ -68,6 +73,7 @@ export default function MembersLayout() {
           </NavLink>
         </div>
       </div>
+      {isNavigating && <GlobalSpinner />}
       <Outlet />
     </>
   );
