@@ -22,6 +22,39 @@ export async function getStripeEvent(request: Request) {
   }
 }
 
+export async function createWebhookEndpoint(endpoint: string, description: string) {
+  const webhookEndpoint = await stripe.webhookEndpoints.create({
+    enabled_events: [
+      "customer.subscription.created",
+      "customer.subscription.deleted",
+      "customer.subscription.updated",
+      "customer.created",
+      "customer.deleted",
+      "payment_intent.created",
+      "payment_intent.succeeded",
+      "payment_intent.requires_action",
+      "payment_method.attached",
+      "invoice.created",
+      "invoice.finalized",
+      "invoice.finalization_failed"
+    ],
+    url: `https://laflorblanca.vercel.app/${endpoint}`,
+    description
+  });
+  return webhookEndpoint;
+}
+export async function deleteWebhookEndpoint(id: string) {
+  const webhookEndpoint = await stripe.webhookEndpoints.del(id);
+  return webhookEndpoint;
+}
+
+export async function listWebhookEndpoints() {
+  const webhookEndpointList = await stripe.webhookEndpoints.list({
+    limit: 20
+  });
+  return webhookEndpointList?.data;
+}
+
 export async function handleCustomerCreated(event: Stripe.Event) {
   const customer = event.data.object as Stripe.Customer;
   const email = customer.email as string;

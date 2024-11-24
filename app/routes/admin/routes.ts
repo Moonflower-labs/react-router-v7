@@ -37,7 +37,9 @@ export const adminRoutes = [
         index("routes/admin/videos/list.tsx"),
         route("create", "routes/admin/videos/create.tsx"),
         route(":id/edit", "routes/admin/videos/edit.tsx")
-      ])
+      ]),
+      //  Webhooks
+      ...prefix("/webhooks", [index("routes/admin/webhooks/list.tsx"), route("create", "routes/admin/webhooks/create.tsx")])
     ])
   ])
 ];
