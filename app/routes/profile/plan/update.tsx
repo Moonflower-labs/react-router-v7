@@ -117,7 +117,7 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
                 onChange={() => setSelectedPlan(plan.priceId)}
               />
               <div className="flex flex-col items-center">
-                <img src={`${plan.img}`} alt={plan.name} className="mb-2 rounded-lg" height={250} width={250} />
+                <img src={plan.img} alt={plan.name} className="mb-2 rounded-lg" height={250} width={250} />
                 <span className="label-text font-bold text-primary text-xl">{plan.name}</span>
                 <span className="label-text font-bold">£{plan.amount / 100}</span>
               </div>

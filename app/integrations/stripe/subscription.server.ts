@@ -1,5 +1,8 @@
 import { prisma } from "~/db.server";
 import { stripe } from "~/integrations/stripe";
+import personalitImg from "../../icons/plan-personality.svg";
+import soulImg from "../../icons/plan-soul.svg";
+import spiritImg from "../../icons/plan-spirit.svg";
 
 export const PLANS = [
   {
@@ -7,21 +10,21 @@ export const PLANS = [
     priceId: "price_1Ng3CfAEZk4zaxmwMXEF9bfR",
     amount: 0,
     mode: "setup",
-    img: "/icons/plan-personality.svg"
+    img: personalitImg
   },
   {
     name: "Alma",
     priceId: "price_1Ng3GzAEZk4zaxmwyZRkXBiW",
     amount: 995,
     mode: "subscription",
-    img: "/icons/plan-soul.svg"
+    img: soulImg
   },
   {
     name: "Espíritu",
     priceId: "price_1Ng3KKAEZk4zaxmwLuapT9kg",
     amount: 1495,
     mode: "subscription",
-    img: "/icons/plan-spirit.svg"
+    img: spiritImg
   }
 ];
 
