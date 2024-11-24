@@ -6,7 +6,8 @@
     "**/.server/**/*.tsx",
     "**/.client/**/*.ts",
     "**/.client/**/*.tsx",
-    ".react-router/types/**/*"
+    ".react-router/types/**/*",
+    "prisma/seed.ts"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
@@ -27,7 +28,6 @@
       "~/*": ["./app/*"]
     },
     "noEmit": true,
-    "rootDirs": [".", "./.react-router/types"],
-    "plugins": [{ "name": "@react-router/dev" }]
+    "rootDirs": [".", "./.react-router/types"]
   }
 }

@@ -1,0 +1,15 @@
+import type { Config } from "@react-router/dev/config";
+// import { fetchPosts } from "~/models/post.server";
+
+export default {
+  ssr: true
+
+  // any url
+  //   prerender: ["/", "/blog", "/blog/popular-post"],
+
+  // async prerender({ getStaticPaths }) {
+  //   let posts = await fetchPosts({ page: 1, pageSize: 10 });
+  //   let staticPaths = getStaticPaths();
+  //   return staticPaths.concat(posts.posts.map(post => post.id));
+  // }
+} satisfies Config;

@@ -1,0 +1,154 @@
+import type Stripe from "stripe";
+import invariant from "tiny-invariant";
+import { prisma } from "~/db.server";
+import { createSubscription, stripe } from "~/integrations/stripe";
+import { createSubscriptionPlan, getSubscriptionPlan } from "~/models/plan.server";
+import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/models/user.server";
+
+export async function getStripeEvent(request: Request) {
+  invariant(process.env.WEBHOOK_SIGNING_SECRET, "Please set the WEBHOOK_SIGNING_SECRET env variable");
+  try {
+    const signature = request.headers.get("Stripe-Signature");
+    if (!signature) {
+      return null;
+    }
+    const payload = await request.text();
+
+    const event = stripe.webhooks.constructEvent(payload, signature, process.env.WEBHOOK_SIGNING_SECRET);
+
+    return event;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function handleCustomerCreated(event: Stripe.Event) {
+  const customer = event.data.object as Stripe.Customer;
+  const email = customer.email as string;
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    console.error(`No user found with email: ${email}`);
+    return; // or handle this case as needed
+  }
+  // Update the user with the customer ID
+  const updateResponse = await updateUserCustomerId(user.id, customer.id);
+
+  if (updateResponse) {
+    console.info(`Customer ID ${customer.id} added to user ${user.id}.`);
+  } else {
+    console.error(`Failed to update user ${user.id} with customer ID ${customer.id}.`);
+  }
+}
+
+export async function handleSubscriptionCreated(event: Stripe.Event) {
+  const subscription = event.data.object as Stripe.Subscription;
+  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
+  // Check if plan exists in db or create it
+  const existingPlan = await getSubscriptionPlan(plan.id);
+  if (!existingPlan) {
+    console.info(`Creating new PLAN ${plan.name}`);
+    await createSubscriptionPlan({
+      id: plan.id,
+      name: plan.name,
+      priceId: subscription.items.data[0].price.id
+    });
+  }
+  const user = await getUserByCustomerId(String(subscription.customer));
+
+  // Check if user has a subscription already
+  const existingSubscription = await prisma.subscription.findUnique({
+    where: { userId: user?.id }
+  });
+  if (existingSubscription) {
+    console.error(`Subscription for user with Id ${user?.id} already exists!`);
+    // todo: handle this scenario by updating the existing subscription
+  }
+
+  // Create a new Subscription for the user
+  const newUserSubscription = await prisma.subscription.create({
+    data: {
+      id: subscription.id,
+      user: { connect: { id: user?.id } },
+      status: subscription.status,
+      plan: { connect: { id: plan.id } }
+    }
+  });
+}
+
+export async function handleSubscriptionUpdated(event: Stripe.Event) {
+  const subscription = event.data.object as Stripe.Subscription;
+  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
+  // Check if plan exists in db or create it
+  const existingPlan = await getSubscriptionPlan(plan.id);
+  if (!existingPlan) {
+    console.info(`Creating new PLAN ${plan.name}`);
+    await createSubscriptionPlan({
+      id: plan.id,
+      name: plan.name,
+      priceId: subscription.items.data[0].price.id
+    });
+  }
+  const user = await getUserByCustomerId(String(subscription.customer));
+
+  // Retrieve the user subscription
+  const existingSubscription = await prisma.subscription.findUnique({
+    where: { userId: user?.id }
+  });
+  if (!existingSubscription) {
+    console.error(`Subscription for user with Id ${user?.id} not found!\nUnable to update`);
+    // As backup create the new sunsbcription. This should never be triggered
+    return prisma.subscription.create({
+      data: {
+        id: subscription.id,
+        user: { connect: { id: user?.id } },
+        status: subscription.status,
+        plan: { connect: { id: plan.id } }
+      }
+    });
+  }
+
+  // Udate Plan and Status for the user Subscription
+  const updatedUserSubscription = await prisma.subscription.update({
+    where: { id: existingSubscription.id },
+    data: {
+      status: subscription.status,
+      plan: { connect: { id: plan.id } }
+    }
+  });
+
+  console.log("Subscription succesfully updated!");
+
+  return updatedUserSubscription;
+}
+
+export async function handleSubscriptionDeleted(event: Stripe.Event) {
+  const subscription = event.data.object as Stripe.Subscription;
+
+  const user = await getUserByCustomerId(String(subscription.customer));
+
+  // Retrieve the user subscription
+  const existingSubscription = await prisma.subscription.findUnique({
+    where: { userId: user?.id }
+  });
+  if (!existingSubscription) {
+    console.error(`Subscription for user with Id ${user?.id} not found!`);
+    return;
+  }
+
+  // Udate Plan and Status for the user Subscription
+  const deletedSubscription = await prisma.subscription.delete({
+    where: { id: existingSubscription.id }
+  });
+}
+
+// def handle_customer_subscription_deleted(self, event):
+// subscription = event.data.object
+// user = self.get_user_by_customer_id(subscription.customer)
+// try:
+//     membership = Membership.objects.get(user=user)
+//     # Delete the membership
+//     membership.delete()
+//     logger.info(f"Membership for {user.username} deleted.")
+// except Membership.DoesNotExist:
+//     logger.info(f"No membership found for {user.username}")
