@@ -64,6 +64,7 @@ export default [
   ...prefix("api", [
     route("/comments", "routes/api/comments.tsx"),
     route("/create-payment-intent", "routes/api/paymentIntent.tsx"),
+    route("/invoice", "routes/api/invoice.tsx"),
     route("/deduct-balance", "routes/api/deduct-balance.tsx"),
     route("/subscription", "routes/api/subscription.tsx"),
     route("/webhook", "routes/api/webhooks.tsx")

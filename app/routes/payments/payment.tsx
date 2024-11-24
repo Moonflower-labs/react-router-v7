@@ -44,8 +44,10 @@ function CheckoutForm() {
       // Api call to resource route endpoint
       const response = await fetch("/api/create-payment-intent", { method: "POST" });
 
-      const { clientSecret, amount, error, usedBalance, customerId, invoiceUrl } = await response.json();
+      const { clientSecret, amount, error, usedBalance, customerId, invoice } = await response.json();
       if (error) return handleError(error);
+
+
       console.log("AMOUNT", amount);
       if (!clientSecret) return;
       // Confirm the payment if clientSecret is available
@@ -72,13 +74,21 @@ function CheckoutForm() {
             body: JSON.stringify({ paymentIntentId: paymentIntent.id, usedBalance, customerId })
           });
         }
+        if (invoice) {
+          // ? mark invoice as paid
+          await fetch("/api/invoice", {
+            method: "POST",
+            headers: { "Content-Type": "applicaton/json" },
+            body: JSON.stringify({ invoiceId: invoice.id })
+          });
+        }
       }
 
       const params = new URLSearchParams();
       params.set("clientSecret", paymentIntent.client_secret as string);
       params.set("paymentIntentId", paymentIntent.id);
-      if (invoiceUrl) {
-        params.set("invoiceUrl", invoiceUrl);
+      if (invoice?.hosted_invoice_url) {
+        params.set("invoiceUrl", invoice?.hosted_invoice_url);
       }
 
       // Redirect to success page with params

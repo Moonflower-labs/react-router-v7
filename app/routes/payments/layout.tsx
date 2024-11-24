@@ -42,7 +42,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const priceId = formData.get("priceId");
-  // If no priceId present redirect to payment checkout
   if (!priceId) {
     throw redirect("/payments");
   }
@@ -54,7 +53,7 @@ export type ContextType = { amount: number | undefined; planName?: string; price
 export default function StripeLayout({ loaderData }: Route.ComponentProps) {
   const customerSessionClientSecret = loaderData?.customerSessionSecret;
   const [stripe, setStripe] = useState<Promise<Stripe | null> | null>(null);
-
+  console.log(loaderData?.mode)
   useEffect(() => {
     setStripe(stripePromise);
     return () => {

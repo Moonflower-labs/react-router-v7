@@ -2,7 +2,6 @@ import { data, isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollR
 import type { Route } from "./+types/root";
 import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
-import { PiFlowerLotus } from "react-icons/pi";
 import { getUserId, sessionStorage, setGuestId } from "./utils/session.server";
 import { getUserById } from "./models/user.server";
 import { getCartItemsCount } from "./models/cart.server";
@@ -10,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
+import logo from "../app/components/root/logo.svg"
 
 
 export const links: Route.LinksFunction = () => [
@@ -80,9 +80,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <div className="h-screen w-full flex justify-center items-center">
       <div className="text-center p-4 my-auto">
-        <h1 className="text-5xl mb-3">
-          <PiFlowerLotus className="mx-auto text-primary" />
-        </h1>
+        <div className="avatar mb-4">
+          <div className="w-32 rounded">
+            <img src={logo} alt="logo" className="transform scale-150" />
+          </div>
+        </div>
         <h5 className="text-3xl mb-3">Ha ocurrido un error.</h5>
         <div className="text-2xl text-error">
           <ErrorMessage error={error} />

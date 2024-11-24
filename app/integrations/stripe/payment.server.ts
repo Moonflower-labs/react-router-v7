@@ -67,33 +67,31 @@ export async function handlePaymentAndInvoice(customerId: string | null, payment
       }
 
       const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-      const invoiceUrl = finalizedInvoice.hosted_invoice_url;
-      console.warn("Invoice url", invoiceUrl);
-      if (!finalizedInvoice.payment_intent) {
-        throw new Error("Failed to create payment intent for invoice");
-      }
-      const paymentIntentId = finalizedInvoice.payment_intent as string;
-      // const paymentIntent = await retrievePaymentIntent(paymentIntentId);
-      const paymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
+      console.warn("Invoice url", finalizedInvoice.hosted_invoice_url);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: finalizedInvoice?.amount_due,
+        currency: "gbp",
+        customer: customerId ?? undefined,
+        description,
+        automatic_payment_methods: { enabled: true },
         metadata: {
-          order_number: orderId
+          order_number: orderId,
+          invoice_id: finalizedInvoice.id
         }
       });
 
       console.log("Invoice finalized and linked:", finalizedInvoice.id);
 
-      //? Send invoice email ?
-      // await stripe.invoices.sendInvoice(invoice.id);
-
-      return { paymentIntent, invoiceUrl };
+      return { paymentIntent, invoice };
     }
-    //  Create a PaymentIntent
+    //  Create only PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: paymentAmount,
       currency: "gbp",
-      customer: customerId ?? undefined, // Optional: Only if customer is logged in
+      customer: customerId ?? undefined,
       description,
-      // automatic_payment_methods: { enabled: true },
+      automatic_payment_methods: { enabled: true },
       metadata: {
         order_number: orderId
       }

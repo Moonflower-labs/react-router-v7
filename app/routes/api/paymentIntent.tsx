@@ -36,11 +36,10 @@ export async function action({ request }: Route.ActionArgs) {
   }
   const lineItems = cart.cartItems
 
-  // const paymentIntent = (await createPaymentIntent({ customerId, amount: finalAmount, orderId })) as Stripe.PaymentIntent;
-  const { paymentIntent, invoiceUrl } = await handlePaymentAndInvoice(customerId, finalAmount, "", lineItems, orderId);
+  const { paymentIntent, invoice } = await handlePaymentAndInvoice(customerId, finalAmount, "Compra en La Flor Blanca", lineItems, orderId);
   if (!paymentIntent) {
     throw new Response("An error has ocurred", { status: 400 });
   }
 
-  return Response.json({ clientSecret: paymentIntent.client_secret, amount: paymentIntent.amount, usedBalance, customerId, invoiceUrl });
+  return Response.json({ clientSecret: paymentIntent.client_secret, amount: paymentIntent.amount, usedBalance, customerId, invoice });
 }
