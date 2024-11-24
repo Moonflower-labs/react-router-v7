@@ -1,8 +1,10 @@
 import { ImBin } from "react-icons/im";
-import { Form } from "react-router";
+import { useFetcher } from "react-router";
 import type { CartItem } from "~/models/cart.server";
 
 export function CartItem({ item }: { item: CartItem }) {
+  const fetcher = useFetcher({ key: "manage-cart-item" });
+
   return (
     <tr>
       <td>
@@ -17,34 +19,50 @@ export function CartItem({ item }: { item: CartItem }) {
       <td>
         {item.product?.name}
         <br />
-        <span className="badge badge-primary badge-sm">{item.product?.description?.slice(0, 10)}...</span>
+        <span className="font-semibold text-primary">
+          {item.price?.info?.length > 30 ? `${item.price.info.slice(0, 18)}...` : item.price.info}
+        </span>
       </td>
       <td className="text-center">£{item.price?.amount / 100}</td>
-      <td className="text-center">{item?.quantity || 1}</td>
+      <td className="text-center">x{item.quantity}</td>
       <th>
         <div className="flex gap-2 align-middle my-auto">
-          {" "}
-          <Form method="post">
+          <fetcher.Form method="post">
             <input type="hidden" name="priceId" value={item.price.id} />
             <input type="hidden" name="productId" value={item.product.id} />
-            <button type="submit" name="action" value={"decrease"} className="btn btn-outline btn-primary btn-xs">
+            <button
+              type="submit"
+              name="action"
+              value={"decrease"}
+              className="btn btn-outline btn-primary btn-xs"
+            >
               -
             </button>
-          </Form>
-          <Form method="post">
+          </fetcher.Form>
+          <fetcher.Form method="post">
             <input type="hidden" name="priceId" value={item.price.id} />
             <input type="hidden" name="productId" value={item.product.id} />
-            <button type="submit" name="action" value={"addToCart"} className="btn btn-outline btn-primary  btn-xs">
+            <button
+              type="submit"
+              name="action"
+              value={"addToCart"}
+              className="btn btn-outline btn-primary  btn-xs"
+            >
               +
             </button>
-          </Form>
-          <Form method="post">
+          </fetcher.Form>
+          <fetcher.Form method="post">
             <input type="hidden" name="action" value={"remove"} />
-            <input type="hidden" name="cartItemId" value={item.product.id} />
-            <button type="submit" name="action" value={"remove"} className="btn btn-ghost btn-xs">
+            <input type="hidden" name="priceId" value={item.price.id} />
+            <button
+              type="submit"
+              name="action"
+              value={"remove"}
+              className="btn btn-ghost btn-xs"
+            >
               <ImBin size={22} className="my-auto text-red-500" />
             </button>
-          </Form>
+          </fetcher.Form>
         </div>
       </th>
     </tr>

@@ -9,14 +9,11 @@ import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
   // todo: make utility fn to check for the user subscription
   // if(!userHasMembership){
   //     return redirect("/")
   // }
-  if (!userId) {
-    throw redirect("/#plans");
-  }
+
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
   let pickedCategories = url.searchParams.getAll("categories") || [];

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ }: Route.LoaderArgs) {
   const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } } } });
   return users;
 }

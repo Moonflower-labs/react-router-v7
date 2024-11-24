@@ -14,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 10);
-  const { videos, pagination } = await fetchVideos({ section: "soul", title: q, categories: pickedCategories, page, pageSize });
+  const { videos, pagination } = await fetchVideos({ section: "Soul", title: q, categories: pickedCategories, page, pageSize });
   const categories = await fetchCategories();
 
   return { videos, pagination, categories, q };

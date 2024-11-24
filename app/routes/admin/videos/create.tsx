@@ -88,8 +88,8 @@ export default function CreateVideoBlog({ loaderData, actionData }: Route.Compon
             </div>
             <select className="select select-bordered select-primary mb-4" name="section" defaultValue={"Elige una sección"}>
               <option disabled>Elige una sección</option>
-              <option value="soul">Alma</option>
-              <option value="spirit">Espíritu</option>
+              <option value="Soul">Alma</option>
+              <option value="Spirit">Espíritu</option>
             </select>
             {errors?.section && <ActionError actionData={{ error: errors?.section }} />}
           </label>

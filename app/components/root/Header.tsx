@@ -2,11 +2,12 @@ import { AiOutlineUser } from "react-icons/ai";
 import { Form, Link, useFetcher, useRouteLoaderData, useSubmit } from "react-router";
 import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { CgShoppingCart } from "react-icons/cg";
 import { User } from "~/models/user.server";
 import { LogoutBtn } from "./LogoutBtn";
 import { Navbar } from "./Navbar";
+import logo from "./logo.svg"
 
 export function Header() {
   const user = useRouteLoaderData("root")?.user as User;
@@ -76,8 +77,8 @@ export function Header() {
           <Link to={"/"} onClick={handleDropdown} className="btn btn-ghost text-2xl" viewTransition>
             <span className="hidden md:block me-2">La Flor Blanca</span>
             <div className="avatar">
-              <div className="w-8 rounded-full">
-                <img src="/logo.jpeg" alt="logo" className="avatart" />
+              <div className="w-10 rounded">
+                <img src={logo} alt="logo" className="transform scale-150" />
               </div>
             </div>
           </Link>
@@ -183,11 +184,39 @@ function ShoppingCartIcon({ count }: { count: number }) {
     <Link to={"./cart"} className="btn btn-ghost btn-circle" viewTransition>
       <div className="indicator cursor-pointer">
         <CgShoppingCart className="h-8 w-8 ms-2 text-primary cursor-pointer" />
-        {count > 0 && (
-          <motion.div key={count} initial={{ scale: 0.7 }} animate={{ scale: 1 }}>
-            <span className="badge badge-sm badge-primary border-primary-content/40 indicator-item">{count}</span>
-          </motion.div>
-        )}
+        <AnimatePresence mode="wait">
+          {count > 0 && (
+            <motion.div
+              key="liked"
+              initial={{ scale: 0 }}
+              animate={{
+                scale: 1,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 15
+                }
+              }}
+              exit={{ scale: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <motion.div key={count} animate={{
+                scale: [1, 1.3, 1],
+                rotate: [0, 16, -16, 0]
+              }}
+                transition={{
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  times: [0, 0.2, 0.5, 0.8],
+                  repeat: 1,
+                  repeatDelay: 0.3
+                }}>
+                <span className="badge badge-sm badge-primary border-primary-content/40 indicator-item">{count}</span>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </Link>
   );

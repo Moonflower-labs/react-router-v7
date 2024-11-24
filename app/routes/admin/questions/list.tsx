@@ -1,6 +1,5 @@
-import { data, Form, Link, Outlet, redirect, useNavigate, useSubmit } from "react-router";
+import { data, Form, Link, Outlet, useNavigate, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { getUserId } from "~/utils/session.server";
 import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
@@ -11,11 +10,6 @@ import { FaEye } from "react-icons/fa";
 import { Question, PremiumQuestion } from "@prisma/client";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
-
-  if (!userId) {
-    throw redirect("/#plans");
-  }
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
   const section = url.searchParams.get("section") ?? "Personalidad";

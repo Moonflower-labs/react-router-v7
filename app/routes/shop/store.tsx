@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 
 export async function loader() {
   // Return the promise
-  return getAllProducts();
+  return { products: getAllProducts() };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -36,7 +36,6 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Store({ loaderData }: Route.ComponentProps) {
   const user = useRouteLoaderData("root")?.user as User;
-  const productPromise = loaderData;
   const fetcher = useFetcher({ key: "add-to-cart" });
 
   useEffect(() => {
@@ -64,17 +63,18 @@ export default function Store({ loaderData }: Route.ComponentProps) {
         </div>
       )}
       <Suspense fallback={<StoreSkeleton />}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
-          <Await resolve={productPromise} errorElement={<p className="text-error text-xl text-center">⚠️ Error cargando los productos!</p>}>
-            {productList =>
-              productList?.length > 0 ? (
-                productList.map((item: Product) => <ProductItem key={item.id} item={item} />)
-              ) : (
-                <div className="text-2xl text-center mx-auto col-span-full">No hay productos que mostrar</div>
-              )
-            }
-          </Await>
-        </div>
+        <Await resolve={loaderData?.products} errorElement={<p className="text-error text-xl text-center">⚠️ Error cargando los productos!</p>}>
+          {productList =>
+            productList?.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
+                {productList.map((item: Product) =>
+                  <ProductItem key={item.id} item={item} />)}
+              </div>
+            ) : (
+              <div className="text-2xl text-center mx-auto col-span-full">No hay productos que mostrar</div>
+            )
+          }
+        </Await>
       </Suspense>
     </>
   );

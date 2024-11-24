@@ -3,6 +3,12 @@ import { FaQuestion } from "react-icons/fa";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
+import type { Route } from "./+types/layout";
+import { requireUserId } from "~/utils/session.server";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  return requireUserId(request)
+}
 
 export default function Layout() {
   return (

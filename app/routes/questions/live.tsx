@@ -2,15 +2,13 @@ import { data, useFetcher, useNavigation } from "react-router";
 import { MutableRefObject, useEffect, useRef } from "react";
 import type { Route } from "./+types/live";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
-import { getUserId } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { toast } from "react-toastify";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
-    const userId = await getUserId(request);
-    if (!userId || typeof userId !== "string") {
-      throw data({ message: "No user ID found" }, { status: 400 });
-    }
+    const userId = await requireUserId(request);
+
     const { liveQuestionCount } = (await getQuestionCount({ userId, section: "live" })) as { liveQuestionCount: number };
 
     return liveQuestionCount;
@@ -24,10 +22,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = await getUserId(request);
-  if (!userId || typeof userId !== "string") {
-    throw data({ message: "No user ID found" }, { status: 400 });
-  }
+  const userId = await requireUserId(request);
+
   const text = formData.get("text");
   const questionCount = Number(formData?.get("questionCount")) ?? 1;
 

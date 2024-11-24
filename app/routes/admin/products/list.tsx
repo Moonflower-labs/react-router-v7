@@ -1,8 +1,8 @@
 import { getUserId, requireUserId } from "~/utils/session.server";
 import type { Route } from "./+types/list";
 import { getAllProducts } from "~/models/product.server";
-import { Form, Link, Outlet, redirect } from "react-router";
-import { FaEye, FaCheck } from "react-icons/fa";
+import { Form, Link, Outlet } from "react-router";
+import { FaEye } from "react-icons/fa";
 import { ImBin } from "react-icons/im";
 import { formatDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
@@ -10,10 +10,8 @@ import { IoMdAdd } from "react-icons/io";
 import { syncStripeProducts } from "~/models/cart.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
-
   // const page = Number((url.searchParams.get('page')) || 1);
   // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 

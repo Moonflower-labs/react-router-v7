@@ -6,6 +6,12 @@ import { HiMiniShoppingBag } from "react-icons/hi2";
 import { PiUsersThreeFill } from "react-icons/pi";
 import { NavLink, Outlet } from "react-router";
 import tarotIcon from "~/icons/tarot.svg"
+import type { Route } from "./+types/layout";
+import { requireUserId } from "~/utils/session.server";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  return requireUserId(request)
+}
 
 export default function AdminLayout() {
   return (

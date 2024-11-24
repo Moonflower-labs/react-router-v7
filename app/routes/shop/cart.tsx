@@ -30,8 +30,7 @@ export async function action({ request }: Route.ActionArgs) {
       break;
     }
     case "remove": {
-      const cartItemId = formData.get("cartItemId");
-      await removeFromCart(userId, String(cartItemId));
+      await removeFromCart(userId, String(priceId));
       break;
     }
     default: {
@@ -46,21 +45,12 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
   const cartItems = loaderData?.cart?.cartItems as CartItem[];
 
   return (
-    <div className="bg-base-100 p-10 min-h-[80vh] flex flex-col justify-center items-center text-neutral-content rounded-lg">
-      <h1 className="text-3xl font-semibold">Artículos de compra</h1>
+    <div className="bg-base-100 p-10 min-h-[80vh] flex flex-col justify-center items-center rounded-lg">
+      <h1 className="text-3xl font-semibold py-3">Cesta</h1>
       {cartItems?.length > 0 ? (
         <>
-          <div className="overflow-y-auto mb-4">
+          <div className="w-screen overflow-y-auto overflow-x-auto mb-4">
             <table className="table">
-              <thead>
-                <tr className="text-center">
-                  <th className="">Imagen</th>
-                  <th className="">Artículo</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
-                  <th></th>
-                </tr>
-              </thead>
               <tbody>
                 {cartItems.map(item => (
                   <Item key={item.id} item={item} />

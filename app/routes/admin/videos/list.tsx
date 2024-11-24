@@ -1,6 +1,5 @@
-import { data, Form, Link, redirect, useSubmit } from "react-router";
+import { data, Form, Link, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { getUserId } from "~/utils/session.server";
 import { formatDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
@@ -11,11 +10,6 @@ import { deleteVideo, fetchVideos } from "~/models/video.server";
 import { Paginator } from "~/components/members/Pagination";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
-
-  if (!userId) {
-    throw redirect("/login");
-  }
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
   let categories = url.searchParams.getAll("categories");

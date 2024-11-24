@@ -1,6 +1,5 @@
 import { data, Form, Link, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { requireUserId } from "~/utils/session.server";
 import { deletePost, fetchPosts } from "~/models/post.server";
 import { formatDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
@@ -11,8 +10,6 @@ import { toast } from "react-toastify";
 import { Paginator } from "~/components/members/Pagination";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
-
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
   let pickedCategories = url.searchParams.getAll("categories") || [];

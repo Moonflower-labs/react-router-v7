@@ -71,7 +71,7 @@ export async function addToCart(userId: string, productId: string, priceId: stri
     const newQuantity = cartItem.quantity + quantity;
     const newTotalPrice = Number(price.amount) * newQuantity;
     if (newQuantity <= 0) {
-      return removeFromCart(userId, cartItem.product.id);
+      return removeFromCart(userId, cartItem.priceId);
     }
     return prisma.cartItem.update({
       data: { quantity: newQuantity, totalPrice: newTotalPrice },
@@ -90,13 +90,13 @@ export async function addToCart(userId: string, productId: string, priceId: stri
   });
 }
 
-export async function removeFromCart(userId: string, productId: string) {
+export async function removeFromCart(userId: string, priceId: string) {
   const cart = await getShoppingCart(userId);
 
   return prisma.cartItem.deleteMany({
     where: {
       cartId: cart!.id,
-      productId
+      priceId
     }
   });
 }

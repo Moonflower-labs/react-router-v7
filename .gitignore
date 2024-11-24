@@ -4,3 +4,6 @@ node_modules
 /build
 .env
 .react-router
+.DS_Store
+.prettierrc
+prisma/dev.db
