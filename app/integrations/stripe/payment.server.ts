@@ -93,7 +93,7 @@ export async function handlePaymentAndInvoice(customerId: string | null, payment
       currency: "gbp",
       customer: customerId ?? undefined, // Optional: Only if customer is logged in
       description,
-      automatic_payment_methods: { enabled: true },
+      // automatic_payment_methods: { enabled: true },
       metadata: {
         order_number: orderId
       }

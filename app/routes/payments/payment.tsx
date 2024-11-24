@@ -53,7 +53,8 @@ function CheckoutForm() {
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `${window.location.origin}/payments/success`
+          return_url: `${window.location.origin}/payments/success`,
+
         },
         redirect: "if_required"
       });
@@ -96,7 +97,7 @@ function CheckoutForm() {
       billingDetails: {
         // email: user?.email,
       }
-    }
+    },
   };
 
   return (

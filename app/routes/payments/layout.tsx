@@ -41,13 +41,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const priceId = formData.get("priceId") as string;
+  const priceId = formData.get("priceId");
   // If no priceId present redirect to payment checkout
   if (!priceId) {
-    return redirect("/payments");
+    throw redirect("/payments");
   }
-  console.log(getSubscriptionData(priceId));
-  return getSubscriptionData(priceId);
+  return getSubscriptionData(String(priceId));
 }
 
 export type ContextType = { amount: number | undefined; planName?: string; priceId?: string; customerBalance: number };
