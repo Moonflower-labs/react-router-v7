@@ -9,9 +9,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
   const userId = session.get("userId");
   const cart = await getShoppingCart(userId);
+  const sortedCart = cart?.cartItems.sort((a, b) => a.productId.localeCompare(b.productId))
   const totalAmount = calculateTotalAmount(cart?.cartItems || []);
 
-  return { cart, totalAmount };
+  return { cart: sortedCart, totalAmount };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -42,7 +43,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Cart({ loaderData }: Route.ComponentProps) {
-  const cartItems = loaderData?.cart?.cartItems as CartItem[];
+  const cartItems = loaderData?.cart as CartItem[];
 
   return (
     <div className="bg-base-100 p-10 min-h-[80vh] flex flex-col justify-center items-center rounded-lg">
