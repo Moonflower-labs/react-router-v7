@@ -128,7 +128,7 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
         ))
       ) : (
         <div className="flex gap-4 justify-center items-center">
-          <span>No hay ninguna pregunta de {section === "basic" ? "Personalidad" : section === "live" ? "Directo" : "Tarot"} todavía 😩 </span>
+          <span>No hay ninguna pregunta de {section === "tarot" ? "Tarot" : section === "live" ? "Directo" : "Personalidad"} todavía 😩 </span>
         </div>
       )}
       <div className="text-center">

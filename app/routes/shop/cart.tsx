@@ -68,7 +68,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
         <div>Cesta vacía</div>
       )}
       <Link to={"/store"} className="link-primary block" viewTransition>
-        Ir a la tienda
+        {cartItems.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
       </Link>
     </div>
   );

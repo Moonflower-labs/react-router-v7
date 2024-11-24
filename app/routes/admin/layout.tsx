@@ -111,6 +111,16 @@ export default function AdminLayout() {
           <RiWebhookFill size={20} />
           <span className="text-xs md:text-lg">Webhooks</span>
         </NavLink>
+        <NavLink
+          to={"admin/emails"}
+          role="tab"
+          className={({ isActive }) =>
+            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
+          }
+          viewTransition>
+          <RiWebhookFill size={20} />
+          <span className="text-xs md:text-lg">Emails</span>
+        </NavLink>
       </div>
       <div className="min-h-screen px-3 w-full">
         <Outlet />

@@ -1,4 +1,4 @@
-import { data, Form, Link, Outlet, redirect, useSubmit } from "react-router";
+import { data, Form, Link, Outlet, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
 import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
