@@ -43,8 +43,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             </div>
             <div className='border rounded-lg shadow w-full md:w-2/3 mb-4 p-2'>
                 <h2 className='text-xl font-bold'>Directo</h2>
-                {tarot?.length > 0
-                    ? tarot.map((question, index) =>
+                {live?.length > 0
+                    ? live.map((question, index) =>
                         <div key={question.id} className='mb-3'>
                             <p>{index + 1}. {formatDate(question.createdAt)}</p>
                             <p>{question.text}</p>
