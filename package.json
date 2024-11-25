@@ -38,7 +38,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "prisma": "^5.21.1",
-    "react-router-devtools": "https://pkg.pr.new/forge42dev/Remix-Dev-Tools/react-router-devtools@151.tgz",
+    "react-router-devtools": "^1.0.4",
     "tailwindcss": "^3.4.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2",
