@@ -10,6 +10,20 @@ export default [
     route("logout", "routes/auth/logout.tsx"),
     route("register", "routes/auth/register.tsx")
   ]),
+
+  // Payments
+  ...prefix("payments", [
+    layout("routes/payments/layout.tsx", [
+      route("subscribe", "routes/payments/subscribe.tsx"),
+      route("setup", "routes/payments/setup.tsx"),
+      route("checkout", "routes/payments/payment.tsx")
+    ]),
+    route("success", "routes/payments/success.tsx")
+  ]),
+  route("store", "routes/shop/store.tsx"),
+  route("cart", "routes/shop/cart.tsx"),
+  route("help", "routes/help.tsx"),
+
   // Profile
   ...prefix("profile", [
     layout("routes/profile/layout.tsx", [
@@ -23,7 +37,8 @@ export default [
         route("update", "routes/profile/plan/update.tsx"),
         route("delete", "routes/profile/plan/delete.tsx"),
         route("confirmation", "routes/profile/plan/confirmation.tsx")
-      ])
+      ]),
+      route("questions", "routes/profile/questions.tsx")
     ])
   ]),
   // Questions
@@ -46,19 +61,6 @@ export default [
       route("live", "routes/members/spirit/live.tsx")
     ])
   ]),
-
-  // Payments
-  ...prefix("payments", [
-    layout("routes/payments/layout.tsx", [
-      route("subscribe", "routes/payments/subscribe.tsx"),
-      route("setup", "routes/payments/setup.tsx"),
-      route("checkout", "routes/payments/payment.tsx")
-    ]),
-    route("success", "routes/payments/success.tsx")
-  ]),
-  route("store", "routes/shop/store.tsx"),
-  route("cart", "routes/shop/cart.tsx"),
-  route("help", "routes/help.tsx"),
 
   // API Routes
   ...prefix("api", [

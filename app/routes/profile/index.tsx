@@ -124,13 +124,16 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <div className="flex justify-between">
               <span>Tarot</span> <span className="badge badge-primary badge-outline">{profile?.tarotQuestionCount}</span>
             </div>
+            <Link to={"questions"} className="text-primary flex justify-end" viewTransition>
+              <GoArrowRight size={24} />
+            </Link>
           </div>
 
           <div className="rounded-lg border shadow-lg p-4">
             <h2 className="text-xl text-center text-primary font-semibold py-3">Mis Pedidos</h2>
             <div className="flex justify-between">
               <span>Aquí podrás ver tus pedidos</span>
-              <Link to={"orders"}><GoArrowRight size={24} /></Link>
+              <Link to={"orders"} viewTransition><GoArrowRight size={24} /></Link>
             </div>
           </div>
 
@@ -138,7 +141,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <h2 className="text-xl text-center text-primary font-semibold py-3">Mis Facturas</h2>
             <div className="flex justify-between">
               <span>Listado de tus tus Facturas para ver online o descargar PDF.</span>
-              <Link to={"invoices"}><GoArrowRight size={24} /></Link>
+              <Link to={"invoices"} viewTransition><GoArrowRight size={24} /></Link>
             </div>
           </div>
 

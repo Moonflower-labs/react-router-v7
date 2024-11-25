@@ -1,7 +1,15 @@
 import { data } from "react-router";
 import { prisma } from "~/db.server";
 
-export async function getQuestions({ section, page = 1, pageSize = 10 }: { section?: string | null; page: number; pageSize: number }) {
+export async function getQuestions({
+  section,
+  page = 1,
+  pageSize = 10
+}: {
+  section?: string | null;
+  page: number;
+  pageSize: number;
+}) {
   // Add pagination
   const take = pageSize; // The number of items to return
   const skip = (Number(page) - 1) * pageSize; // Number of items to skip for pagination
@@ -66,7 +74,15 @@ export async function createBasicQuestion({ userId, data }: { userId: string; da
   });
 }
 
-export async function createPremiumQuestion({ userId, data, section }: { userId: string; data: Record<string, any>; section: "live" | "tarot" }) {
+export async function createPremiumQuestion({
+  userId,
+  data,
+  section
+}: {
+  userId: string;
+  data: Record<string, any>;
+  section: "live" | "tarot";
+}) {
   return prisma.premiumQuestion.create({
     data: {
       userId,
@@ -78,7 +94,15 @@ export async function createPremiumQuestion({ userId, data, section }: { userId:
   });
 }
 
-export async function incrementQuestionCount({ userId, questionType, count }: { userId: string; questionType: string; count: number }) {
+export async function incrementQuestionCount({
+  userId,
+  questionType,
+  count
+}: {
+  userId: string;
+  questionType: string;
+  count: number;
+}) {
   switch (questionType) {
     case "basic": {
       return prisma.profile.update({
@@ -108,4 +132,13 @@ export async function deleteQuestion(id: string, premium?: boolean) {
     return prisma.question.delete({ where: { id } });
   }
   return prisma.premiumQuestion.delete({ where: { id } });
+}
+
+export async function getUserQuestions(userId: string) {
+  const [basic, tarot, live] = await Promise.all([
+    prisma.question.findMany({ where: { userId } }),
+    prisma.premiumQuestion.findMany({ where: { userId, section: "tarot" } }),
+    prisma.premiumQuestion.findMany({ where: { userId, section: "live" } })
+  ]);
+  return { basic, tarot, live };
 }
