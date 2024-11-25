@@ -64,7 +64,6 @@ export default function ResetPassword({ loaderData, actionData }: Route.Componen
                 <h1 className="text-4xl font-bold text-primary mb-4">
                     Confirma el cambio de contraseña
                 </h1>
-
                 <p className="py-8 w-2/3 mx-auto">Elige una contraseña nueva.</p>
             </div>
 
