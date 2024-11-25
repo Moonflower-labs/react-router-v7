@@ -1,5 +1,5 @@
 import { data, Form, Link, redirect, useNavigation, useOutletContext, useSubmit } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { PLANS, retrieveSubscription, stripe } from "~/integrations/stripe";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
@@ -75,22 +75,12 @@ export async function action({ request }: Route.ActionArgs) {
 export default function UpdateSubscription({ loaderData, actionData }: Route.ComponentProps) {
   const { subscription }: any = useOutletContext() || {};
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useCallback((node: HTMLDivElement | null) => { node?.focus(); }, [])
   const previewInvoice = actionData?.preview;
   const navigation = useNavigation();
   const submit = useSubmit();
   const plans = loaderData;
 
-  useEffect(() => {
-    if (previewInvoice && ref.current) {
-      // Delay focusing to ensure the animation is complete
-      const timeoutId = setTimeout(() => {
-        ref?.current?.focus();
-      }, 200); // Adjust the timeout if necessary
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [previewInvoice]);
 
   return (
     <div className="text-center">
