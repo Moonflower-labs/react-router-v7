@@ -12,8 +12,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
   try {
     const userProfile = await getUserProfile(String(userId));
-    const planData = getSubscriptionData(userProfile?.subscription?.plan?.name as string);
-    return { userProfile, planData };
+    const planName = userProfile?.subscription?.plan?.name
+    return { userProfile, planData: planName ? getSubscriptionData(planName) : null };
   } catch (error) {
     console.error(error);
     return null;
