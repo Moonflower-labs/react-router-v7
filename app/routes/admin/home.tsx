@@ -83,29 +83,6 @@ export default function Admin() {
           </Link>
         </div>
       </div>
-      <div className="text-center">
-        <div className="text-3xl font-semibold mb-4">Tienda</div>
-        <div className="grid grid-cols-3 gap-4">
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Pedidos
-          </Link>
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Productos
-          </Link>
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Video Blogs
-          </Link>
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Tarot
-          </Link>
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Sesiones en directo
-          </Link>
-          <Link to={"post"} className="btn  btn-primary btn-outline btn-sm shadow-md" viewTransition>
-            Preguntas
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }
