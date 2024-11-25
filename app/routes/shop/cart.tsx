@@ -3,16 +3,15 @@ import type { Route } from "./+types/cart";
 import { CartItem as Item } from "~/components/shop/CartItem";
 import { addToCart, calculateTotalAmount, getShoppingCart, removeFromCart } from "~/models/cart.server";
 import { getSession } from "~/utils/session.server";
-import type { CartItem } from "~/models/cart.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
   const userId = session.get("userId");
   const cart = await getShoppingCart(userId);
-  const sortedCart = cart?.cartItems.sort((a, b) => a.productId.localeCompare(b.productId))
+  // const sortedCart = cart?.cartItems.sort((a, b) => a.productId.localeCompare(b.productId))
   const totalAmount = calculateTotalAmount(cart?.cartItems || []);
 
-  return { cart: sortedCart, totalAmount };
+  return { cart, totalAmount };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -43,12 +42,12 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Cart({ loaderData }: Route.ComponentProps) {
-  const cartItems = loaderData?.cart as CartItem[];
+  const cartItems = loaderData?.cart?.cartItems;
 
   return (
     <div className="bg-base-100 p-10 min-h-[80vh] flex flex-col justify-center items-center rounded-lg">
       <h1 className="text-3xl font-semibold py-3">Cesta</h1>
-      {cartItems?.length > 0 ? (
+      {cartItems && cartItems?.length > 0 ? (
         <>
           <div className="w-screen overflow-y-auto overflow-x-auto mb-4">
             <table className="table">
@@ -68,7 +67,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
         <div>Cesta vacía</div>
       )}
       <Link to={"/store"} className="link-primary block" viewTransition>
-        {cartItems.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
+        {cartItems && cartItems?.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
       </Link>
     </div>
   );

@@ -16,7 +16,8 @@ export async function getShoppingCart(userId: string) {
         include: {
           product: true,
           price: true
-        }
+        },
+        orderBy: { id: "asc" }
       }
     }
   });
