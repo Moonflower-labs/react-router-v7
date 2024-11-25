@@ -8,7 +8,9 @@ export default [
   layout("routes/auth/layout.tsx", [
     route("login", "routes/auth/login.tsx"),
     route("logout", "routes/auth/logout.tsx"),
-    route("register", "routes/auth/register.tsx")
+    route("register", "routes/auth/register.tsx"),
+    route("forgot-password", "routes/auth/forgot-password.tsx"),
+    route("reset-password", "routes/auth/reset-password.tsx")
   ]),
 
   // Payments
@@ -50,9 +52,15 @@ export default [
   // Members
   layout("routes/members/layout.tsx", [
     // Personality plan
-    ...prefix("personality", [index("routes/members/personality/index.tsx"), route("post/:id", "routes/members/personality/detail.tsx")]),
+    ...prefix("personality", [
+      index("routes/members/personality/index.tsx"),
+      route("post/:id", "routes/members/personality/detail.tsx")
+    ]),
     // Soul plan
-    ...prefix("soul", [index("routes/members/soul/index.tsx"), route("video/:id", "routes/members/soul/detail.tsx")]),
+    ...prefix("soul", [
+      index("routes/members/soul/index.tsx"),
+      route("video/:id", "routes/members/soul/detail.tsx")
+    ]),
 
     // Spirit plan
     ...prefix("spirit", [

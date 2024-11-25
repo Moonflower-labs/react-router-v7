@@ -1,5 +1,15 @@
+import crypto from "crypto";
+
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
+}
+
+export function generateToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+export function generateResetUrl(token: string): string {
+  return `${process.env.APP_URL}/reset-password?token=${token}`;
 }
 
 export function calculateRenewalDate(date: Date | undefined) {

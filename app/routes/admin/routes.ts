@@ -13,7 +13,10 @@ export const adminRoutes = [
       //  Categories
       ...prefix("/emails", [index("routes/admin/emails/send.tsx")]),
       //  Orders
-      ...prefix("/orders", [index("routes/admin/orders/list.tsx"), route(":id/detail", "routes/admin/orders/detail.tsx")]),
+      ...prefix("/orders", [
+        index("routes/admin/orders/list.tsx"),
+        route(":id/detail", "routes/admin/orders/detail.tsx")
+      ]),
       //  Posts
       ...prefix("/post", [
         index("routes/admin/posts/list.tsx"),
@@ -27,8 +30,13 @@ export const adminRoutes = [
         route("create", "routes/admin/products/create.tsx"),
         route(":id/edit", "routes/admin/products/edit.tsx")
       ]),
+      // Reset Tokens
+      route("tokens", "routes/admin/resetToken/reset-token.tsx"),
       //  Questions
-      ...prefix("/questions", [index("routes/admin/questions/list.tsx"), route(":id/detail", "routes/admin/questions/detail.tsx")]),
+      ...prefix("/questions", [
+        index("routes/admin/questions/list.tsx"),
+        route(":id/detail", "routes/admin/questions/detail.tsx")
+      ]),
       // Users
       ...prefix("/users", [
         index("routes/admin/users/list.tsx")
@@ -41,7 +49,10 @@ export const adminRoutes = [
         route(":id/edit", "routes/admin/videos/edit.tsx")
       ]),
       //  Webhooks
-      ...prefix("/webhooks", [index("routes/admin/webhooks/list.tsx"), route("create", "routes/admin/webhooks/create.tsx")])
+      ...prefix("/webhooks", [
+        index("routes/admin/webhooks/list.tsx"),
+        route("create", "routes/admin/webhooks/create.tsx")
+      ])
     ])
   ])
 ];

@@ -33,6 +33,9 @@ model User {
   questions        Question[]
   orders           Order[]
   replies          Reply[]
+
+
+  ResetToken ResetToken[]
 }
 
 model Password {
@@ -311,16 +314,25 @@ model Question {
   createdAt DateTime @default(now())
 }
 
+model ResetToken {
+  id        String @id @default(cuid())
+  userId    String 
+  token     String @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime 
+  user      User @relation(fields: [userId],references: [id])
+}
+
 // todo: add enums for production db
-// enum Section {
-//   Spirit
-//   Soul
-//   Live
-// }
+enum Section {
+  Spirit
+  Soul
+  Live
+}
 
 model Video {
   id          String  @id @default(cuid())
-  section     String
+  section     Section
   title       String
   description String
   url         String
