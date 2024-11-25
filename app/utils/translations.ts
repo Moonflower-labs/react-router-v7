@@ -7,7 +7,6 @@ export const subscriptionStatusTranslations: Record<string, string> = {
   trialing: "En prueba"
 };
 
-// Could add a helper function if you want
 export function translateSubscriptionStatus(status: string | undefined) {
   if (status === undefined) return;
   return subscriptionStatusTranslations[status] || status;

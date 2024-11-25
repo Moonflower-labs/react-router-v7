@@ -8,7 +8,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
   const userId = session.get("userId");
   const cart = await getShoppingCart(userId);
-  // const sortedCart = cart?.cartItems.sort((a, b) => a.productId.localeCompare(b.productId))
   const totalAmount = calculateTotalAmount(cart?.cartItems || []);
 
   return { cart, totalAmount };

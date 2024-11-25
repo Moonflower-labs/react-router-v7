@@ -12,7 +12,6 @@ export async function action({ request }: Route.ActionArgs) {
 
 
     const email = await sendEmail(to, subject, text, html)
-    console.log(email)
     return email
 }
 

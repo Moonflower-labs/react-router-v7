@@ -8,7 +8,7 @@ import { getCartItemsCount } from "./models/cart.server";
 import { ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import "react-toastify/dist/ReactToastify.css";
-import "./app.css";
+import stylesheet from "./app.css?url";
 import logo from "../app/components/root/logo.svg"
 
 
@@ -22,7 +22,8 @@ export const links: Route.LinksFunction = () => [
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-  }
+  },
+  { rel: "stylesheet", href: stylesheet },
 ];
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
