@@ -7,8 +7,7 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "setup": "prisma migrate dev && prisma db seed",
-    "typecheck": "react-router typegen && tsc",
-    "typegen:watch": "react-router typegen --watch"
+    "typecheck": "react-router typegen && tsc --build --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
