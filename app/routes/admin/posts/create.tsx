@@ -15,11 +15,7 @@ export async function loader() {
   return categories;
 }
 
-interface Errors {
-  title?: string;
-  description?: string;
-  categories?: string; // You can adjust this based on how you want to manage categories
-}
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const userId = (await getUserId(request)) as string;
@@ -27,7 +23,7 @@ export async function action({ request }: Route.ActionArgs) {
   const description = formData.get("description");
   const categories = formData.getAll("categories") as string[];
   const published = formData.get("published") === "true";
-  let errors: Errors = {};
+  let errors: any = {};
   if (!title) {
     errors.title = "Escribe un título";
   }
@@ -41,9 +37,13 @@ export async function action({ request }: Route.ActionArgs) {
     return { errors };
   }
 
-  const post = await createPost(userId, title, String(description), categories, published);
+  try {
+    await createPost(userId, title, String(description), categories, published);
 
-  return { success: true, published };
+    return { success: true, published };
+  } catch (error) {
+    return { success: false, message: "Ha ocurrido un error" };
+  }
 }
 
 export default function CreatePost({ loaderData, actionData }: Route.ComponentProps) {
@@ -56,6 +56,8 @@ export default function CreatePost({ loaderData, actionData }: Route.ComponentPr
       toast.success(`Post ${actionData?.published ? "pubicado" : "editado"} 👏🏽`);
       formRef.current.reset();
       setSelectedOptions([]);
+    } else if (!actionData?.success && actionData?.message) {
+      toast.error(actionData?.message);
     }
   }, [actionData]);
 
@@ -76,7 +78,7 @@ export default function CreatePost({ loaderData, actionData }: Route.ComponentPr
           ) : (
             <div className="flex justify-center items-center gap-4">
               <div>No hay ninguna categoria todavía</div>
-              <Link to={""} className="text-primary btn btn-ghost btn-sm">
+              <Link to={"/admin/categories/create"} className="text-primary btn btn-ghost btn-sm">
                 <IoMdAdd size={24} />
               </Link>
             </div>
