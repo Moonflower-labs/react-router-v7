@@ -1,7 +1,6 @@
 import { prisma } from "~/db.server";
 import { Route } from "./+types/detail";
 import { formatDate } from "~/utils/format";
-import type { PremiumQuestion, Question } from "@prisma/client";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const basic = await prisma.question.findUnique({ where: { id: params.id } });
