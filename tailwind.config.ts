@@ -46,7 +46,6 @@ export default {
           "error-content": "#fae8ff"
         }
       },
-      "light",
       "dark",
       "cupcake",
       "garden",
