@@ -13,13 +13,13 @@ import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply } from "~/models/comment.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
+  if (!params.id) {
+    throw data({ message: "No param Id provided!" }, { status: 400 });
+  }
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
 
-  if (!params.id) {
-    throw data({ message: "No param Id provided!" }, { status: 400 });
-  }
   const [video, { comments, pagination }] = await Promise.all([fetchVideo(params.id), fetchVideoComments(params.id, page, pageSize)]);
 
   return { video, id: params.id, comments, pagination };

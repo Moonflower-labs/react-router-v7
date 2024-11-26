@@ -14,12 +14,13 @@ import { getUserId } from "~/utils/session.server";
 import type { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
+  if (!params.id) {
+    throw data({ message: "No param ID provided!" }, { status: 400 });
+  }
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
-  if (!params.id) {
-    throw new Error("No param Id provided!");
-  }
+
   const [video, { comments, pagination }] = await Promise.all([fetchVideo(params.id), fetchVideoComments(params.id, page, pageSize)]);
   return { video, comments, pagination };
 }

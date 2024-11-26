@@ -14,17 +14,18 @@ import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   if (!params.id) {
-    throw new Error("No post ID provided!");
+    throw data({ message: "No post ID provided!" }, { status: 400 });
   }
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
-  const post = await getPostWithAverageRating(params.id);
+  const [post, { comments, pagination }] = await Promise.all([
+    getPostWithAverageRating(params.id),
+    fetchPostComments(params.id, page, pageSize)
+  ]);
   if (!post) {
     throw data({ message: "No hemos encontrado el post 🙁" }, { status: 404 });
   }
-  const { comments, pagination } = await fetchPostComments(params.id, page, pageSize);
-
   return { post, comments, page, pagination };
 }
 
