@@ -18,6 +18,7 @@ export default function Layout() {
 
   return (
     <>
+      <h2 className="font-semibold text-center py-1 text-xl text-primary/70">Pregúntale a La Flor Blanca</h2>
       <div
         role="navigation"
         className="bg-base-100 flex gap-1 py-1 justify-evenly md:justify-center sticky top-[72px] z-50 md:w-fit rounded-lg md:bg-transparent mx-auto">
@@ -36,7 +37,7 @@ export default function Layout() {
               </div>
             </div>
             <span>Personalidad</span>
-            <FaQuestion size={22} />
+            <FaQuestion size={22} className="hidden md:block" />
           </NavLink>
           <NavLink
             to={"/questions/tarot"}
@@ -51,7 +52,7 @@ export default function Layout() {
               </div>
             </div>
             <span>Tarot</span>
-            <FaQuestion size={22} />
+            <FaQuestion size={22} className="hidden md:block" />
           </NavLink>
           <NavLink
             to={"/questions/live"}
@@ -66,7 +67,7 @@ export default function Layout() {
               </div>
             </div>
             <span>Directo</span>
-            <FaQuestion size={22} />
+            <FaQuestion size={22} className="hidden md:block" />
           </NavLink>
         </div>
       </div>

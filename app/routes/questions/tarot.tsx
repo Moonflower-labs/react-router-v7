@@ -1,19 +1,16 @@
 import { data, useFetcher } from "react-router";
-import { MutableRefObject, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import type { Route } from "./+types/tarot";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
-import { getUserId } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
-    const userId = await getUserId(request);
-    if (!userId || typeof userId !== "string") {
-      throw data({ message: "No user ID found" }, { status: 400 });
-    }
+    const userId = await requireUserId(request);
     const { tarotQuestionCount } = (await getQuestionCount({ userId, section: "tarot" })) as { tarotQuestionCount: number };
-    console.log(tarotQuestionCount);
+
     return tarotQuestionCount;
   } catch (error) {
     console.error(error);
@@ -25,10 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = await getUserId(request);
-  if (!userId || typeof userId !== "string") {
-    throw data({ message: "No user ID found" }, { status: 400 });
-  }
+  const userId = await requireUserId(request);
   const text = formData.get("text");
   const info = formData.get("info");
   const questionCount = Number(formData?.get("questionCount")) ?? 1;
@@ -36,17 +30,15 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: false, error: "Ya has usado el máximo número de preguntas este mes" };
   }
 
-  const errors = {};
+  const errors: any = {};
 
   // validate the fields
   if (!text) {
-    // errors.text = "Escribe una pregunta";
+    errors.text = "Escribe una pregunta";
   }
-  // return data if we have errors
   if (Object.keys(errors).length) {
     return errors;
   }
-  // todo: validate input data + provide feedback
   try {
     await createPremiumQuestion({ userId, data: { text, info }, section: "tarot" });
     //  Increment count
@@ -59,17 +51,16 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Component({ loaderData }: Route.ComponentProps) {
-  // const errors = useActionData();
+export default function Component({ loaderData, actionData }: Route.ComponentProps) {
+  const errors = actionData
   const questionCount = loaderData;
   const fetcher = useFetcher();
-  const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
 
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data && fetcher.data.success) {
-      formRef.current?.reset(); // Reset the form
+  const formRef = useCallback((node: HTMLFormElement | null) => {
+    if (node && fetcher.state === "idle" && fetcher.data?.message) {
+      node.reset();
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data?.message]);
 
   useEffect(() => {
     if (fetcher.data) {
@@ -83,19 +74,12 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   }, [fetcher.data]);
 
   return (
-    <div className="text-center pt-16 pb-6 flex flex-col items-center justify-center">
-      {/* <div className="">
-        <img
-          className="tarot"
-          src="{{url_for('static', filename='images/sun.avif')}}"
-          alt=""
-        />
-        <img
-          className="tarot"
-          src="{{url_for('static', filename='images/tarot.avif')}}"
-          alt=""
-        />
-      </div> */}
+    <div className="text-center pt-6 pb-6 flex flex-col items-center justify-center">
+      <img
+        className="w-32"
+        src="/tarot.png"
+        alt="Tarot card"
+      />
       <h2 className="text-3xl font-semibold text-primary mb-1">Pregunta de Tarot</h2>
       <div className="p-10 pt-6 md:w-2/3 mx-auto">
         <p>
@@ -120,9 +104,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <label className="form-control mb-6 label">
             <span className="label-text  mb-3">1. ¿Qué duda tienes o qué te interesa saber?</span>
             <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
-            {/* {errors?.text && (
+            {errors?.text && (
               <span className="text-error mt-2">{errors?.text}</span>
-            )} */}
+            )}
           </label>
 
           <label className="form-control mb-6 label">

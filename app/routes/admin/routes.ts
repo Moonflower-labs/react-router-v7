@@ -10,7 +10,7 @@ export const adminRoutes = [
         route("create", "routes/admin/categories/create.tsx"),
         route(":id/edit", "routes/admin/categories/edit.tsx")
       ]),
-      //  Categories
+      //  Emails
       ...prefix("/emails", [index("routes/admin/emails/send.tsx")]),
       //  Orders
       ...prefix("/orders", [

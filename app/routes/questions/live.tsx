@@ -1,5 +1,5 @@
-import { data, useFetcher, useNavigation } from "react-router";
-import { MutableRefObject, useEffect, useRef } from "react";
+import { data, useFetcher } from "react-router";
+import { useCallback, useEffect } from "react";
 import type { Route } from "./+types/live";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { requireUserId } from "~/utils/session.server";
@@ -31,11 +31,11 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: false, error: "Ya has usado el máximo número de preguntas este mes" };
   }
 
-  const errors = {};
+  const errors: any = {};
 
   // validate the fields
   if (!text) {
-    // errors.text = "Escribe una pregunta";
+    errors.text = "Escribe una pregunta";
   }
   // return data if we have errors
   if (Object.keys(errors).length) {
@@ -58,14 +58,13 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
   const errors = actionData;
   const questionCount = loaderData;
   const fetcher = useFetcher();
-  const navigation = useNavigation();
-  const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
 
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data && fetcher.data.success) {
-      formRef.current?.reset(); // Reset the form
+  const formRef = useCallback((node: HTMLFormElement | null) => {
+    if (node && fetcher.state === "idle" && fetcher.data?.message) {
+      node.reset();
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data?.message]);
+
 
   useEffect(() => {
     if (fetcher.data) {
@@ -79,8 +78,12 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
   }, [fetcher.data]);
 
   return (
-    <div className="text-center pt-16 pb-6">
-      <img className="tarot" src="" alt="" width={200} />
+    <div className="text-center pt-6 pb-6">
+      <img
+        className="w-32 mx-auto"
+        src="/live.png"
+        alt="Live Stream"
+      />
       <h2 className="text-3xl font-semibold text-primary mb-1">Pregunta con respuesta en directo</h2>
       <div className="p-10 pt-6 md:w-2/3 mx-auto">
         <p className="h3 mb-3">Una sesión mensual en directo espontánea, respondiendo usando el método que surja. Una Pregunta por persona o miembro.</p>
@@ -104,30 +107,20 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
                 <span className="label-text">1. ¿Qué necesitas aclarar, entender?</span>
               </div>
               <textarea className="textarea textarea-bordered h-24" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
-              {/* {errors?.text && (
+              {errors?.text && (
                 <span className="text-error mt-2">{errors?.text}</span>
-              )} */}
+              )}
             </label>
             <div className="mb-3 text-center">
-              <button type="reset" className="btn btn-outline btn-accent mx-1 rounded-1">
+              <button type="reset" className="btn btn-sm btn-outline btn-accent mx-1 rounded-1">
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-primary mx-1 rounded-1">
+              <button type="submit" className="btn btn-sm btn-primary mx-1 rounded-1">
                 Enviar
               </button>
             </div>
           </div>
         </fetcher.Form>
-      </div>
-      <div className="row my-4 justify-content-center text-center mx-auto">
-        <p className="h2 title">SESIONES EN DIRECTO</p>
-        <p className="h3 mb-3">Encuentra el link para la sessión a continuación:</p>
-
-        <div className="">
-          <a role="button" href="{{link[2]}}" className="link-info link-underline-opacity-0" target="_blank">
-            <i className="bi bi-play-fill h2 me-3"></i>{" "}
-          </a>
-        </div>
       </div>
     </div>
   );

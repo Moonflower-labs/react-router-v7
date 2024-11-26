@@ -74,8 +74,8 @@ export async function action({ request }: Route.ActionArgs) {
 export default function UpdateSubscription({ loaderData, actionData }: Route.ComponentProps) {
   const { subscription }: any = useOutletContext() || {};
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [])
   const previewInvoice = actionData?.preview;
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
   const navigation = useNavigation();
   const submit = useSubmit();
   const plans = loaderData;

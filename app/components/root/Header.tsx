@@ -107,14 +107,6 @@ export function Header() {
                   <input
                     type="radio"
                     name="theme-buttons"
-                    defaultChecked={theme === "light"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Light"
-                    value="light"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
                     defaultChecked={theme === "garden"}
                     className="btn btn-sm theme-controller bg-base-100"
                     aria-label="Garden"

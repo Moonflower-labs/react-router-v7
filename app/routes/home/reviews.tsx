@@ -1,6 +1,6 @@
 import type { Review } from "~/models/review.server";
 import type { User } from "~/models/user.server";
-import { Suspense, useCallback, useEffect, useRef } from "react";
+import { Suspense, useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
 import { Await, useAsyncValue, useFetcher, useRouteLoaderData } from "react-router";
 import ReviewsSkeleton from "~/components/skeletons/ReviewsSkeleton";
@@ -25,7 +25,6 @@ function Reviews() {
 
   const renderStars = useCallback((score: number) => {
     const starArray = Array.from({ length: 5 });
-
     return starArray.map((_, index) => <FaStar key={index} className={index < score ? "text-warning" : "text-gray-400"} size={20} />);
   }, []);
 
@@ -62,13 +61,12 @@ function Reviews() {
 
 function ReviewForm() {
   const fetcher = useFetcher({ key: "review" });
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.message) {
-      formRef.current?.reset(); // Reset the form
+  const formRef = useCallback((node: HTMLFormElement | null) => {
+    if (node && fetcher.state === "idle" && fetcher.data?.message) {
+      node.reset();
     }
-  }, [fetcher.data?.message, fetcher.state, formRef]);
+  }, [fetcher.state, fetcher.data?.message]);
+
 
   return (
     <>
