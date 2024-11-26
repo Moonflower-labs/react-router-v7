@@ -102,7 +102,7 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
         <input type="hidden" name="type" value={"tarot"} />
         <div className="p-6">
           <label className="form-control mb-6 label">
-            <span className="label-text  mb-3">1. ¿Qué duda tienes o qué te interesa saber?</span>
+            <span className="label-text  mb-3 font-bold">1. ¿Qué duda tienes o qué te interesa saber?</span>
             <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
             {errors?.text && (
               <span className="text-error mt-2">{errors?.text}</span>
@@ -110,17 +110,17 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
           </label>
 
           <label className="form-control mb-6 label">
-            <div className="label-text mb-3">
+            <div className="label-text mb-3 font-bold">
               2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.
             </div>
             <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="info"></textarea>
           </label>
 
           <div className="flex gap-3 mb-3 justify-center">
-            <button type="reset" className="btn btn-accent  btn-outline">
+            <button type="reset" className="btn btn-sm btn-accent  btn-outline">
               Cancelar
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-sm btn-primary">
               Enviar
             </button>
           </div>

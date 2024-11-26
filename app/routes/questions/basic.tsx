@@ -151,7 +151,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           </div>
 
           <div className="mb-3">
-            <div> 1. ¿Tu pregunta es sobre Limpiezas, Emociones y Sentimientos Discordantes, Ataques Psíquicos o Habilidades Psíquicas?</div>
+            <div className="font-bold"> 1. ¿Tu pregunta es sobre Limpiezas, Emociones y Sentimientos Discordantes, Ataques Psíquicos o Habilidades Psíquicas?</div>
             <div className="form-control">
               <label className="label cursor-pointer">
                 <span className="label-text">Limpiezas</span>
@@ -189,14 +189,14 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           </div>
           <label className="form-control mb-6">
             <div className="label">
-              <span className="label-text">2. ¿Qué duda tienes o te interesa saber sobre este tema?</span>
+              <span className="label-text font-bold">2. ¿Qué duda tienes o te interesa saber sobre este tema?</span>
               <span className="label-text-alt">Alt label</span>
             </div>
             <textarea className="textarea textarea-bordered h-24 mb-3" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
             {errors?.text && <ActionError actionData={{ error: errors.text }} />}
           </label>
           <div className="mb-6">
-            <div> 3. ¿Dónde has oído hablar de nosotros?</div>
+            <div className="font-bold"> 3. ¿Dónde has oído hablar de nosotros?</div>
             <div className="form-control">
               <label className="label cursor-pointer">
                 <span className="label-text">Telegram</span>
@@ -264,7 +264,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           </div>
 
           <div className="mb-3">
-            <div>4. ¿Cúal es tu grupo de edad?</div>
+            <div className="font-bold">4. ¿Cúal es tu grupo de edad?</div>
             <div className="form-control">
               <label className="label cursor-pointer">
                 <span className="label-text">De 16 a 25 años </span>
@@ -310,7 +310,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
             {errors?.ageGroup && <ActionError actionData={{ error: errors.ageGroup }} />}
           </div>
           <label className="label flex-row justify-between">
-            <span className="label-text mb-3 md:mb-0">5. ¿Cúal es tu Género?</span>
+            <span className="label-text mb-3 md:mb-0 font-bold">5. ¿Cúal es tu Género?</span>
             <select className="select select-bordered" name="gender" required>
               <option value={"mujer"}>Mujer</option>
               <option value={"hombre"}>Hombre</option>
@@ -319,24 +319,27 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
 
           <div className="form-control mb-3">
             <label className="label flex-col md:flex-row">
-              <span className="label-text mb-3 md:mb-0">6. ¿Desde qué país nos contactas?</span>
+              <span className="label-text mb-3 md:mb-0 font-bold">6. ¿Desde qué país nos contactas?</span>
               <input type="text" name="country" placeholder="País" className="input input-bordered w-full max-w-xs" required />
             </label>
           </div>
           <div className="form-control mb-3">
             <label className="label flex-col md:flex-row">
-              <span className="label-text mb-3 md:mb-0">7. ¿Desde qué ciudad nos contactas?</span>
+              <span className="label-text mb-3 md:mb-0 font-bold">7. ¿Desde qué ciudad nos contactas?</span>
               <input type="text" name="city" placeholder="Ciudad" className="input input-bordered w-full max-w-xs" required />
             </label>
           </div>
         </div>
-        <button
-          type="submit"
-          className="btn btn-primary mb-3"
-        // disabled={Number(questionCount) >= 3}
-        >
-          Enviar
-        </button>
+        <div className="flex gap-3 mb-3 justify-center">
+          <button type="reset" className="btn btn-sm btn-accent  btn-outline">
+            Cancelar
+          </button>
+          <button type="submit" className="btn btn-sm btn-primary"
+          // disabled={Number(questionCount) >= 3}
+          >
+            Enviar
+          </button>
+        </div>
       </fetcher.Form>
     </div>
   );

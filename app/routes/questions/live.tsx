@@ -104,7 +104,7 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
           <div className="p-6">
             <label className="form-control mb-6">
               <div className="label">
-                <span className="label-text">1. ¿Qué necesitas aclarar, entender?</span>
+                <span className="label-text font-bold">1. ¿Qué necesitas aclarar, entender?</span>
               </div>
               <textarea className="textarea textarea-bordered h-24" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
               {errors?.text && (
