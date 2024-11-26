@@ -5,7 +5,6 @@ import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
 import { requireUserId } from "~/utils/session.server";
 import { formatUnixDate } from "~/utils/format";
-import { motion } from "framer-motion";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 
 export async function loader() {
@@ -75,7 +74,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function UpdateSubscription({ loaderData, actionData }: Route.ComponentProps) {
   const { subscription }: any = useOutletContext() || {};
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const ref = useCallback((node: HTMLDivElement | null) => { node?.focus(); }, [])
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [])
   const previewInvoice = actionData?.preview;
   const navigation = useNavigation();
   const submit = useSubmit();
@@ -119,12 +118,9 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
       <Form method="put" className="py-2 mx-auto">
         <input type="hidden" name="priceId" value={String(selectedPlan)} />
         {previewInvoice && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            transition={{ duration: 1.2 }}
+          <div
             className="py-8 px-6 focus:outline-none"
-            ref={ref} tabIndex={0}
+            ref={ref}
           >
             <p>INFO </p>
             <p>
@@ -153,7 +149,7 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
                 Confirmar
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
       </Form>
     </div>
