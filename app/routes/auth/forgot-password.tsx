@@ -59,7 +59,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
 
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                 <Form method="post" className="card-body">
-                    {!actionData?.success && <p className="mb-3 rounded p-2 bg-success/40">Enlace enviado! Comprueba tu email.<span> No lo encuentras? Comprueba Spam</span></p>}
+                    {actionData?.success && <p className="mb-3 rounded p-2 bg-success/40">Enlace enviado! Comprueba tu email.<span> No lo encuentras? Comprueba Spam</span></p>}
                     <div className="form-control">
                         <input
                             type="email"
