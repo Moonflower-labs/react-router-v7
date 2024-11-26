@@ -1,4 +1,4 @@
-import { Form, Link, useNavigation, redirect, data } from "react-router";
+import { Form, Link, useNavigation, redirect } from "react-router";
 import { createUserSession, getUserId } from "~/utils/session.server";
 import type { Route } from "./+types/register";
 import { createUser, getUserByEmail } from "~/models/user.server";
@@ -12,13 +12,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   return null;
 }
 
-interface ActionErrors {
-  errors?: {
-    username?: string;
-    email?: string;
-    password?: string | null;
-  };
-}
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -29,41 +22,33 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = (formData.get("redirectTo") as string) || "/";
 
   if (!username || typeof username !== "string") {
-    return data({ errors: { email: null, password: null, username: "Debes de elegir un nombre de usuario" } }, { status: 400 });
+    return { errors: { email: null, password: null, username: "Debes de elegir un nombre de usuario" } }
   }
 
   if (!validateEmail(email)) {
-    return data({ errors: { email: "Email is invalid", password: null } }, { status: 400 });
+    return { errors: { email: "Email is invalid", password: null } }
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return data({ errors: { email: null, password: "El password es requerido" } }, { status: 400 });
+    return { errors: { email: null, password: "El password es requerido" } }
   }
 
   if (password.length < 8) {
-    return data({ errors: { email: null, password: "El password es muy corto" } }, { status: 400 });
+    return { errors: { email: null, password: "El password es muy corto" } }
   }
 
   if (password !== confirmation) {
-    return data({ errors: { email: null, password: "Los passwords deben de coincidir" } }, { status: 400 });
+    return { errors: { email: null, password: "Los passwords deben de coincidir" } }
   }
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
-    return data(
-      {
-        errors: {
-          email: "A user already exists with this email",
-          password: null
-        }
-      },
-      { status: 400 }
-    );
+    return { errors: { email: "A user already exists with this email", password: null } }
   }
 
   const user = await createUser(email, password, username);
 
-  return createUserSession({
+  throw await createUserSession({
     redirectTo,
     remember: false,
     request,
@@ -72,7 +57,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ResgisterPage({ actionData }: Route.ComponentProps) {
-  const actionErrors = actionData as ActionErrors;
+  const actionErrors = actionData;
   const navigation = useNavigation();
 
   return (

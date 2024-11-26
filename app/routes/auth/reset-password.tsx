@@ -22,7 +22,7 @@ export async function action({ request }: Route.ActionArgs) {
     const password = formData.get("password");
     const passwordConfirmation = formData.get("confirm");
 
-    if (password != passwordConfirmation) {
+    if (password !== passwordConfirmation) {
         return { error: "Passwords should match" }
     }
 

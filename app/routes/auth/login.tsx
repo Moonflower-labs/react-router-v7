@@ -1,4 +1,4 @@
-import { data, Form, Link, redirect, useLocation, useNavigation } from "react-router";
+import { Form, Link, redirect, useLocation, useNavigation } from "react-router";
 import { createUserSession, getUserId } from "~/utils/session.server";
 import type { Route } from "./+types/login";
 import { verifyLogin } from "~/models/user.server";
@@ -23,22 +23,22 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = (formData.get("redirectTo") as string) || "/";
 
   if (!validateEmail(email)) {
-    return data({ errors: { email: "Email is invalid", password: null } }, { status: 400 });
+    return { errors: { email: "Email is invalid", password: null } }
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return data({ errors: { email: null, password: "Password is required" } }, { status: 400 });
+    return { errors: { email: null, password: "Password is required" } }
   }
 
   if (password.length < 8) {
-    return data({ errors: { email: null, password: "Password is too short" } }, { status: 400 });
+    return { errors: { email: null, password: "Password is too short" } }
   }
 
   const user = await verifyLogin(email, password);
 
   if (!user) {
     console.log("no user");
-    return data({ errors: { email: "Invalid email or password", password: null } }, { status: 400 });
+    return { errors: { email: "Invalid email or password", password: null } }
   }
   // Manage cart merging
   const guestId = (await getUserId(request)) as string;
@@ -46,25 +46,20 @@ export async function action({ request }: Route.ActionArgs) {
 
   const toastMessage = { message: "Sesión iniciada!", type: "info" };
   // create user session
-  return createUserSession({
+  throw await createUserSession({
     redirectTo,
     remember: remember === "on" ? true : false,
     request,
     userId: user.id
   });
 }
-interface ActionData {
-  errors?: {
-    email?: string;
-    password?: string;
-  };
-}
+
 
 export default function Login({ actionData }: Route.ComponentProps) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const from = params.get("from") || "/";
-  const actionErrors = actionData as ActionData;
+  const actionErrors = actionData;
   const navigation = useNavigation();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
