@@ -2,7 +2,7 @@ import { Form, Link, useNavigation, redirect } from "react-router";
 import { createUserSession, getUserId } from "~/utils/session.server";
 import type { Route } from "./+types/register";
 import { createUser, getUserByEmail } from "~/models/user.server";
-import { validateEmail } from "~/utils/helpers";
+import { validateEmail, validateUsername } from "~/utils/helpers";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -21,8 +21,8 @@ export async function action({ request }: Route.ActionArgs) {
   const confirmation = formData.get("confirmation");
   const redirectTo = (formData.get("redirectTo") as string) || "/";
 
-  if (!username || typeof username !== "string") {
-    return { errors: { email: null, password: null, username: "Debes de elegir un nombre de usuario" } }
+  if (!validateUsername(username)) {
+    return { errors: { email: null, password: null, username: "Nombre de usuario no puede contener espacios ni sobrepasar los 18 caracteres!" } }
   }
 
   if (!validateEmail(email)) {
