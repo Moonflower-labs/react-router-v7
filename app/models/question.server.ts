@@ -1,5 +1,18 @@
 import { data } from "react-router";
 import { prisma } from "~/db.server";
+import type {
+  Question,
+  PremiumQuestion as PrismaPremiumQuestion
+} from "@prisma/client";
+import type { User } from "./user.server";
+
+export interface BasicQuestion extends Question {
+  user?: User;
+}
+
+export interface PremiumQuestion extends PrismaPremiumQuestion {
+  user?: User;
+}
 
 export async function getQuestions({
   section,
@@ -16,10 +29,15 @@ export async function getQuestions({
 
   let questions;
   if (!section) {
-    questions = await prisma.question.findMany({ take, skip });
+    questions = await prisma.question.findMany({
+      take,
+      skip,
+      include: { user: { select: { username: true } } }
+    });
   } else {
     questions = await prisma.premiumQuestion.findMany({
       where: { section },
+      include: { user: { select: { username: true } } },
       take,
       skip
     });
@@ -33,7 +51,13 @@ export async function getQuestions({
   return { questions, pagination: { totalCount, totalPages, page, pageSize } };
 }
 
-export async function getQuestionCount({ userId, section }: { userId: string; section: string }) {
+export async function getQuestionCount({
+  userId,
+  section
+}: {
+  userId: string;
+  section: string;
+}) {
   switch (section) {
     case "basic": {
       return prisma.profile.findUnique({
@@ -58,7 +82,13 @@ export async function getQuestionCount({ userId, section }: { userId: string; se
   }
 }
 
-export async function createBasicQuestion({ userId, data }: { userId: string; data: Record<string, any> }) {
+export async function createBasicQuestion({
+  userId,
+  data
+}: {
+  userId: string;
+  data: Record<string, any>;
+}) {
   return prisma.question.create({
     data: {
       userId,

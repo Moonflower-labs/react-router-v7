@@ -5,9 +5,8 @@ import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Paginator } from "~/components/members/Pagination";
-import { deleteQuestion, getQuestions } from "~/models/question.server";
+import { deleteQuestion, getQuestions, type BasicQuestion, type PremiumQuestion } from "~/models/question.server";
 import { FaEye } from "react-icons/fa";
-import { Question, PremiumQuestion } from "@prisma/client";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -16,8 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 3);
-  const { questions, pagination } = await getQuestions({ page, pageSize });
-  console.log(section);
+  const { questions, pagination } = await getQuestions({ section, page, pageSize });
   return { questions, pagination, q: title, section };
 }
 
@@ -43,7 +41,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ListQuestions({ loaderData, actionData }: Route.ComponentProps) {
-  const questions = loaderData?.questions as (Question | PremiumQuestion)[];
+  const questions = loaderData?.questions as (BasicQuestion | PremiumQuestion)[];
   const submit = useSubmit();
   const navigate = useNavigate();
   const section = loaderData?.section;
@@ -109,7 +107,7 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
             className="flex flex-col md:flex-row justify-between items-center gap-6 p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
             <div className="flex justify-between items-center w-full">
               <span>
-                {index + 1}. {question.name}{" "}
+                {index + 1}. Usuario: <span className="font-semibold"> {question.user?.username}</span> {" "}
               </span>
               <span className="me-5">{formatDate(question.createdAt)}</span>
             </div>
