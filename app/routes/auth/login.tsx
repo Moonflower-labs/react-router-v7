@@ -15,7 +15,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  await new Promise(resolve => setTimeout(resolve, 1000));
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
