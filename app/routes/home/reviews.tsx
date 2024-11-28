@@ -1,6 +1,6 @@
 import type { Review } from "~/models/review.server";
 import type { User } from "~/models/user.server";
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { FaStar } from "react-icons/fa6";
 import { Await, useFetcher, useRouteLoaderData } from "react-router";
 import ReviewsSkeleton from "~/components/skeletons/ReviewsSkeleton";
@@ -11,41 +11,80 @@ const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
   return (
     <Suspense fallback={<ReviewsSkeleton />}>
       <Await resolve={reviews} errorElement={<p className="text-error text-xl text-center col-span-full py-6">⚠️ Error cargando los reviews!</p>}>
-        {(resolvedReviews) => <Reviews reviewsData={resolvedReviews} />}
+        {(resolvedReviews) => <ReviewsCarousel reviewsData={resolvedReviews} />}
       </Await>
     </Suspense>
   );
 };
 
-export default ReviewsSection;
+export default ReviewsSection
 
-function Reviews({ reviewsData }: { reviewsData: Review[] }) {
+const ReviewsCarousel = ({ reviewsData }: { reviewsData: Review[] }) => {
   const user = useRouteLoaderData("root")?.user as User;
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [startTouch, setStartTouch] = useState(0);
 
   const renderStars = useCallback((score: number) => {
     const starArray = Array.from({ length: 5 });
-    return starArray.map((_, index) => <FaStar key={index} className={index < score ? "text-warning" : "text-gray-400"} size={20} />);
+    return starArray.map((_, index) => (
+      <FaStar key={index} className={index < score ? "text-warning" : "text-gray-400"} size={20} />
+    ));
   }, []);
+
+  const prevSlide = () => {
+    setActiveSlide((prev) => (prev === 0 ? reviewsData.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setActiveSlide((prev) => (prev === reviewsData.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touchStart = e.touches[0].clientX;
+    setStartTouch(touchStart);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEnd = e.changedTouches[0].clientX;
+    if (startTouch - touchEnd > 50) {
+      nextSlide(); // Swipe left (next)
+    } else if (touchEnd - startTouch > 50) {
+      prevSlide(); // Swipe right (previous)
+    }
+  };
 
   return (
     <section className="flex flex-col justify-center mb-6">
       <h2 className="font-semibold text-center text-3xl text-primary mb-4">Reviews</h2>
-      <div className="carousel w-full lg:w-[70%] rounded-lg shadow-xl mx-auto mb-8 max-h-60 align-middle bg-neutral-content/10">
+      <div
+        className="carousel w-full lg:w-[70%] rounded-lg shadow-xl mx-auto mb-8 max-h-60 align-middle bg-neutral-content/10"
+        onTouchStart={handleTouchStart} // Set up touch start event
+        onTouchEnd={handleTouchEnd} // Set up touch end event
+      >
         {reviewsData?.length > 0 ? (
-          reviewsData?.map((slide, index) => (
-            <div key={slide.id} id={slide.id} className="carousel-item relative w-full flex-col items-center">
-              <div className="rating pt-4">{renderStars(slide.score)}</div>
+          reviewsData.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`carousel-item relative w-full flex-col justify-center items-center ${activeSlide === index ? "block" : "hidden"}`}
+            >
+              <div className="rating pt-4 flex justify-center">{renderStars(slide.score)}</div>
               <div className="w-full p-8 text-center">{slide.text}</div>
-              <div className="text-sm opacity-80 pb-3 font-bold">
+              <div className="flex justify-center text-sm opacity-80 pb-3 font-bold">
                 {slide?.user?.username} {formatDate(slide.createdAt)}
               </div>
               <div className="absolute flex justify-between transform -translate-y-1/2 left-0 right-0 top-1/2">
-                <a href={`#${reviewsData[index === 0 ? reviewsData.length - 1 : index - 1]?.id}`} className="btn btn-circle btn-ghost text-primary">
+                <button
+                  className="btn btn-circle btn-ghost text-primary"
+                  onClick={prevSlide}
+                >
                   ❮
-                </a>
-                <a href={`#${reviewsData[index === reviewsData.length - 1 ? 0 : index + 1]?.id}`} className="btn btn-circle btn-ghost text-primary">
+                </button>
+                <button
+                  className="btn btn-circle btn-ghost text-primary"
+                  onClick={nextSlide}
+                >
                   ❯
-                </a>
+                </button>
               </div>
             </div>
           ))
@@ -56,7 +95,8 @@ function Reviews({ reviewsData }: { reviewsData: Review[] }) {
       {user ? <ReviewForm /> : <div className="text-2xl text-center text-primary">Inicia sesión para dar tu opinión</div>}
     </section>
   );
-}
+};
+
 
 function ReviewForm() {
   const fetcher = useFetcher({ key: "review" });
