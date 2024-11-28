@@ -57,7 +57,7 @@ export default function SubscriptionPlans() {
         </div>
 
         <div className="col-span-full">
-          <div className="card bg-neutral-content/10 w-[95%] max-w-[30rem] shadow-xl">
+          <div className="card bg-neutral-content/10 w-[95%] max-w-[30rem] shadow-xl mx-auto">
             <figure className="px-10 pt-10">
               <img src={"/plan-spirit.jpeg"} alt="" className="rounded-xl" />
             </figure>
