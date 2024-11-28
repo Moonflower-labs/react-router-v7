@@ -2,16 +2,16 @@ import type { Review } from "~/models/review.server";
 import type { User } from "~/models/user.server";
 import { Suspense, useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
-import { Await, useAsyncValue, useFetcher, useRouteLoaderData } from "react-router";
+import { Await, useFetcher, useRouteLoaderData } from "react-router";
 import ReviewsSkeleton from "~/components/skeletons/ReviewsSkeleton";
 import { formatDate } from "~/utils/format";
 
-const ReviewsSection = ({ reviews }: { reviews: Review[] }) => {
+const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
 
   return (
     <Suspense fallback={<ReviewsSkeleton />}>
       <Await resolve={reviews} errorElement={<p className="text-error text-xl text-center col-span-full py-6">⚠️ Error cargando los reviews!</p>}>
-        <Reviews />
+        {(resolvedReviews) => <Reviews reviewsData={resolvedReviews} />}
       </Await>
     </Suspense>
   );
@@ -19,8 +19,7 @@ const ReviewsSection = ({ reviews }: { reviews: Review[] }) => {
 
 export default ReviewsSection;
 
-function Reviews() {
-  const reviewsData = useAsyncValue() as Review[];
+function Reviews({ reviewsData }: { reviewsData: Review[] }) {
   const user = useRouteLoaderData("root")?.user as User;
 
   const renderStars = useCallback((score: number) => {
@@ -31,7 +30,7 @@ function Reviews() {
   return (
     <section className="flex flex-col justify-center mb-6">
       <h2 className="font-semibold text-center text-3xl text-primary mb-4">Reviews</h2>
-      <div className="carousel w-full lg:w-[85%] rounded-lg shadow-xl mx-auto mb-8 max-h-60 align-middle bg-neutral-content/10">
+      <div className="carousel w-full lg:w-[70%] rounded-lg shadow-xl mx-auto mb-8 max-h-60 align-middle bg-neutral-content/10">
         {reviewsData?.length > 0 ? (
           reviewsData?.map((slide, index) => (
             <div key={slide.id} id={slide.id} className="carousel-item relative w-full flex-col items-center">
