@@ -42,7 +42,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { errors };
   }
 
-  await updateVideo(section, params.id, title, String(description), url, categories, published);
+  await updateVideo(section, params.id, title, String(description), url.trim(), categories, published);
 
   return { success: true, published };
 }

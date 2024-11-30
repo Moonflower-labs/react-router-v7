@@ -1,7 +1,6 @@
 import { Form, Link } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/create";
-import { getUserId } from "~/utils/session.server";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { prisma } from "~/db.server";
@@ -15,16 +14,9 @@ export async function loader() {
   return categories;
 }
 
-interface Errors {
-  title?: string;
-  description?: string;
-  categories?: string;
-  section?: string;
-  url?: string;
-}
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = (await getUserId(request)) as string;
   const title = formData.get("title") as string;
   const description = formData.get("description");
   const url = formData.get("url");
@@ -32,7 +24,7 @@ export async function action({ request }: Route.ActionArgs) {
   const categories = formData.getAll("categories") as string[];
   const published = formData.get("published") === "true";
 
-  let errors: Errors = {};
+  let errors: any = {};
   if (!title) {
     errors.title = "Escribe un título";
   }
@@ -53,7 +45,8 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   try {
-    const videoBlog = await createVideo(String(section), title, String(description), String(url), categories, published);
+    // Create the video blog
+    await createVideo(String(section), title, String(description), String(url).trim(), categories, published);
 
     return { success: true, published };
   } catch (error) {
