@@ -19,7 +19,7 @@ export async function action({ request }: Route.ActionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const remember = formData.get("remember");
-  const redirectTo = (formData.get("redirectTo") as string) || "/";
+  const redirectTo = (formData.get("redirectTo") as string) ?? "/";
 
   if (!validateEmail(email)) {
     return { errors: { email: "Email is invalid", password: null } }
@@ -42,7 +42,6 @@ export async function action({ request }: Route.ActionArgs) {
   // Manage cart merging
   const guestId = (await getUserId(request)) as string;
   await mergeGuestCart(guestId, user?.id);
-
   const toastMessage = { message: "Sesión iniciada!", type: "info" };
   // create user session
   throw await createUserSession({
@@ -57,7 +56,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Login({ actionData }: Route.ComponentProps) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const from = params.get("from") || "/";
+  const from = params.get("redirectTo") ?? "/";
   const actionErrors = actionData;
   const navigation = useNavigation();
   const emailRef = React.useRef<HTMLInputElement>(null);
