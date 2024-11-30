@@ -15,13 +15,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { video, categories };
 }
 
-interface Errors {
-  title?: string;
-  description?: string;
-  categories?: string;
-  url?: string;
-  section?: string;
-}
+
 export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const title = formData.get("title") as string;
@@ -31,7 +25,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const categories = formData.getAll("categories") as string[];
   const published = formData.get("published") === "true";
 
-  let errors: Errors = {};
+  let errors: any = {};
   if (published) {
     if (!url) errors.url = "Debes de dar una URL si quieres publicar el vídeo";
   }
@@ -78,8 +72,8 @@ export default function EditVideoBlog({ loaderData, actionData }: Route.Componen
           </div>
           <select className="select select-bordered select-primary mb-4" name="section" defaultValue={video?.section}>
             <option disabled>Elige una sección</option>
-            <option value="soul">Alma</option>
-            <option value="spirit">Espíritu</option>
+            <option value="Soul">Alma</option>
+            <option value="Spirit">Espíritu</option>
           </select>
           {errors?.section && <ActionError actionData={{ error: errors?.section }} />}
         </label>
