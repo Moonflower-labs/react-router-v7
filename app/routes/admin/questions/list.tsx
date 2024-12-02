@@ -11,7 +11,7 @@ import { FaEye } from "react-icons/fa";
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const title = url.searchParams.get("search");
-  const section = url.searchParams.get("section") ?? "Personalidad";
+  const section = url.searchParams.get("section") ?? "basic";
 
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 3);
@@ -45,7 +45,6 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
   const submit = useSubmit();
   const navigate = useNavigate();
   const section = loaderData?.section;
-
   useEffect(() => {
     if (actionData?.success) {
       toast.success("Pregunta eliminada");
@@ -86,18 +85,27 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
 
   return (
     <div>
-      <h1 className="text-3xl text-primary flex justify-center items-center gap-4 my-5">
-        Preguntas de <span className="font-bold">{section === "live" ? "Directo" : section === "tarot" ? "Tarot" : "Personalidad"}</span>
+      <h1 className="text-3xl text-primary flex flex-col md:flex-row justify-center items-center gap-4 my-5">
+        <span>Preguntas de</span> <span className="font-bold">{section === "live" ? "Directo" : section === "tarot" ? "Tarot" : "Personalidad"}</span>
         <span className="badge badge-primary">{loaderData?.pagination?.totalCount}</span>
       </h1>
-      <label className="flex gap-3 justify-center items-center mb-4">
+      <label className="flex flex-col gap-3 justify-center items-center mb-4">
         <span>Sección</span>
         <Form onChange={e => submit(e.currentTarget)} className="my-auto">
-          <select className="select select-bordered select-primary" name="section" defaultValue={section}>
-            <option value="basic">Personalidad</option>
-            <option value="tarot">Tarot</option>
-            <option value="live">Directo</option>
-          </select>
+          <div className="join join-horizontal">
+            <label className="btn btn-primary join-item cursor-pointer">
+              <span className="label-text text-primary-content">Personalidad</span>
+              <input type="radio" name="section" value={"basic"} className="radio radio-primary bg-base-100" defaultChecked={section === "basic"} />
+            </label>
+            <label className="btn join-item btn-primary cursor-pointer">
+              <span className="label-text text-primary-content">Tarot</span>
+              <input type="radio" name="section" value="tarot" className="radio radio-primary bg-base-100" defaultChecked={section === "tarot"} />
+            </label>
+            <label className="btn join-item btn-primary cursor-pointer">
+              <span className="label-text text-primary-content">Directo</span>
+              <input type="radio" name="section" value="live" className="radio radio-primary bg-base-100" defaultChecked={section === "live"} />
+            </label>
+          </div>
         </Form>
       </label>
       {questions?.length ? (
