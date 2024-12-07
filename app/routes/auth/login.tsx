@@ -19,7 +19,7 @@ export async function action({ request }: Route.ActionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const remember = formData.get("remember");
-  const redirectTo = (formData.get("redirectTo") as string) ?? "/";
+  const redirectTo = (formData.get("redirectTo") as string) ?? "/profile";
 
   if (!validateEmail(email)) {
     return { errors: { email: "Email is invalid", password: null } }
