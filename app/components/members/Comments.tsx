@@ -35,7 +35,7 @@ export default function Comments({ objectId, fieldName }: CommentSectionProps) {
               <CommentItem
                 comment={comment}
                 userId={user?.id}
-                avatar={user?.profile?.avatar || undefined}
+                avatar={comment.user?.profile?.avatar || undefined}
                 commentForm={<CommentForm objectId={comment.id} fieldName="comment" action="reply" />}
                 likeButton={<LikeButton object="comment" id={comment.id} isLiked={comment?.likes?.some((like: Like) => like?.userId === user.id)} />}
                 deleteButton={<DeleteButton object="comment" id={comment.id} />}
