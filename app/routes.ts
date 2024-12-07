@@ -6,6 +6,9 @@ export default [
   index("routes/welcome/index.tsx"),
   route("about", "routes/welcome/about.tsx"),
   route("plans", "routes/welcome/plans.tsx"),
+  route("gallery", "routes/gallery/index.tsx"),
+  route("gallery/image/:id", "routes/gallery/detail.tsx"),
+
   // Auth
   layout("routes/auth/layout.tsx", [
     route("login", "routes/auth/login.tsx"),
@@ -29,21 +32,18 @@ export default [
   route("help", "routes/help.tsx"),
 
   // Profile
-  ...prefix("profile", [
-    layout("routes/profile/layout.tsx", [
-      index("routes/profile/index.tsx"),
-      route("favorites", "routes/profile/favorites.tsx"),
-      route("invoices", "routes/profile/invoices.tsx"),
-      route("subscription", "routes/profile/subscription.tsx"),
-      route("orders", "routes/profile/orders.tsx"),
-      route("plan", "routes/profile/plan/index.tsx", [
-        // index("routes/profile/plan/index.tsx"),
-        route("update", "routes/profile/plan/update.tsx"),
-        route("delete", "routes/profile/plan/delete.tsx"),
-        route("confirmation", "routes/profile/plan/confirmation.tsx")
-      ]),
-      route("questions", "routes/profile/questions.tsx")
-    ])
+  route("profile", "routes/profile/layout.tsx", [
+    index("routes/profile/index.tsx"),
+    route("favorites", "routes/profile/favorites.tsx"),
+    route("invoices", "routes/profile/invoices.tsx"),
+    route("subscription", "routes/profile/subscription.tsx"),
+    route("orders", "routes/profile/orders.tsx"),
+    route("plan", "routes/profile/plan/index.tsx", [
+      route("update", "routes/profile/plan/update.tsx"),
+      route("delete", "routes/profile/plan/delete.tsx"),
+      route("confirmation", "routes/profile/plan/confirmation.tsx")
+    ]),
+    route("questions", "routes/profile/questions.tsx")
   ]),
 
   // Members
