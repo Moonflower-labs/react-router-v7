@@ -1,21 +1,21 @@
-import { type MetaFunction, useFetcher, useLocation } from "react-router";
+import { useFetcher } from "react-router";
 import { useEffect } from "react";
 import type { Route } from "./+types/home";
 import { getUserId } from "~/utils/session.server";
 import { FadeInComponent } from "~/components/framer-motion/FadeInComponent";
-import SubscriptionPlans from "./SubscriptionPlans";
 import ReviewsSection from "./reviews";
-import { createReview, getReviews, Review } from "~/models/review.server";
+import { createReview, getReviews, type Review } from "~/models/review.server";
 import { toast } from "react-toastify";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
   return [{ title: "La Flor Blanca: Home" }, { name: "description", content: "Health and wellbeing" }];
 };
 
 export async function loader({ }: Route.LoaderArgs) {
   // Retutn the reviews promise
-  return { reviews: getReviews() };
+  const reviews = getReviews()
+  return { reviews };
 }
 
 
@@ -38,18 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { pathname, hash } = useLocation();
   const fetcher = useFetcher({ key: "review" });
-
-
-  useEffect(() => {
-    const sectionId = hash.substring(1); // Extract section ID from hash fragment
-    const targetSection = document.getElementById(sectionId); // Get the target section element
-
-    if (targetSection) {
-      targetSection.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [pathname, hash]);
 
   useEffect(() => {
     if (fetcher?.data?.success && fetcher.state !== "idle" && fetcher?.data?.message) {
@@ -60,14 +49,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <div className="p-2 pt-8">
-        <div className="p-[0.12rem] mx-auto md:w-1/2 bg-gradient-to-r from-primary/80 via-pink-400 to-secondary/80 rounded-lg">
-          <div className="rounded-md overflow-hidden">
-            <img src={"flower.png"} alt="Your Image" className="w-full aspect-video" />
+      <FadeInComponent>
+        <div className="p-2 pt-8">
+          <div className="p-[0.12rem] mx-auto md:w-1/2 bg-gradient-to-r from-primary/80 via-pink-400 to-secondary/80 rounded-lg">
+            <div className="rounded-md overflow-hidden">
+              <img src={"flower.png"} alt="Your Image" className="w-full aspect-video" />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="p-6 md:w-[75%] mx-auto flex flex-col gap-4 text-center" data-testid="home">
+      </FadeInComponent>
+      <section className="p-6 md:w-[75%] mx-auto flex flex-col gap-4 text-center" data-testid="home">
         <FadeInComponent>
           <p className="text-2xl">
             <span> Hola a todos almas oscuras y luminosas, </span>
@@ -94,8 +85,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             adecuadamente y alinearlas con el propósito de nuestra misión.
           </p>
         </FadeInComponent>
-      </div>
-      <div className="grid md:grid-cols-2 gap-6 mb-4 px-1 pb-10">
+      </section>
+      <section className="grid md:grid-cols-2 gap-4 mb-4 px-2 pb-10">
         <FadeInComponent>
           <YoutubeVideo videoId="v726U5jRots" />
         </FadeInComponent>
@@ -107,13 +98,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <YoutubeVideo videoId="4GIIhZK1vaY" className="md:w-1/2 mx-auto" />
           </FadeInComponent>
         </div>
-      </div>
-      <div className="divider w-[85%] mx-auto"></div>
-      <FadeInComponent>
-        <SubscriptionPlans />
-      </FadeInComponent>
+      </section>
+
       <div className="divider w-[85%] mx-auto"></div>
       <ReviewsSection reviews={loaderData?.reviews as Promise<Review[]>} />
     </>
   );
 }
+

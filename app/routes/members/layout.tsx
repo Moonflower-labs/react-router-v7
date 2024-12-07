@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigation } from "react-router";
+import { Link, NavLink, Outlet, useNavigation } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
@@ -21,7 +21,7 @@ export default function MembersLayout() {
       <div
         role="navigation"
         data-testid="members-layout"
-        className="bg-base-100 flex gap-1 py-1 justify-evenly md:justify-center sticky top-[72px] z-50 md:w-fit rounded-lg md:bg-transparent mx-auto">
+        className="bg-base-100 flex flex-col gap-1 py-1 justify-center sticky top-[72px] z-50 md:w-fit rounded-lg md:bg-transparent mx-auto">
         <div className="grid grid-cols-3 gap-1 w-full max-w-3xl bg-base-100 rounded-md">
           <NavLink
             to={"/personality"}
@@ -71,7 +71,15 @@ export default function MembersLayout() {
             </div>
             <span>Espíritu</span>
           </NavLink>
+
         </div>
+        <Link
+          to={"/questions"}
+          className={"btn btn-sm btn-primary shadow mx-auto"}
+          viewTransition
+        >
+          Ir a Preguntas
+        </Link>
       </div>
       {isNavigating && <GlobalSpinner />}
       <Outlet />

@@ -3,7 +3,9 @@ import { index, layout, prefix, route } from "@react-router/dev/routes";
 import { adminRoutes } from "./routes/admin/routes";
 
 export default [
-  index("routes/home/home.tsx"),
+  index("routes/welcome/index.tsx"),
+  route("home", "routes/home/home.tsx"),
+  route("plans", "routes/welcome/plans.tsx"),
   // Auth
   layout("routes/auth/layout.tsx", [
     route("login", "routes/auth/login.tsx"),
@@ -43,31 +45,25 @@ export default [
       route("questions", "routes/profile/questions.tsx")
     ])
   ]),
+
+  // Members
+  route("", "routes/members/layout.tsx", [
+    // Personality plan
+    route("personality", "routes/members/personality/index.tsx"),
+    route("personality/post/:id", "routes/members/personality/detail.tsx"),
+    // Soul plan
+    route("soul", "routes/members/soul/index.tsx"),
+    route("soul/video/:id", "routes/members/soul/detail.tsx"),
+    // Spirit plan
+    route("spirit", "routes/members/spirit/index.tsx"),
+    route("spirit/video/:id", "routes/members/spirit/detail.tsx"),
+    route("spirit/live", "routes/members/spirit/live.tsx")
+  ]),
   // Questions
   route("questions", "routes/questions/layout.tsx", [
     index("routes/questions/basic.tsx"),
     route("live", "routes/questions/live.tsx"),
     route("tarot", "routes/questions/tarot.tsx")
-  ]),
-  // Members
-  layout("routes/members/layout.tsx", [
-    // Personality plan
-    ...prefix("personality", [
-      index("routes/members/personality/index.tsx"),
-      route("post/:id", "routes/members/personality/detail.tsx")
-    ]),
-    // Soul plan
-    ...prefix("soul", [
-      index("routes/members/soul/index.tsx"),
-      route("video/:id", "routes/members/soul/detail.tsx")
-    ]),
-
-    // Spirit plan
-    ...prefix("spirit", [
-      index("routes/members/spirit/index.tsx"),
-      route("video/:id", "routes/members/spirit/detail.tsx"),
-      route("live", "routes/members/spirit/live.tsx")
-    ])
   ]),
 
   // API Routes

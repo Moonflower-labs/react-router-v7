@@ -2,7 +2,7 @@ import type { Config } from "@react-router/dev/config";
 // import { fetchPosts } from "~/models/post.server";
 
 export default {
-  ssr: true
+  ssr: true,
 
   // any url
   //   prerender: ["/", "/blog", "/blog/popular-post"],
@@ -12,4 +12,7 @@ export default {
   //   let staticPaths = getStaticPaths();
   //   return staticPaths.concat(posts.posts.map(post => post.id));
   // }
+  future: {
+    unstable_optimizeDeps: true
+  }
 } satisfies Config;

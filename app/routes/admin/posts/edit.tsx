@@ -8,7 +8,7 @@ import { editPost, fetchPost } from "~/models/post.server";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import { Category } from "@prisma/client";
+import type { Category } from "@prisma/client";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const post = await fetchPost(params.id);
