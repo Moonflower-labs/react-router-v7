@@ -37,7 +37,7 @@ export async function action({ request }: Route.ActionArgs) {
   return { message: "Gracias por tu opinión.", success: true };
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function About({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher({ key: "review" });
 
   useEffect(() => {
