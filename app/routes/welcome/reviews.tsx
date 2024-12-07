@@ -59,7 +59,7 @@ const ReviewsCarousel = ({ reviewsData }: { reviewsData: Review[] }) => {
 
   return (
     <section className="flex flex-col justify-center mb-6">
-      <h2 className="font-semibold text-center text-3xl text-primary mb-4">Reviews</h2>
+      <h2 className="font-semibold text-center text-3xl text-primary mb-4">Opiniones</h2>
       <div
         className="carousel w-full lg:w-[70%] rounded-lg shadow-xl mx-auto mb-8 max-h-60 align-middle bg-neutral-content/10"
         onTouchStart={handleTouchStart} // Set up touch start event
