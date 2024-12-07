@@ -104,12 +104,12 @@ export default function Welcome({ }: Route.ComponentProps) {
                     Comunidad anónima de espiritualidad y bienestar.
                 </div>
             </motion.div>
-            <div className="flex flex-row text-center justify-center items-stretch gap-4 w-[96%] md:w-[40%] font-bold text-primary">
+            <div className="flex flex-row text-center justify-center items-stretch gap-2 w-[96%] md:w-[40%] font-bold text-primary">
                 {/* Link containers */}
                 <motion.div
-                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow flex-grow basis-1/3" // Equal width and grow
+                    className="flex flex-wrap justify-center items-center border border-primary/40 rounded p-4 shadow w-1/3"
                     whileHover={{
-                        scale: 1.1,
+                        scale: 1.05,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -117,15 +117,15 @@ export default function Welcome({ }: Route.ComponentProps) {
                         stiffness: 300
                     }}
                 >
-                    <Link to={"/home"} viewTransition>
-                        <span> Sobre La Flor Blanca</span>
+                    <Link to={"/about"} viewTransition>
+                        Sobre La Flor Blanca
                     </Link>
                 </motion.div>
 
                 <motion.div
-                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow flex-grow basis-1/3"
+                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow w-1/3"
                     whileHover={{
-                        scale: 1.1,
+                        scale: 1.05,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -138,9 +138,9 @@ export default function Welcome({ }: Route.ComponentProps) {
                     </Link>
                 </motion.div>
                 <motion.div
-                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow flex-grow basis-1/3"
+                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow w-1/3"
                     whileHover={{
-                        scale: 1.1,
+                        scale: 1.05,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -170,7 +170,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                     <p className="">
                         Conoce la historia de La Flor Blanca, explora vídeos gratuitos y conoce las distintas secciones.
                     </p>
-                    <Link to={"/home"} viewTransition className="flex justify-between items-center link-primary">
+                    <Link to={"/about"} viewTransition className="flex justify-between items-center link-primary">
                         <span>Qué es La Flor Blanca?</span>
                         <IoMdArrowDroprightCircle size={24} />
                     </Link>
@@ -183,7 +183,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                     <p className="">
                         Conoce la historia de La Flor Blanca y explora vídeos
                     </p>
-                    <Link to={"/home"} viewTransition className="flex justify-between items-center link-primary">
+                    <Link to={"/about"} viewTransition className="flex justify-between items-center link-primary">
                         <span>  Es completamente anónima?</span>
                         <IoMdArrowDroprightCircle size={24} />
                     </Link>
@@ -196,7 +196,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                     <p className="">
                         Conoce la historia de La Flor Blanca y explora vídeos
                     </p>
-                    <Link to={"/home"} viewTransition className="flex justify-between items-center link-primary">
+                    <Link to={"/about"} viewTransition className="flex justify-between items-center link-primary">
                         <span>Colabora con La Flor Blanca</span>
                         <IoMdArrowDroprightCircle size={24} />
                     </Link>
@@ -209,7 +209,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                     <p className="">
                         Conoce la historia de La Flor Blanca y explora vídeos , blah, blah,  blah...
                     </p>
-                    <Link to={"/home"} viewTransition className="flex justify-between items-center link-primary">
+                    <Link to={"/about"} viewTransition className="flex justify-between items-center link-primary">
                         <span>Qué es La Flor Blanca?</span>
                         <IoMdArrowDroprightCircle size={24} />
                     </Link>

@@ -4,7 +4,7 @@ import { adminRoutes } from "./routes/admin/routes";
 
 export default [
   index("routes/welcome/index.tsx"),
-  route("home", "routes/home/home.tsx"),
+  route("about", "routes/welcome/about.tsx"),
   route("plans", "routes/welcome/plans.tsx"),
   // Auth
   layout("routes/auth/layout.tsx", [

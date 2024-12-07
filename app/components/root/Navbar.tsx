@@ -25,8 +25,8 @@ export function Navbar() {
             className="fixed top-0 right-0 w-screen h-full z-100"
             onClick={handleNav}>
             <div className="w-full md:w-[40%] h-full fixed right-0 backdrop-blur-sm flex flex-col gap-3 items-center justify-center">
-              <Link to="/" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Inicio
+              <Link to="/about" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+                Sobre La Flor Blanca
               </Link>
 
               <Link to="/plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>

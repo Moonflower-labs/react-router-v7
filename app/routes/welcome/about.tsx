@@ -1,12 +1,12 @@
 import { useFetcher } from "react-router";
 import { useEffect } from "react";
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/about";
 import { getUserId } from "~/utils/session.server";
 import { FadeInComponent } from "~/components/framer-motion/FadeInComponent";
-import ReviewsSection from "./reviews";
 import { createReview, getReviews, type Review } from "~/models/review.server";
 import { toast } from "react-toastify";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
+import ReviewsSection from "./reviews";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "La Flor Blanca: Home" }, { name: "description", content: "Health and wellbeing" }];
