@@ -5,9 +5,6 @@ import { createReview, getReviews } from "~/models/review.server";
 import { motion } from "framer-motion";
 import logo from "./logo.svg"
 import ShiningLogo from "./logo";
-import personalityImg from "~/icons/plan-personality.svg"
-import soulImg from "~/icons/plan-soul.svg"
-import spiritImg from "~/icons/plan-spirit.svg"
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 
 
