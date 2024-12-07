@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router";
-import { LuSquareMenu } from "react-icons/lu";
+
 import { AnimatePresence, motion } from "framer-motion";
+import { CgMenuBoxed } from "react-icons/cg";
 
 export function Navbar() {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,7 +13,7 @@ export function Navbar() {
 
   return (
     <>
-      <LuSquareMenu onClick={handleNav} size={35} className="text-primary my-auto pe-2 cursor-pointer" />
+      <CgMenuBoxed onClick={handleNav} size={35} className="text-primary my-auto pe-2 cursor-pointer" />
       <AnimatePresence>
         {isVisible && (
           <motion.nav
