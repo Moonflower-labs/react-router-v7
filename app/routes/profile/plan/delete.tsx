@@ -1,6 +1,7 @@
-import { ActionFunctionArgs, Form } from "react-router";
+import { Form } from "react-router";
+import type { Route } from "./+types/delete";
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.LoaderArgs) {
   const method = request.method;
   if (method === "DELETE") {
     try {

@@ -1,7 +1,7 @@
 import { FaRegCommentAlt } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa6";
 import { Link } from "react-router";
-import { Video } from "~/models/video.server";
+import type { Video } from "~/models/video.server";
 
 const VideoListCard = ({ video }: { video: Video }) => {
   return (

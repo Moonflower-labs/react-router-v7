@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { PaymentElement, useStripe, useElements, AddressElement } from "@stripe/react-stripe-js";
-import { StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
+import type { StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Form, useNavigate, useOutletContext } from "react-router";
-import { ContextType } from "./layout";
+import type { ContextType } from "./layout";
 import type { Route } from "./+types/payment";
 
 export async function action({ request }: Route.ActionArgs) { }

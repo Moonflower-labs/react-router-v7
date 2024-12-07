@@ -11,7 +11,11 @@ const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
   return (
     <Suspense fallback={<ReviewsSkeleton />}>
       <Await resolve={reviews} errorElement={<p className="text-error text-xl text-center col-span-full py-6">⚠️ Error cargando los reviews!</p>}>
-        {(resolvedReviews) => <ReviewsCarousel reviewsData={resolvedReviews} />}
+        {(resolvedReviews) =>
+          <section>
+            <ReviewsCarousel reviewsData={resolvedReviews} />
+          </section>
+        }
       </Await>
     </Suspense>
   );

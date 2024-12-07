@@ -1,5 +1,5 @@
 import { prisma } from "~/db.server";
-import { Route } from "./+types/detail";
+import type { Route } from "./+types/detail";
 import { formatDate } from "~/utils/format";
 
 export async function loader({ params }: Route.LoaderArgs) {

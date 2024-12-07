@@ -1,5 +1,5 @@
 import { prisma } from "~/db.server";
-import { CartItem } from "./cart.server";
+import { type CartItem } from "./cart.server";
 
 export async function createOrder1(userId: string, cartItems: CartItem[]) {
   if (userId.startsWith("guest-")) {
@@ -82,7 +82,10 @@ export async function fetchOrders(status?: string) {
 export async function fetchOrder(id: string) {
   return prisma.order.findUnique({
     where: { id },
-    include: { orderItems: { include: { price: true, product: true } }, user: { select: { username: true, email: true } } }
+    include: {
+      orderItems: { include: { price: true, product: true } },
+      user: { select: { username: true, email: true } }
+    }
   });
 }
 

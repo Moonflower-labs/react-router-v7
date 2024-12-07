@@ -1,7 +1,7 @@
 import { FaRegCommentAlt } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 import { Link } from "react-router";
-import { Post } from "~/models/post.server";
+import type { Post } from "~/models/post.server";
 
 export function PostListCard({ post }: { post: Post }) {
   return (

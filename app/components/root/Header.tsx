@@ -4,7 +4,7 @@ import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CgShoppingCart } from "react-icons/cg";
-import { User } from "~/models/user.server";
+import type { User } from "~/models/user.server";
 import { LogoutBtn } from "./LogoutBtn";
 import { Navbar } from "./Navbar";
 import logo from "./logo.svg"

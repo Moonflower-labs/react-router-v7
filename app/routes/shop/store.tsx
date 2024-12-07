@@ -4,14 +4,15 @@ import type { Route } from "./+types/store";
 import { Suspense, useEffect } from "react";
 import { addToCart } from "~/models/cart.server";
 import { getUserId } from "~/utils/session.server";
-import { getAllProducts, Product } from "~/models/product.server";
+import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
 import { toast } from "react-toastify";
 
 export async function loader() {
   // Return the promise
-  return { products: getAllProducts() };
+  const products = getAllProducts()
+  return { products };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -64,10 +65,10 @@ export default function Store({ loaderData }: Route.ComponentProps) {
       )}
       <Suspense fallback={<StoreSkeleton />}>
         <Await resolve={loaderData?.products} errorElement={<p className="text-error text-xl text-center">⚠️ Error cargando los productos!</p>}>
-          {productList =>
-            productList?.length > 0 ? (
+          {products =>
+            products?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
-                {productList.map((item: Product) =>
+                {products.map((item: Product) =>
                   <ProductItem key={item.id} item={item} />)}
               </div>
             ) : (

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router";
-import { LuMenuSquare } from "react-icons/lu";
+import { LuSquareMenu } from "react-icons/lu";
 import { AnimatePresence, motion } from "framer-motion";
 
 export function Navbar() {
@@ -12,7 +12,7 @@ export function Navbar() {
 
   return (
     <>
-      <LuMenuSquare onClick={handleNav} size={35} className="text-primary my-auto pe-2 cursor-pointer" />
+      <LuSquareMenu onClick={handleNav} size={35} className="text-primary my-auto pe-2 cursor-pointer" />
       <AnimatePresence>
         {isVisible && (
           <motion.nav
@@ -28,7 +28,7 @@ export function Navbar() {
                 Inicio
               </Link>
 
-              <Link to="/#plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+              <Link to="/plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Planes de subscripción
               </Link>
               <Link to="personality" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>

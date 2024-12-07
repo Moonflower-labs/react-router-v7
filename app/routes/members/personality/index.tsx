@@ -1,9 +1,7 @@
-import { redirect } from "react-router";
 import { Paginator } from "~/components/members/Pagination";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import type { Route } from "./+types/index";
-import { getUserId } from "~/utils/session.server";
-import { fetchPostsWithAverageRating, Post } from "~/models/post.server";
+import { fetchPostsWithAverageRating, type Post } from "~/models/post.server";
 import { PostListCard } from "../PostListCard";
 import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";

@@ -5,7 +5,7 @@ export const ProductItem = ({ item }: { item: Product }) => {
   const fetcher = useFetcher({ key: "add-to-cart" });
 
   return (
-    <div className="card w-[94%] bg-base-200 mx-auto shadow-lg">
+    <div className="card w-[92%] bg-base-200 mx-auto shadow-lg">
       <figure className="px-10 pt-10">
         <img src={item?.thumbnail || ""} alt={item?.name} className="aspect-square rounded-xl" />
       </figure>

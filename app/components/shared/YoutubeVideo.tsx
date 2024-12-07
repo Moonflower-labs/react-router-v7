@@ -7,15 +7,17 @@ export function YoutubeVideo({ videoId, className }: { videoId: string; classNam
   return (
     <>
       {isFrameLoaded ? (
-        <iframe
-          className={`aspect-video rounded-lg shadow-md ${className ? className : ""}`}
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?si=16inDY65QTJli5hi`}
-          height="100%"
-          width="100%"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
-          allowFullScreen
-          loading="lazy"></iframe>
+        <div className="">
+          <iframe
+            className={`aspect-video rounded-lg shadow-md ${className ? className : ""}`}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?si=16inDY65QTJli5hi`}
+            height="100%"
+            width="100%"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+            allowFullScreen
+            loading="lazy"></iframe>
+        </div>
       ) : (
         <div className={`hero shadow-xl ${className ? className : ""}`}>
           <img src={`https://i.ytimg.com/vi/${videoId}/sddefault.jpg`} alt="" className="hero-overlay aspect-video rounded-lg w-full shadow-md" />

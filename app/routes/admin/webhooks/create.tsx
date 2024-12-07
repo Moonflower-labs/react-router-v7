@@ -1,20 +1,17 @@
 import { Form } from 'react-router'
 import ActionError from '~/components/framer-motion/ActionError'
-import { Route } from './+types/create';
+import type { Route } from './+types/create';
 import { createWebhookEndpoint } from '~/integrations/stripe';
 
 
-interface Errors {
-    endpoint?: string;
-    description?: string;
-}
+
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const desciption = formData.get("desciption") as string;
     const endpoint = formData.get("endpoint") as string;
     const url = formData.get("url") as string;
 
-    let errors: Errors = {};
+    let errors: any = {};
     if (!endpoint) {
         errors.endpoint = "Debes añadir el endpoint";
     }

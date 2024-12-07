@@ -84,7 +84,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
         posts.map((post, index) => (
           <div
             key={post.id}
-            className="flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
+            className="flex flex-col xl:flex-row justify-between items-center gap-6 p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
             <div className="w-full">
               {index + 1}. {post.title}
             </div>

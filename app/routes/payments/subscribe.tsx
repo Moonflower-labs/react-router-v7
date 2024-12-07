@@ -1,8 +1,8 @@
 import { Form, redirect, useNavigate, useOutletContext } from "react-router";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
+import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useCallback, useState } from "react";
-import { ContextType } from "./layout";
+import type { ContextType } from "./layout";
 import type { Route } from "./+types/subscribe";
 import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";

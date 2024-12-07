@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import type { Category } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -95,7 +95,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
         name={name}
         className="hidden" // Hide the actual select element
         value={selectedOptions}
-        onChange={() => {}}>
+        onChange={() => { }}>
         {options.map(option => (
           <option key={option} value={option}>
             {option}
@@ -199,7 +199,7 @@ export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, o
         name={name}
         className="hidden" // Hide the actual select element
         value={selectedOptions.map(o => o.id)}
-        onChange={() => {}}>
+        onChange={() => { }}>
         {options.map(option => (
           <option key={option.id} value={option.id}>
             {option.name}

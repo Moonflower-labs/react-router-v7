@@ -1,6 +1,12 @@
 import { prisma, type Prisma } from "~/db.server";
 
-import type { Video as PrismaVideo, Like, Category, Favorite } from "@prisma/client";
+import type {
+  Video as PrismaVideo,
+  Like,
+  Category,
+  Favorite,
+  Section
+} from "@prisma/client";
 
 export interface Video extends PrismaVideo {
   comments: Comment[];
@@ -16,7 +22,7 @@ export async function fetchVideos({
   page = 1,
   pageSize = 5
 }: {
-  section?: string;
+  section: Section | undefined;
   title: string | null;
   categories: string[];
   page: number;
@@ -71,7 +77,11 @@ export async function fetchVideo(videoId: string) {
     }
   });
 }
-export async function fetchVideoComments(videoId: string, page: number, pageSize: number) {
+export async function fetchVideoComments(
+  videoId: string,
+  page: number,
+  pageSize: number
+) {
   const comments = await prisma.comment.findMany({
     where: { videoId },
     include: {
@@ -120,7 +130,11 @@ export async function fetchVideoComments(videoId: string, page: number, pageSize
   return { comments, pagination: { totalCount, totalPages, page, pageSize } };
 }
 
-export async function addVideoComment(userId: string, content: string, videoId: string) {
+export async function addVideoComment(
+  userId: string,
+  content: string,
+  videoId: string
+) {
   return prisma.comment.create({
     data: {
       user: { connect: { id: userId } },
@@ -149,7 +163,14 @@ export async function addToFavoriteVideo(userId: string, videoId: string) {
   });
 }
 
-export async function createVideo(section: string, title: string, description: string, url: string, categoryIds?: string[], published?: boolean) {
+export async function createVideo(
+  section: Section,
+  title: string,
+  description: string,
+  url: string,
+  categoryIds?: string[],
+  published?: boolean
+) {
   let categoriesToConnect = undefined;
 
   if (categoryIds && categoryIds.length > 0) {
@@ -161,14 +182,16 @@ export async function createVideo(section: string, title: string, description: s
       description,
       section,
       url,
-      categories: categoriesToConnect ? { connect: categoriesToConnect } : undefined,
+      categories: categoriesToConnect
+        ? { connect: categoriesToConnect }
+        : undefined,
       published
     }
   });
 }
 
 export async function updateVideo(
-  section: string,
+  section: Section | undefined,
   videoId: string,
   title: string,
   description: string,

@@ -3,13 +3,13 @@ import { useRef, useEffect, useState } from "react";
 import { FaRegCommentAlt, FaReply } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatDate } from "~/utils/format";
-import { User } from "~/models/user.server";
-import { Comment, Reply } from "~/models/post.server";
+import type { User } from "~/models/user.server";
+import type { Comment, Reply } from "~/models/post.server";
 import { Paginator } from "./Pagination";
 import { LikeButton } from "./LikeButton";
 import ActionError from "../framer-motion/ActionError";
-import { Pagination } from "~/models/post.server";
-import { Like } from "@prisma/client";
+import type { Pagination } from "~/models/post.server";
+import type { Like } from "@prisma/client";
 import { ImBin } from "react-icons/im";
 
 interface CommentSectionProps {

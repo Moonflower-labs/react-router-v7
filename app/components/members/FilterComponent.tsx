@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSubmit, useLoaderData, useLocation, Form } from "react-router";
 import { BsFilterCircle } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
-import { Category } from "@prisma/client";
+import type { Category } from "@prisma/client";
 import { MultiSelect } from "../shared/multi-select";
 import { AnimatePresence, motion } from "framer-motion";
 

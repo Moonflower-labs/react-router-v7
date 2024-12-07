@@ -1,6 +1,6 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { data, Outlet, redirect, useOutletContext } from "react-router";
-import { Appearance, type Stripe, StripeElementsOptions } from "@stripe/stripe-js";
+import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
 import { createCustomerSession, getCustomerBalance, getCustomerId, getSubscriptionData } from "~/integrations/stripe";
@@ -77,7 +77,7 @@ export default function StripeLayout({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <>
+    <div className="min-h-screen">
       {stripe && (
         <Elements stripe={stripe} options={options}>
           <Outlet
@@ -92,7 +92,7 @@ export default function StripeLayout({ loaderData }: Route.ComponentProps) {
           />
         </Elements>
       )}
-    </>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/basic";
 import { requireUserId } from "~/utils/session.server";

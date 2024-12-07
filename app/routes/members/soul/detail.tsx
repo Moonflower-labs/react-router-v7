@@ -6,7 +6,7 @@ import VideoComponent from "~/components/members/VideoComponent";
 import { formatDate } from "~/utils/format";
 import Comments from "~/components/members/Comments";
 import { getUserId } from "~/utils/session.server";
-import { User } from "~/models/user.server";
+import type { User } from "~/models/user.server";
 import { Favorite } from "~/components/members/Favorite";
 import { LikeButton } from "~/components/members/LikeButton";
 import { handleLike } from "~/models/like.server";

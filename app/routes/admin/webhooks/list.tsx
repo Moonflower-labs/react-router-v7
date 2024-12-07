@@ -1,4 +1,4 @@
-import { Route } from "./+types/list";
+import type { Route } from "./+types/list";
 import { data, Form, Link } from "react-router";
 import { deleteWebhookEndpoint, listWebhookEndpoints } from "~/integrations/stripe";
 import { ImBin } from "react-icons/im";

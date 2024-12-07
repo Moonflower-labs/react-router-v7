@@ -7,7 +7,7 @@ import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { createVideo } from "~/models/video.server";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import { Category } from "@prisma/client";
+import type { Category } from "@prisma/client";
 
 export async function loader() {
   const categories = await prisma.category.findMany();

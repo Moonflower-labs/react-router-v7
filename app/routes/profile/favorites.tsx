@@ -58,8 +58,8 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
                   {fav?.video?.title}
                 </Link>
                 <div className="flex flex-row gap-2 justify-end w-1/3">
-                  <span className={`text-end badge badge-primary ${fav?.video?.section === "soul" && "badge-outline"}`}>
-                    {fav?.video?.section === "soul" ? "Alma" : "Espíritu"}
+                  <span className={`text-end badge badge-primary ${fav?.video?.section === "Soul" && "badge-outline"}`}>
+                    {fav?.video?.section === "Soul" ? "Alma" : "Espíritu"}
                   </span>
                   <fetcher.Form method="post" action={`/${fav?.video?.section}/video/${fav?.video?.id}`} className="text-end">
                     <input type="hidden" name="id" value={fav?.video?.id} />

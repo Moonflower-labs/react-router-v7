@@ -1,4 +1,4 @@
-import { getUserId, requireUserId } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import type { Route } from "./+types/list";
 import { getAllProducts } from "~/models/product.server";
 import { Form, Link, Outlet } from "react-router";

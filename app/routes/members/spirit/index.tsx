@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/index";
-import { fetchVideos, Video } from "~/models/video.server";
+import { fetchVideos, type Video } from "~/models/video.server";
 import VideoListCard from "~/components/members/VideoListCard";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { Paginator } from "~/components/members/Pagination";

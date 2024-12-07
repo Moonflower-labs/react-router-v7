@@ -1,6 +1,6 @@
 import type { Route } from "./+types/index";
 import { useEffect } from "react";
-import { fetchVideos, Video } from "~/models/video.server";
+import { fetchVideos, type Video } from "~/models/video.server";
 import VideoListCard from "~/components/members/VideoListCard";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { FilterComponent } from "~/components/members/FilterComponent";

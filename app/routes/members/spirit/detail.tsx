@@ -1,11 +1,11 @@
 import { useParams, Link, useRouteLoaderData, data } from "react-router";
 import { PiFlowerLotus } from "react-icons/pi";
 import type { Route } from "./+types/detail";
-import { addToFavoriteVideo, fetchVideo, fetchVideoComments, Video } from "~/models/video.server";
+import { addToFavoriteVideo, fetchVideo, fetchVideoComments, type Video } from "~/models/video.server";
 import Comments from "~/components/members/Comments";
 import VideoComponent from "~/components/members/VideoComponent";
 import { formatDate } from "~/utils/format";
-import { User } from "~/models/user.server";
+import type { User } from "~/models/user.server";
 import { Favorite } from "~/components/members/Favorite";
 import { LikeButton } from "~/components/members/LikeButton";
 import { DeleteReply, DeleteComment } from "~/models/comment.server";

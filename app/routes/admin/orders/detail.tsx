@@ -1,5 +1,5 @@
 import { fetchOrder } from "~/models/order.server";
-import { Route } from "./+types/detail";
+import type { Route } from "./+types/detail";
 import { Form } from "react-router";
 import { FaCheck } from "react-icons/fa";
 import { MdOutlinePendingActions } from "react-icons/md";

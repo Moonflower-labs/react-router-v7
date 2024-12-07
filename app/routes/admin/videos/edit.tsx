@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import { Category } from "@prisma/client";
+import type { Category } from "@prisma/client";
 import { fetchVideo, updateVideo } from "~/models/video.server";
 
 export async function loader({ params }: Route.LoaderArgs) {

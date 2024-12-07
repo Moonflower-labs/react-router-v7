@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { useFetcher } from "react-router";
-import { Post } from "~/models/post.server";
-import { Video } from "~/models/video.server";
+import type { Post } from "~/models/post.server";
+import type { Video } from "~/models/video.server";
 
 export function Favorite({ object, isFavorite }: { object: Post | Video; isFavorite?: boolean }) {
   const fetcher = useFetcher();

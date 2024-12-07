@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { Pagination } from "~/models/post.server";
+import type { Pagination } from "~/models/post.server";
 
 export function Paginator({ pagination }: { pagination: Pagination }) {
   const { pathname, search } = useLocation();

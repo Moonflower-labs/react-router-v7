@@ -1,11 +1,11 @@
 import { PiFlowerLotus } from "react-icons/pi";
 import type { Route } from "./+types/detail";
-import { addToFavoritePost, getPostWithAverageRating, Post, ratePost } from "~/models/post.server";
+import { addToFavoritePost, getPostWithAverageRating, type Post, ratePost } from "~/models/post.server";
 import { formatDate } from "~/utils/format";
 import { data, useRouteLoaderData } from "react-router";
 import Comments from "~/components/members/Comments";
 import { getUserId } from "~/utils/session.server";
-import { User } from "~/models/user.server";
+import type { User } from "~/models/user.server";
 import { LikeButton } from "~/components/members/LikeButton";
 import { Favorite } from "~/components/members/Favorite";
 import RatingForm from "~/components/members/Rating";
