@@ -19,14 +19,12 @@ export default [
   ]),
 
   // Payments
-  ...prefix("payments", [
-    layout("routes/payments/layout.tsx", [
-      route("subscribe", "routes/payments/subscribe.tsx"),
-      route("setup", "routes/payments/setup.tsx"),
-      route("checkout", "routes/payments/payment.tsx")
-    ]),
-    route("success", "routes/payments/success.tsx")
+  route("payments", "routes/payments/layout.tsx", [
+    route("subscribe", "routes/payments/subscribe.tsx"),
+    route("setup", "routes/payments/setup.tsx"),
+    route("checkout", "routes/payments/payment.tsx")
   ]),
+  route("payments/success", "routes/payments/success.tsx"),
   route("store", "routes/shop/store.tsx"),
   route("cart", "routes/shop/cart.tsx"),
   route("help", "routes/help.tsx"),
@@ -51,19 +49,17 @@ export default [
     // Personality plan
     route("personality", "routes/members/personality/index.tsx"),
     route("personality/post/:id", "routes/members/personality/detail.tsx"),
+    route("personality/question", "routes/members/personality/question.tsx"),
+
     // Soul plan
     route("soul", "routes/members/soul/index.tsx"),
     route("soul/video/:id", "routes/members/soul/detail.tsx"),
+    route("soul/question", "routes/members/soul/question.tsx"),
     // Spirit plan
     route("spirit", "routes/members/spirit/index.tsx"),
     route("spirit/video/:id", "routes/members/spirit/detail.tsx"),
+    route("spirit/question", "routes/members/spirit/question.tsx"),
     route("spirit/live", "routes/members/spirit/live.tsx")
-  ]),
-  // Questions
-  route("questions", "routes/questions/layout.tsx", [
-    index("routes/questions/basic.tsx"),
-    route("live", "routes/questions/live.tsx"),
-    route("tarot", "routes/questions/tarot.tsx")
   ]),
 
   // API Routes

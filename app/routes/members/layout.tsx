@@ -1,10 +1,10 @@
-import { Link, NavLink, Outlet, useNavigation } from "react-router";
+import { Link, NavLink, Outlet, useMatches } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
-import GlobalSpinner from "~/components/shared/GlobalSpinner";
+import ScrollToAnchor from "~/components/shared/ScrollToAnchor";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -12,9 +12,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MembersLayout() {
-
-  const navigation = useNavigation();
-  const isNavigating = Boolean(navigation.location);
+  const matches = useMatches();
 
   return (
     <>
@@ -29,10 +27,10 @@ export default function MembersLayout() {
             className={({ isActive }) =>
               `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
-            preventScrollReset={true}
+            // preventScrollReset={true}
             viewTransition
           >
-            <div className="avatar">
+            <div className="hidden md:block avatar">
               <div className="w-8 rounded">
                 <img src={personalityImg} />
               </div>
@@ -45,10 +43,10 @@ export default function MembersLayout() {
             className={({ isActive }) =>
               `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
-            preventScrollReset={true}
+            // preventScrollReset={true}
             viewTransition
           >
-            <div className="avatar">
+            <div className="hidden md:block avatar">
               <div className="w-8 rounded">
                 <img src={soulImg} />
               </div>
@@ -61,27 +59,31 @@ export default function MembersLayout() {
             className={({ isActive }) =>
               `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
-            preventScrollReset={true}
+            // preventScrollReset={true}
             viewTransition
           >
-            <div className="avatar">
+            <div className="hidden md:block avatar">
               <div className="w-8 rounded">
                 <img src={spiritImg} />
               </div>
             </div>
             <span>Espíritu</span>
           </NavLink>
-
         </div>
-        <Link
-          to={"/questions"}
-          className={"btn btn-sm btn-primary shadow mx-auto"}
-          viewTransition
-        >
-          Ir a Preguntas
-        </Link>
+        <ScrollToAnchor />
+        {matches
+          .filter(
+            (match: any) =>
+              match.handle && match.handle.links
+          )
+          .map((match: any, index) => (
+            <div key={index} className="md:bg-base-100 rounded flex gap-2 justify-center items-center">
+              {match.handle.links.map((link: any) =>
+                <NavLink to={link.to} end className={({ isActive, isPending }) => `hover:scale-110 transition-all ease-in-out duration-300 ${isActive ? "badge badge-primary" : isPending ? "scale-110" : ""}`} viewTransition>{link.name}</NavLink>
+              )}
+            </div>
+          ))}
       </div>
-      {isNavigating && <GlobalSpinner />}
       <Outlet />
     </>
   );

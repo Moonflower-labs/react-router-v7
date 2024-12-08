@@ -7,6 +7,10 @@ import { FilterComponent } from "~/components/members/FilterComponent";
 import { Paginator } from "~/components/members/Pagination";
 import { fetchCategories } from "~/models/category.server";
 
+export const handle = {
+  links: [{ to: "/soul#videos", name: "Videos" }, { to: "/soul#podcasts", name: "Podcasts" }, { to: "/soul/question", name: "Pregunta" }]
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("search");
@@ -71,8 +75,8 @@ export default function Soul({ loaderData }: Route.ComponentProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mb-4">
-        <div className="m-4">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mb-4" id="podcasts">
+        <div className="m-4" >
           <p className="text-3xl mb-3">Respuestas de audio</p>
           <iframe
             title="podcasts-soul"
@@ -96,8 +100,8 @@ export default function Soul({ loaderData }: Route.ComponentProps) {
             referrerPolicy="no-referrer"
             loading="lazy"></iframe>
         </div>
-      </div>
-      <section className="">
+      </section>
+      <section className="" id="videos">
         <p className="text-3xl pb-3">Respuestas de video</p>
         <FilterComponent />
         {videos?.length ? (

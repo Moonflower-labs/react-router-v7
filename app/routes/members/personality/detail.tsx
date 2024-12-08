@@ -12,6 +12,10 @@ import RatingForm from "~/components/members/Rating";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.server";
 
+export const handle = {
+  links: [{ to: "/personality#blogs", name: "Blogs" }, { to: "/personality#podcasts", name: "Podcasts" }, { to: "/personality/question", name: "Pregunta" }]
+}
+
 export async function loader({ params, request }: Route.LoaderArgs) {
   if (!params.id) {
     throw data({ message: "No post ID provided!" }, { status: 400 });

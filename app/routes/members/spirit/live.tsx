@@ -1,5 +1,10 @@
 import { Link } from "react-router";
 
+
+export const handle = {
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+}
+
 export default function LiveSessions() {
   return (
     <div className="text-center pt-5 px-1">

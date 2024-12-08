@@ -1,10 +1,14 @@
 import { type MutableRefObject, useEffect, useRef } from "react";
 import { data, useFetcher } from "react-router";
-import type { Route } from "./+types/basic";
+import type { Route } from "./+types/question";
 import { requireUserId } from "~/utils/session.server";
 import { createBasicQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
 import ActionError from "~/components/framer-motion/ActionError";
+
+export const handle = {
+  links: [{ to: "/personality#blogs", name: "Blogs" }, { to: "/personality#podcasts", name: "Podcasts" }, { to: "/personality/question", name: "Pregunta" }]
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {

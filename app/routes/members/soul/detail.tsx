@@ -12,6 +12,11 @@ import { LikeButton } from "~/components/members/LikeButton";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply } from "~/models/comment.server";
 
+export const handle = {
+  links: [{ to: "/soul#videos", name: "Videos" }, { to: "/soul#podcasts", name: "Podcasts" }, { to: "/soul/question", name: "Pregunta" }]
+}
+
+
 export async function loader({ request, params }: Route.LoaderArgs) {
   if (!params.id) {
     throw data({ message: "No param Id provided!" }, { status: 400 });

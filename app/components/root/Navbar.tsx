@@ -28,15 +28,17 @@ export function Navbar() {
               <Link to="/about" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Sobre La Flor Blanca
               </Link>
-
               <Link to="/plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Planes de subscripción
               </Link>
               <Link to="personality" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Rincón de miembros
               </Link>
-              <Link to="questions" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Pregúntale a La Flor Blanca
+              <Link to="gallery" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+                Susurros de La Flor Blanca
+              </Link>
+              <Link to="/reviews" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+                Reviews
               </Link>
               <Link to="store" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Tienda

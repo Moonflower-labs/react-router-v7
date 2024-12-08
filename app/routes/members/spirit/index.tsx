@@ -7,6 +7,11 @@ import { Paginator } from "~/components/members/Pagination";
 import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";
 
+
+export const handle = {
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("search");
@@ -26,14 +31,7 @@ export default function Spirit({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="text-center pt-5 px-1">
-      <div className="pt-10 mb-8 font-semibold flex items-center justify-center relative">
-        <h2 className="text-primary text-4xl absolute md:left-1/2 transform -translate-x-1/2">Espíritu</h2>
-        <span className="absolute right-0">
-          <Link to={"/spirit/live"} className="btn btn-sm btn-primary">
-            Sesiones en directo
-          </Link>
-        </span>
-      </div>
+      <h1 className="text-primary text-4xl mb-4">Espíritu</h1>
 
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
         <p className="text-3xl mb-2">¡Bienvenidos Espíritus!</p>
@@ -66,7 +64,7 @@ export default function Spirit({ loaderData }: Route.ComponentProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mb-4">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mb-4" id="podcasts">
         <div className="m-4">
           <p className="text-3xl mb-3">Respuestas de audio</p>
           <iframe
@@ -91,8 +89,8 @@ export default function Spirit({ loaderData }: Route.ComponentProps) {
             referrerPolicy="no-referrer"
             loading="lazy"></iframe>
         </div>
-      </div>
-      <section className="">
+      </section>
+      <section id="videos">
         <p className="text-3xl pb-3">Respuestas de video</p>
         <FilterComponent />
         {videos?.length ? (

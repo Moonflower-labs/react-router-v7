@@ -23,29 +23,32 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return { posts, pagination, categories, q: title };
 }
+export const handle = {
+  links: [{ to: "/personality#blogs", name: "Blogs" }, { to: "/personality#podcasts", name: "Podcasts" }, { to: "/personality/question", name: "Pregunta" }]
+}
 
 export default function Personality({ loaderData }: Route.ComponentProps) {
   const data = loaderData?.posts as Post[];
   const pagination = loaderData?.pagination;
 
   return (
-    <div className="text-center pt-5 px-1" data-testid="personality-index">
-      <div className="pt-10 text-primary text-4xl mb-8 font-semibold">Personalidad</div>
+    <main className="text-center px-1" data-testid="personality-index">
+      <h1 className="pt-10 text-primary text-4xl mb-8 font-semibold">Personalidad</h1>
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
         <p className="text-3xl mb-2">¡Bienvenidos Personalidades!</p>
         <YoutubeVideo videoId="7158ShreVEU" />
       </div>
       <div className="text-center mb-4">Estos son ejemplos de preguntas y sugerencias de temáticas generalizadas por parte de los oyentes.</div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
         {resources?.map(item => (
           <div key={item.videoId} className="flex flex-col m-10">
             <p className="h-10 mb-2">{item?.title}</p>
             <YoutubeVideo videoId={item?.videoId} />
           </div>
         ))}
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-10">
+      <section className="grid grid-cols-1 md:w-1/2 mx-auto mb-10" id="podcasts">
         <p className="text-3xl mb-6">Respuestas de audio</p>
         <p className="mb-3">Si quieres ver la pregunta más detallada y completa del episodio dale a &quot;more info&quot;.</p>
         <iframe
@@ -57,8 +60,8 @@ export default function Personality({ loaderData }: Route.ComponentProps) {
           src="https://share.transistor.fm/e/respuestas-personalidad/playlist"
           referrerPolicy="no-referrer"
           loading="lazy"></iframe>
-      </div>
-      <p className="text-3xl mb-5">Respuestas de Blog</p>
+      </section>
+      <p className="text-3xl mb-5" id="blogs">Respuestas de Blog</p>
       <FilterComponent />
       {data?.length ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-items-center pb-4">
@@ -70,7 +73,7 @@ export default function Personality({ loaderData }: Route.ComponentProps) {
         <div className="text-xl pb-3 text-center">No hay respuestas disponibles</div>
       )}
       <Paginator pagination={pagination} />
-    </div>
+    </main>
   );
 }
 

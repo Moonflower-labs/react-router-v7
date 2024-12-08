@@ -1,9 +1,13 @@
 import { data, useFetcher } from "react-router";
 import { useCallback, useEffect } from "react";
-import type { Route } from "./+types/live";
+import type { Route } from "./+types/question";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { requireUserId } from "~/utils/session.server";
 import { toast } from "react-toastify";
+
+export const handle = {
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {

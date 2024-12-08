@@ -13,6 +13,11 @@ import { handleLike } from "~/models/like.server";
 import { getUserId } from "~/utils/session.server";
 import type { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
+
+export const handle = {
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+}
+
 export async function loader({ request, params }: Route.LoaderArgs) {
   if (!params.id) {
     throw data({ message: "No param ID provided!" }, { status: 400 });
