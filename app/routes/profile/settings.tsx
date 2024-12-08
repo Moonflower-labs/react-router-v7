@@ -2,6 +2,8 @@ import { setUserPrefs } from '~/cookies/userPref.server';
 import type { Route } from './+types/settings';
 import { Form, useRouteLoaderData, useSubmit } from 'react-router';
 import { IoColorPalette } from 'react-icons/io5';
+import { MdNotificationImportant } from 'react-icons/md';
+import { FaMessage } from 'react-icons/fa6';
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -16,16 +18,16 @@ export default function Settings() {
 
 
     return (
-        <div className='text-center pt-2 mx-2'>
+        <main className='text-center pt-2 mx-2 flex flex-col gap-4'>
             <h1 className='text-3xl text-primary font-semibold'>Settings</h1>
-            <div className="flex flex-col">
+            <section className="flex flex-col">
                 <div className="m-1 btn btn-ghost flex flex-row">
                     <IoColorPalette size={24} />
                     <span>Theme</span>
                 </div>
                 <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
                     <div className=" z-[1] p-0 m-0  rounded-full max-w-screen-lg mx-auto">
-                        <div className="flex flex-row flex-wrap gap-1 bg-neutral/10 p-1 rounded-md">
+                        <div className="flex flex-row flex-wrap justify-center gap-1 bg-neutral/10 p-1 rounded-md">
                             {themes.map((themeOption) => (
                                 <input
                                     key={themeOption.value}
@@ -40,13 +42,27 @@ export default function Settings() {
                         </div>
                     </div>
                 </Form>
-            </div>
-        </div>
+            </section>
+            <section className="flex flex-col">
+                <div className="m-1 btn btn-ghost flex flex-row">
+                    <MdNotificationImportant size={24} />
+                    <span>Notifications</span>
+                </div>
+                <div>Unavaliable settings.</div>
+            </section>
+            <section className="flex flex-col">
+                <div className="m-1 btn btn-ghost flex flex-row">
+                    <FaMessage size={24} />
+                    <span>Messages</span>
+                </div>
+                <div>Unavaliable settings.</div>
+            </section>
+        </main>
     )
 }
 
 const themes = [
-    { value: 'default', label: 'Default' },
+    { value: 'florBlanca', label: 'Default' },
     { value: 'garden', label: 'Garden' },
     { value: 'dracula', label: 'Dracula' },
     { value: 'emerald', label: 'Emerald' },
