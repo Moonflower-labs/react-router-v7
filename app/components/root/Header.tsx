@@ -88,7 +88,7 @@ export function Header() {
           <ShoppingCartIcon count={optimisticCount} />
         </div>
         <div className="navbar-end">
-          <div className="dropdown dropdown-end dropdown-bottom">
+          <div className="hidden dropdown dropdown-end dropdown-bottom">
             <div tabIndex={0} className="m-1 btn btn-ghost flex flex-col">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
