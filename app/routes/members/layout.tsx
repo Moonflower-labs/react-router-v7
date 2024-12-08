@@ -1,10 +1,10 @@
-import { Link, NavLink, Outlet, useMatches } from "react-router";
+import { Link, NavLink, Outlet, useLocation, useMatches } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
-import ScrollToAnchor from "~/components/shared/ScrollToAnchor";
+import ScrollToHash from "~/components/shared/ScrollToHash";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -13,6 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function MembersLayout() {
   const matches = useMatches();
+  const { hash, pathname } = useLocation();
 
   return (
     <>
@@ -70,7 +71,7 @@ export default function MembersLayout() {
             <span>Espíritu</span>
           </NavLink>
         </div>
-        <ScrollToAnchor />
+        <ScrollToHash />
         {matches
           .filter(
             (match: any) =>
@@ -79,7 +80,12 @@ export default function MembersLayout() {
           .map((match: any, index) => (
             <div key={index} className="md:bg-base-100 rounded flex gap-2 justify-center items-center">
               {match.handle.links.map((link: any) =>
-                <NavLink to={link.to} end className={({ isActive, isPending }) => `hover:scale-110 transition-all ease-in-out duration-300 ${isActive ? "badge badge-primary" : isPending ? "scale-110" : ""}`} viewTransition>{link.name}</NavLink>
+                <Link key={link.to} to={link.to}
+                  className={`hover:scale-110 transition-all ease-in-out duration-300 ${link.to === pathname + hash && "badge badge-primary"}`}
+                  viewTransition
+                >
+                  {link.name}
+                </Link>
               )}
             </div>
           ))}

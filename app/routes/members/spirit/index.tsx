@@ -30,11 +30,10 @@ export default function Spirit({ loaderData }: Route.ComponentProps) {
   const pagination = loaderData?.pagination;
 
   return (
-    <div className="text-center pt-5 px-1">
+    <div className="text-center pt-2 px-1">
       <h1 className="text-primary text-4xl mb-4">Espíritu</h1>
-
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
-        <p className="text-3xl mb-2">¡Bienvenidos Espíritus!</p>
+        <p className="text-3xl mb-3">¡Bienvenidos Espíritus!</p>
         <YoutubeVideo videoId="be5-o9k9zdg" />
       </div>
 

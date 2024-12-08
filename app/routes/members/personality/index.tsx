@@ -32,10 +32,10 @@ export default function Personality({ loaderData }: Route.ComponentProps) {
   const pagination = loaderData?.pagination;
 
   return (
-    <main className="text-center px-1" data-testid="personality-index">
-      <h1 className="pt-10 text-primary text-4xl mb-8 font-semibold">Personalidad</h1>
+    <main className="text-center px-1 pt-2" data-testid="personality-index">
+      <h1 className="text-primary text-4xl mb-8 font-semibold">Personalidad</h1>
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
-        <p className="text-3xl mb-2">¡Bienvenidos Personalidades!</p>
+        <p className="text-3xl mb-3">¡Bienvenidos Personalidades!</p>
         <YoutubeVideo videoId="7158ShreVEU" />
       </div>
       <div className="text-center mb-4">Estos son ejemplos de preguntas y sugerencias de temáticas generalizadas por parte de los oyentes.</div>
