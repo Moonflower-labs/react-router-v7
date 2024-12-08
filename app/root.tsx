@@ -1,4 +1,4 @@
-import { data, isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { data, isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "react-router";
 import type { Route } from "./+types/root";
 import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
@@ -57,8 +57,10 @@ export const action = async ({ request }: Route.ActionArgs) => {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const theme = useLoaderData()?.theme // Load the theme
+  console.log("THE THEEEEEME:", theme)
   return (
-    <html lang="es" data-theme={"florBlanca"}>
+    <html lang="es" data-theme={theme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

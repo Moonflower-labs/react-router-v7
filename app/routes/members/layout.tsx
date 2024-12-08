@@ -26,12 +26,12 @@ export default function MembersLayout() {
             to={"/personality"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
             // preventScrollReset={true}
             viewTransition
           >
-            <div className="hidden md:block avatar">
+            <div className="avatar">
               <div className="w-8 rounded">
                 <img src={personalityImg} />
               </div>
@@ -42,12 +42,12 @@ export default function MembersLayout() {
             to={"/soul"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
             // preventScrollReset={true}
             viewTransition
           >
-            <div className="hidden md:block avatar">
+            <div className="avatar">
               <div className="w-8 rounded">
                 <img src={soulImg} />
               </div>
@@ -58,12 +58,12 @@ export default function MembersLayout() {
             to={"/spirit"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-col justify-center items-center md:flex-row gap-2 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
             }
             // preventScrollReset={true}
             viewTransition
           >
-            <div className="hidden md:block avatar">
+            <div className=" avatar">
               <div className="w-8 rounded">
                 <img src={spiritImg} />
               </div>
@@ -78,7 +78,7 @@ export default function MembersLayout() {
               match.handle && match.handle.links
           )
           .map((match: any, index) => (
-            <div key={index} className="md:bg-base-100 rounded flex gap-2 justify-center items-center">
+            <div key={index} className="md:bg-base-100 rounded flex flex-wrap gap-4 justify-center items-center">
               {match.handle.links.map((link: any) =>
                 <Link key={link.to} to={link.to}
                   className={`hover:scale-110 transition-all ease-in-out duration-300 ${link.to === pathname + hash && "badge badge-primary"}`}

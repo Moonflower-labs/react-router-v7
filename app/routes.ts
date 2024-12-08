@@ -41,7 +41,8 @@ export default [
       route("delete", "routes/profile/plan/delete.tsx"),
       route("confirmation", "routes/profile/plan/confirmation.tsx")
     ]),
-    route("questions", "routes/profile/questions.tsx")
+    route("questions", "routes/profile/questions.tsx"),
+    route("settings", "routes/profile/settings.tsx")
   ]),
 
   // Members

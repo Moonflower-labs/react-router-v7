@@ -46,7 +46,7 @@ export function Header() {
                     </Link>
                   </li>
                   <li>
-                    <Link to={"/settings"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={"/profile/settings"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Ajustes
                     </Link>
                   </li>
@@ -93,73 +93,21 @@ export function Header() {
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
+
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
               <div tabIndex={0} className="menu dropdown-content z-[1] p-0 m-0 justify-end rounded-full">
-                <div className="flex flex-col gap-1  bg-neutral/10 p-1 rounded-md">
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "default"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Default"
-                    value="default"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "garden"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Garden"
-                    value="garden"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "dracula"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Dracula"
-                    value="dracula"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "emerald"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Emerald"
-                    value="emerald"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "cupcake"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Cupcake"
-                    value="cupcake"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "coffee"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Coffee"
-                    value="coffee"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "aqua"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Aqua"
-                    value="aqua"
-                  />
-                  <input
-                    type="radio"
-                    name="theme-buttons"
-                    defaultChecked={theme === "dark"}
-                    className="btn btn-sm theme-controller bg-base-100"
-                    aria-label="Dark"
-                    value="dark"
-                  />
+                <div className="flex flex-col gap-1 bg-neutral/10 p-1 rounded-md">
+                  {themes.map((themeOption) => (
+                    <input
+                      key={themeOption.value}
+                      type="radio"
+                      name="theme-buttons"
+                      defaultChecked={theme === themeOption.value}
+                      className="btn btn-sm theme-controller bg-base-100"
+                      aria-label={themeOption.label}
+                      value={themeOption.value}
+                    />
+                  ))}
                 </div>
               </div>
             </Form>
@@ -170,6 +118,17 @@ export function Header() {
     </header>
   );
 }
+
+const themes = [
+  { value: 'default', label: 'Default' },
+  { value: 'garden', label: 'Garden' },
+  { value: 'dracula', label: 'Dracula' },
+  { value: 'emerald', label: 'Emerald' },
+  { value: 'cupcake', label: 'Cupcake' },
+  { value: 'coffee', label: 'Coffee' },
+  { value: 'aqua', label: 'Aqua' },
+  { value: 'dark', label: 'Dark' },
+];
 
 function ShoppingCartIcon({ count }: { count: number }) {
   return (
