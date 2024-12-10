@@ -28,7 +28,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
     return (
         <main className="text-center">
-            <h1 className="text-primary text-3xl font-semibold mb-4">Component</h1>
+            <h1 className="text-primary text-3xl font-semibold mb-4 pt-4">Galería</h1>
             <div className="grid gap-6 justify-center items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-4">
                 {loaderData?.images && loaderData.images.map((image: any) =>
                     <div className="flex flex-col justify-center items-center gap-4">
