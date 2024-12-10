@@ -1,6 +1,6 @@
 import { AiFillProduct } from "react-icons/ai";
 import { BiCategoryAlt, BiSolidVideos } from "react-icons/bi";
-import { FaHome, FaQuestion } from "react-icons/fa";
+import { FaHome, FaQuestion, FaRegImages } from "react-icons/fa";
 import { GiQuillInk } from "react-icons/gi";
 import { HiMiniShoppingBag } from "react-icons/hi2";
 import { PiUsersThreeFill } from "react-icons/pi";
@@ -90,6 +90,16 @@ export default function AdminLayout() {
           viewTransition>
           <AiFillProduct size={20} />
           <span className="text-xs md:text-lg">Productos</span>
+        </NavLink>
+        <NavLink
+          to={"admin/gallery"}
+          role="tab"
+          className={({ isActive }) =>
+            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
+          }
+          viewTransition>
+          <FaRegImages size={20} />
+          <span className="text-xs md:text-lg">Imágenes</span>
         </NavLink>
         <NavLink
           to={"admin/users"}
