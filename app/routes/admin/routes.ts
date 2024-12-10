@@ -12,6 +12,11 @@ export const adminRoutes = [
       ]),
       //  Emails
       ...prefix("/emails", [index("routes/admin/emails/send.tsx")]),
+      //  Gallery
+      ...prefix("/gallery", [
+        index("routes/admin/gallery/list.tsx"),
+        route("upload", "routes/admin/gallery/upload.tsx")
+      ]),
       //  Orders
       ...prefix("/orders", [
         index("routes/admin/orders/list.tsx"),

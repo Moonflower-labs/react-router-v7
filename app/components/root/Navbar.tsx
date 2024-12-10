@@ -13,7 +13,7 @@ export function Navbar() {
 
   return (
     <>
-      <CgMenuBoxed onClick={handleNav} size={42} className="text-primary my-auto cursor-pointer" />
+      <CgMenuBoxed onClick={handleNav} size={36} className="text-primary my-auto cursor-pointer" />
       <AnimatePresence>
         {isVisible && (
           <motion.nav

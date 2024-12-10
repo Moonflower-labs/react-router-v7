@@ -58,7 +58,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useLoaderData()?.theme // Load the theme
-  console.log("THE THEEEEEME:", theme)
+
   return (
     <html lang="es" data-theme={theme}>
       <head>
