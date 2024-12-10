@@ -1,6 +1,6 @@
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import type { Route } from "./+types/upload";
-import { Form } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
 import cloudinary from "~/integrations/cloudinary/service.server";
 
 
@@ -38,28 +38,35 @@ export async function action({ request }: Route.ActionArgs) {
         }
     };
 
-    const formData = await parseFormData(
-        request,
-        uploadHandler,
-        {
-            maxFileSize: 3000000, // 3MB
-        }
-    );
-    // 'image' has already been processed at this point
-    const file = formData.get("image");
-    return { file }
+    try {
+        const formData = await parseFormData(
+            request,
+            uploadHandler,
+            {
+                maxFileSize: 3000000, // 3MB
+            }
+        );
+        // 'image' has already been processed at this point
+        const file = formData.get("image");
+
+    } catch (error) {
+        console.log(error)
+        return { error: "Upload  unsuccessfull" }
+    }
+    throw redirect("/admin/gallery")
 }
 
 export default function Component({ actionData }: Route.ComponentProps) {
-    const file = actionData?.file
-    console.log(file)
+    const navigation = useNavigation()
 
     return (
         <main>
             <h1 className="text-3xl text-center font-semibold text-primary mb-4">Upload Image</h1>
+            {actionData?.error && <div className="text-error">{actionData.error}</div>}
             <Form method="post" encType="multipart/form-data" className="flex flex-col justify-center items-center gap-3 max-w-xl mx-auto">
-                <input type="file" className="file-input file-input-bordered file-input-primary w-full max-w-xs" name="image" />
-                <button type="submit" className="btn btn-primary btn-sm">Submit</button>
+                <input type="file" className="file-input file-input-bordered file-input-primary w-full max-w-xs mb-4" name="image" />
+                {navigation.state !== "submitting" && <div className="text-center  mb-4"> <span className="mx-auto loading loading-spinner text-primary"></span></div>}
+                <button type="submit" className="btn btn-primary btn-sm" disabled={navigation.state === "submitting"}>Submit</button>
             </Form>
         </main>
     );
