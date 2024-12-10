@@ -1,8 +1,16 @@
 import type Stripe from "stripe";
 import { stripe } from "./stripe.server";
-import { CartItem } from "~/models/cart.server";
+import type { CartItem } from "~/models/cart.server";
 
-export async function createPaymentIntent({ customerId, amount, orderId }: { customerId: string; amount: number; orderId: string }) {
+export async function createPaymentIntent({
+  customerId,
+  amount,
+  orderId
+}: {
+  customerId: string;
+  amount: number;
+  orderId: string;
+}) {
   const intentParams: Stripe.PaymentIntentCreateParams = {
     amount: amount,
     currency: "gbp",
@@ -20,7 +28,10 @@ export async function createPaymentIntent({ customerId, amount, orderId }: { cus
   } catch (error) {
     return {
       error: {
-        message: error instanceof Error ? error?.message : "Error creating a payment intent"
+        message:
+          error instanceof Error
+            ? error?.message
+            : "Error creating a payment intent"
       }
     };
   }
@@ -31,8 +42,13 @@ export async function retrievePaymentIntent(id: string) {
 }
 
 // Deduct customer balance used, handling negative balance
-export async function deductBalanceUsed(customerId: string, amountUsed: number) {
-  const customer = (await stripe.customers.retrieve(customerId)) as Stripe.Customer;
+export async function deductBalanceUsed(
+  customerId: string,
+  amountUsed: number
+) {
+  const customer = (await stripe.customers.retrieve(
+    customerId
+  )) as Stripe.Customer;
   const currentBalance = customer.balance ?? 0; // Handle null balance
 
   // Deduct from balance (Note: balance is negative when customer has credits)
@@ -41,7 +57,13 @@ export async function deductBalanceUsed(customerId: string, amountUsed: number) 
 }
 
 // Main function to create a PaymentIntent and an Invoice
-export async function handlePaymentAndInvoice(customerId: string | null, paymentAmount: number, description: string, lineItems: CartItem[], orderId: string) {
+export async function handlePaymentAndInvoice(
+  customerId: string | null,
+  paymentAmount: number,
+  description: string,
+  lineItems: CartItem[],
+  orderId: string
+) {
   try {
     if (customerId) {
       //  Create and finalize the invoice
@@ -63,10 +85,14 @@ export async function handlePaymentAndInvoice(customerId: string | null, payment
           currency: "gbp",
           description: `${item.product.name} ${item.price?.info} (x${item.quantity})`
         });
-        console.warn(`${item.product.name} ${item.price?.info} (x${item.quantity})`);
+        console.warn(
+          `${item.product.name} ${item.price?.info} (x${item.quantity})`
+        );
       }
 
-      const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+      const finalizedInvoice = await stripe.invoices.finalizeInvoice(
+        invoice.id
+      );
       console.warn("Invoice url", finalizedInvoice.hosted_invoice_url);
 
       const paymentIntent = await stripe.paymentIntents.create({
