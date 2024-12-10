@@ -65,7 +65,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
             {actionData?.error && <div className="text-error">{actionData.error}</div>}
             <Form method="post" encType="multipart/form-data" className="flex flex-col justify-center items-center gap-3 max-w-xl mx-auto">
                 <input type="file" className="file-input file-input-bordered file-input-primary w-full max-w-xs mb-4" name="image" />
-                {navigation.state !== "submitting" && <div className="text-center  mb-4"> <span className="mx-auto loading loading-spinner text-primary"></span></div>}
+                {navigation.state === "submitting" && <span className="mx-auto loading loading-spinner text-primary mb-3"></span>}
                 <button type="submit" className="btn btn-primary btn-sm" disabled={navigation.state === "submitting"}>Submit</button>
             </Form>
         </main>
