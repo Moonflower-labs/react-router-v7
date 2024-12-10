@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Component({ loaderData }: Route.ComponentProps) {
     const cld = new Cloudinary({
         cloud: {
-            cloudName: "dgnlwmr2q",
+            cloudName: loaderData?.cloudName,
         },
         url: { secure: true }
     });
