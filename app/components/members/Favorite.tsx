@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { useFetcher } from "react-router";
 import type { Post } from "~/models/post.server";

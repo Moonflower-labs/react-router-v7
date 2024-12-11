@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { useRef, useEffect, useState } from "react";
 import { FaRegCommentAlt, FaReply } from "react-icons/fa";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { formatDate } from "~/utils/format";
 import type { User } from "~/models/user.server";
 import type { Comment, Reply } from "~/models/post.server";

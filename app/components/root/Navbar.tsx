@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { CgMenuBoxed } from "react-icons/cg";
 
 export function Navbar() {

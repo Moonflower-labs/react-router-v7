@@ -2,7 +2,7 @@ import { AiOutlineUser } from "react-icons/ai";
 import { Form, Link, useFetcher, useRouteLoaderData, useSubmit } from "react-router";
 import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { CgShoppingCart } from "react-icons/cg";
 import type { User } from "~/models/user.server";
 import { LogoutBtn } from "./LogoutBtn";

@@ -4,7 +4,7 @@ import { BsFilterCircle } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import type { Category } from "@prisma/client";
 import { MultiSelect } from "../shared/multi-select";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 
 export const FilterComponent = React.memo(() => {
   const { q, categories } = (useLoaderData() as { q: string | null; categories: Category[] }) || { q: null };

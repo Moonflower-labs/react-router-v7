@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useFetcher } from "react-router";

@@ -2,7 +2,7 @@ import { Link, type MetaFunction } from "react-router";
 import type { Route } from "./+types/index";
 import { getUserId } from "~/utils/session.server";
 import { createReview, getReviews } from "~/models/review.server";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import logo from "./logo.svg"
 import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
