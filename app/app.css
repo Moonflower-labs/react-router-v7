@@ -25,6 +25,10 @@ body {
   font-style: normal;
 }
 
+.full-image {
+  view-transition-name: full-image;
+}
+
 /* html,
 body {
   @apply bg-white dark:bg-gray-950;
