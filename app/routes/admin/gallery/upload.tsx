@@ -1,15 +1,17 @@
-import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
+import { type FileUpload, parseFormData, } from "@mjackson/form-data-parser";
 import type { Route } from "./+types/upload";
 import { redirect, useNavigation, useSubmit, type SubmitOptions } from "react-router";
 import { uploadImage } from "~/integrations/cloudinary/service.server";
+import { MultipartParseError } from "@mjackson/multipart-parser";
+import { toast } from "react-toastify";
 
-
+const MAX_FILE_SIZE = 3000000; // 3MB
 
 export async function action({ request }: Route.ActionArgs) {
-
     const url = new URL(request.url)
     const searchparams = url.searchParams
     const imgName = searchparams.get("name") as string
+
     const uploadHandler = async (fileUpload: FileUpload) => {
         if (fileUpload.fieldName === "image") {
             // process the upload and return a File
@@ -32,7 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
             request,
             uploadHandler,
             {
-                maxFileSize: 3000000, // 3MB
+                maxFileSize: MAX_FILE_SIZE
             }
         );
         // 'image' has already been processed at this point
@@ -45,6 +47,9 @@ export async function action({ request }: Route.ActionArgs) {
 
     } catch (error) {
         console.log(error)
+        if (error instanceof MultipartParseError) {
+            return { error: "Upload  Exeeded max file size" }
+        }
         return { error: "Upload  unsuccessfull" }
     }
     throw redirect("/admin/gallery")
@@ -53,6 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Component({ actionData }: Route.ComponentProps) {
     const navigation = useNavigation()
     const submit = useSubmit()
+
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -68,12 +74,20 @@ export default function Component({ actionData }: Route.ComponentProps) {
         }
         submit(formData, options)
     }
+    // Validate file size on client side
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.size > MAX_FILE_SIZE) {
+            toast.error("El archivo sobrepasa el límite de 3MB!")
+            e.target.value = ""
+        }
+    }
 
     return (
         <main>
             <h1 className="text-3xl text-center font-semibold text-primary pt-4 mb-4">Upload Image</h1>
             <form method="post" onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col justify-center items-center gap-3 max-w-xl mx-auto mb-4">
-                <input type="file" className="file-input file-input-bordered file-input-primary w-full max-w-xs mb-4" name="image" accept="image/*" />
+                <input type="file" onChange={handleFileChange} className="file-input file-input-bordered file-input-primary w-full max-w-xs mb-4" name="image" accept="image/*" />
                 <input type="text" className="input input-bordered input-primary w-full max-w-xs mb-4" name="name" placeholder="Nombre" />
                 {navigation.state === "submitting" && <span className="mx-auto loading loading-spinner text-primary mb-3"></span>}
                 {actionData?.error && <div className="text-error">{actionData.error}</div>}
