@@ -20,7 +20,7 @@ export async function action({ request }: Route.ActionArgs) {
 
             } catch (error) {
                 console.log(error);
-                return;
+                return null;
             };
         }
     };
