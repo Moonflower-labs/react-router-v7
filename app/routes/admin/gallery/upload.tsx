@@ -15,6 +15,9 @@ export async function action({ request }: Route.ActionArgs) {
             // process the upload and return a File
             // upload to cloudinary
             try {
+                if (fileUpload.size > 3000000) {
+                    throw new Error("File is too large")
+                }
                 const uploadedImage = await uploadImage(fileUpload.stream(), imgName)
                 return uploadedImage.secure_url;
 
