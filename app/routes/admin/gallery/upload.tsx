@@ -70,7 +70,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
 
     return (
         <main>
-            <h1 className="text-3xl text-center font-semibold text-primary mb-4">Upload Image</h1>
+            <h1 className="text-3xl text-center font-semibold text-primary pt-4 mb-4">Upload Image</h1>
             <form method="post" onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col justify-center items-center gap-3 max-w-xl mx-auto mb-4">
                 <input type="file" className="file-input file-input-bordered file-input-primary w-full max-w-xs mb-4" name="image" accept="image/*" />
                 <input type="text" className="input input-bordered input-primary w-full max-w-xs mb-4" name="name" placeholder="Nombre" />
