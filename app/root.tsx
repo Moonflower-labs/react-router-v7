@@ -72,7 +72,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Header />
         {children}
         <Footer />
-        <ScrollRestoration />
+        <ScrollRestoration
+          getKey={(location, _matches) => {
+            const paths = ["/gallery", "/personality", "/soul", "/spirit"];
+            return paths.includes(location.pathname)
+              ? //  restore by pathname
+              location.pathname
+              : // everything else by location like the browser
+              location.key;
+          }} />
         <Scripts />
       </body>
     </html>
