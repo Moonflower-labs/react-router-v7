@@ -16,7 +16,7 @@ export async function uploadImage(
 ): Promise<any> {
   const uploadPromise = new Promise(async (resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: "remixImages", public_id: publicId },
+      { folder: "susurros", public_id: publicId },
       (error, result) => {
         if (error) {
           reject(error);

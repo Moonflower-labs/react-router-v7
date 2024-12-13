@@ -12,6 +12,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 
 export default function Gallery({ loaderData }: Route.ComponentProps) {
+
+
     return (
 
         <main className="text-center min-h-screen p-4">
@@ -34,16 +36,21 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
                             viewTransition
                             className={"w-fit mx-auto"}>
                             {({ isTransitioning }) => (
-                                <img
-                                    src={image.url}
-                                    alt={image.resource_type}
-                                    className="gallery-item h-32 aspect-auto m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500"
-                                    style={{
-                                        viewTransitionName: isTransitioning
-                                            ? "full-image"
-                                            : "none",
-                                    }}
-                                />)}
+                                <>
+                                    <img
+                                        src={image.url}
+                                        alt={image.resource_type}
+                                        className={`gallery-item h-32 aspect-auto m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500`}
+                                        style={{
+                                            viewTransitionName: isTransitioning
+                                                ? "full-image"
+                                                : "none",
+                                        }}
+                                    />
+                                    <p className='font-semibold mt-2'>{image.display_name}</p>
+                                </>
+                            )}
+
                         </NavLink>
                     ))}
                 </div>
