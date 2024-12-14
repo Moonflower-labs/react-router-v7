@@ -47,7 +47,7 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
                                                 : "none",
                                         }}
                                     />
-                                    <p className='font-semibold mt-2'>{image.display_name}</p>
+                                    <p className='font-semibold mt-2'>{image.display_name?.toString().replaceAll("-", " ")}</p>
                                 </>
                             )}
 
