@@ -40,7 +40,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <main className="text-center">
             <h1 className="text-primary text-3xl font-semibold mb-4 pt-4">Galería</h1>
             <div className="grid gap-3 justify-center items-start grid-cols-2 lg:grid-cols-3 mb-4">
-                <Link to={"upload"} viewTransition className="flex flex-col justify-center items-center gap-4 rounded outline-dashed outline-lime-500 aspect-square w-4/5 p-4 mx-auto">
+                <Link to={"upload"} viewTransition className="flex flex-col justify-center items-center gap-4 rounded outline-dashed outline-base-300 aspect-square w-4/5 p-4 mx-auto">
                     <BiUpload size={28} />
                     <p>Upload images</p>
                 </Link>
