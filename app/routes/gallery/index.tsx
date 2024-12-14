@@ -40,7 +40,7 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
                                     <img
                                         src={image.url}
                                         alt={image.resource_type}
-                                        className={`gallery-item w-full aspect-square m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500`}
+                                        className={`gallery-item w-full aspect-square object-cover object-top m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500`}
                                         style={{
                                             viewTransitionName: isTransitioning
                                                 ? "full-image"
