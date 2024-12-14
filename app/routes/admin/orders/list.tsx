@@ -4,7 +4,7 @@ import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { deleteOrder, fetchOrders, updateOrderStatus } from "~/models/order.server";
+import { deleteOrder, fetchOrders, getOrderCount, updateOrderStatus } from "~/models/order.server";
 import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 
@@ -15,9 +15,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   // const page = Number((url.searchParams.get('page')) || 1);
   // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 
-  const orders = await fetchOrders();
+  const [orders, pendingOrderCount] = await Promise.all([
+    fetchOrders(), await getOrderCount("Pending")
+  ])
 
-  return { orders, q: title };
+  return { orders, q: title, pendingOrderCount };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -103,7 +105,8 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
 
   return (
     <div>
-      <h2 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h2>
+      <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h1>
+      <p className="mb-3">Pedidos pendientes <span className="badge badge-primary">{loaderData?.pendingOrderCount}</span></p>
       {orders?.length ? (
         orders.map((order, index) => (
           <div
@@ -125,7 +128,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
                 <FaEye size={24} />
               </Link>
               <Form method="put">
-                <input type="hidden" name="status" value={order.status === "complete" ? "incomplete" : "complete"} />
+                <input type="hidden" name="status" value={order.status === "complete" ? "Pending" : "complete"} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-accent">
                   <FaCheck />
                 </button>

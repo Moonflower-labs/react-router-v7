@@ -50,7 +50,6 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
               <span>
                 {index + 1}. {product.name}{" "}
               </span>
-              <span className="me-5">{formatDate(product.createdAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
               <Link to={`${product.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>

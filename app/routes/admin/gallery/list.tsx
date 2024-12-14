@@ -3,8 +3,8 @@ import type { Route } from "./+types/list";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Form, Link } from "react-router";
-import { IoMdAdd } from "react-icons/io";
 import { ImBin } from "react-icons/im";
+import { BiUpload } from "react-icons/bi";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const images = await cloudinary.api.resources({
@@ -39,20 +39,22 @@ export default function Component({ loaderData }: Route.ComponentProps) {
     return (
         <main className="text-center">
             <h1 className="text-primary text-3xl font-semibold mb-4 pt-4">Galería</h1>
-            <div className="grid gap-3 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
+            <div className="grid gap-3 justify-center items-start grid-cols-2 lg:grid-cols-3 mb-4">
+                <Link to={"upload"} viewTransition className="flex flex-col justify-center items-center gap-4 rounded outline-dashed outline-lime-500 aspect-square w-4/5 p-4 mx-auto">
+                    <BiUpload size={28} />
+                    <p>Upload images</p>
+                </Link>
+
                 {loaderData?.images?.length > 0 ?
                     loaderData.images.map((image: any) =>
-                        <div key={image.url} className="flex flex-col justify-center items-center gap-4">
-                            <img src={image.secure_url} alt={image?.display_name} className="w-32 m-auto rounded" />
-                            <p>{image.display_name}</p>
-                            <div className="flex gap-3 justify-center items-center">
-                                <Link to={"upload"} className="btn btn-xs btn-outline btn-success" viewTransition>
-                                    <IoMdAdd size={24} />
-                                </Link>
+                        <div key={image.url} className="flex flex-col justify-start items-center gap-2">
+                            <img src={image.secure_url} alt={image?.display_name} className="w-4/5 m-auto aspect-square rounded" />
+                            <div className="flex gap-3 justify-between items-center">
+                                <p>{image.display_name}</p>
                                 <Form method="post" className="flex justify-center items-center">
                                     <button
                                         type="submit"
-                                        name="imageId" value={image.public_id} className=" btn btn-xs btn-outline btn-error m-auto justify-self-center">
+                                        name="imageId" value={image.public_id} className="text-error cursor-pointer m-auto justify-self-center">
                                         <ImBin size={20} />
                                     </button>
                                 </Form>
@@ -60,10 +62,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                         </div>
                         // <AdvancedImage key={image.url} cldImg={cld.image(image?.public_id)} />
                     ) : (
-                        <p className="col-span-full flex flex-col gap-4">
-                            <span> No hay imágenes que mostrar.</span>
-                            <Link to={"upload"} className="link link-primary">Upload</Link>
-                        </p>
+                        <span> No hay imágenes que mostrar.</span>
                     )}
             </div>
         </main>

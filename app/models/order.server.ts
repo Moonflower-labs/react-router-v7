@@ -79,6 +79,10 @@ export async function fetchOrders(status?: string) {
   return prisma.order.findMany({ where: { status } });
 }
 
+export async function getOrderCount(status?: string) {
+  return prisma.order.count({ where: { status } });
+}
+
 export async function fetchOrder(id: string) {
   return prisma.order.findUnique({
     where: { id },
