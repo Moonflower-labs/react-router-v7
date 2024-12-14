@@ -60,7 +60,10 @@ export default [
     route("spirit", "routes/members/spirit/index.tsx"),
     route("spirit/video/:id", "routes/members/spirit/detail.tsx"),
     route("spirit/question", "routes/members/spirit/question.tsx"),
-    route("spirit/live", "routes/members/spirit/live.tsx")
+    route("spirit/live", "routes/members/spirit/live.tsx"),
+    route("spirit/live/chat", "routes/chat/index.tsx"),
+    // Live Stream Chat
+    route("spirit/live/chat/stream", "routes/chat/stream.tsx")
   ]),
 
   // API Routes
@@ -72,6 +75,7 @@ export default [
     route("/subscription", "routes/api/subscription.tsx"),
     route("/webhook", "routes/api/webhooks.tsx")
   ]),
+
   // Add the admin routes
   ...adminRoutes
 ] satisfies RouteConfig;

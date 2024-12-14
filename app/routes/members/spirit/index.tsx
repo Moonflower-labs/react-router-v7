@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import type { Route } from "./+types/index";
 import { fetchVideos, type Video } from "~/models/video.server";
 import VideoListCard from "~/components/members/VideoListCard";
@@ -9,7 +8,7 @@ import { fetchCategories } from "~/models/category.server";
 
 
 export const handle = {
-  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }, { to: "/spirit/live/chat", name: "Live Chat" }]
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

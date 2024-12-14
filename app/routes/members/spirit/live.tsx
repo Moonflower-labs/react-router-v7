@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 
 export const handle = {
-  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }]
+  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }, { to: "/spirit/live/chat", name: "Live Chat" }]
 }
 
 export default function LiveSessions() {

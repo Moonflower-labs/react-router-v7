@@ -36,6 +36,8 @@ model User {
 
 
   ResetToken ResetToken[]
+
+  Message Message[]
 }
 
 model Password {
@@ -346,4 +348,11 @@ model Video {
   likes      Like[]
   favorites  Favorite[]
   rating     Rating[]
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now())
+  user User[]
 }
