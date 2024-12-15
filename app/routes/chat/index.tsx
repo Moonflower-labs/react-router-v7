@@ -112,7 +112,7 @@ function Message({ text }: { text: string }) {
                 Anonymous user
                 <time className="text-xs opacity-50"> 12:45</time>
             </div>
-            <div className="chat-bubble ">{text}</div>
+            <div className="chat-bubble chat-bubble-primary">{text}</div>
         </div>
     );
 }
