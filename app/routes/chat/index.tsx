@@ -60,7 +60,7 @@ export default function Index({ actionData }: Route.ComponentProps) {
             <div className="text-center p-8 text-primary text-4xl  font-semibold">
                 Live Chat
             </div>
-            <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto text-2xl border rounded-lg mb-16">
+            <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                 {messages.map(({ id, message }: { id: string, message: string }) => (
                     <Message key={id} text={message} />
                 ))}
@@ -100,7 +100,7 @@ function Message({ text }: { text: string }) {
 
 
     return (
-        <div className="w-full p-3 chat chat-start" ref={ref}>
+        <div className="w-full p-3 chat odd:chat-end chat-start" ref={ref}>
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img
