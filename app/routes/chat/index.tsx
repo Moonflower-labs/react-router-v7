@@ -19,13 +19,13 @@ export async function action({ request }: Route.ActionArgs) {
         throw new Error("you messed up, it's not my fault");
     }
 
-    await prisma.message.create({
+    const msg = await prisma.message.create({
         data: {
             message,
         },
     });
 
-    emitter.emit("chat");
+    emitter.emit("chat", msg);
 
     return { success: true };
 }
@@ -46,13 +46,14 @@ export async function loader() {
 
 export default function Index({ actionData }: Route.ComponentProps) {
     const { messages } = useLiveLoader<typeof loader>();
+
     const formRef = useCallback((node: HTMLFormElement | null) => {
         if (node && actionData?.success) {
             node.reset();
         }
     }, [actionData]);
 
-
+    // console.log(messages)
 
     return (
         <div className="h-screen flex flex-col px-2">
