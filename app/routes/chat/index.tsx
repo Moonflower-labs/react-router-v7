@@ -100,7 +100,7 @@ function Message({ text }: { text: string }) {
 
 
     return (
-        <div className="w-full p-3 chat odd:chat-end chat-start" ref={ref}>
+        <div className="w-full p-3 chat even:chat-start odd:chat-end" ref={ref}>
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img
