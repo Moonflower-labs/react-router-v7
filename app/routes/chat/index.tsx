@@ -94,13 +94,13 @@ export default function Index({ actionData }: Route.ComponentProps) {
 function Message({ text }: { text: string }) {
     const ref = useCallback((node: HTMLDivElement | null) => {
         if (node) {
-            node?.focus();
+            node.scrollIntoView({ behavior: "smooth" });
         }
     }, []);
 
 
     return (
-        <div className="w-full p-3 odd:bg-primary/15 focus:outline-none chat chat-start" ref={ref} tabIndex={-1}>
+        <div className="w-full p-3 chat chat-start" ref={ref}>
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img
@@ -112,7 +112,7 @@ function Message({ text }: { text: string }) {
                 Anonymous user
                 <time className="text-xs opacity-50"> 12:45</time>
             </div>
-            <div className="chat-bubble">{text}</div>
+            <div className="chat-bubble ">{text}</div>
         </div>
     );
 }
