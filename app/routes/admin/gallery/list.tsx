@@ -50,7 +50,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                         <div key={image.url} className="flex flex-col justify-start items-center gap-2">
                             <img src={image.secure_url} alt={image?.display_name} className="w-4/5 m-auto aspect-square object-cover rounded" />
                             <div className="flex gap-3 justify-between items-center">
-                                <p>{image.display_name}</p>
+                                <p>{image.display_name.toString().replaceAll("-", " ")}</p>
                                 <Form method="post" className="flex justify-center items-center">
                                     <button
                                         type="submit"
