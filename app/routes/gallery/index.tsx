@@ -28,7 +28,7 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
                 )}
             </div> */}
             <div className="gallery">
-                <div className="gallery grid gap-3 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
+                <div className="gallery grid gap-3 justify-center items-start grid-cols-2 lg:grid-cols-3 mb-4">
                     {loaderData?.images.map((image: any) => (
                         <NavLink
                             key={image.public_id}
