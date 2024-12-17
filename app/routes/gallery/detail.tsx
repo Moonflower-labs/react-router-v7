@@ -23,7 +23,7 @@ export default function ImagePage({ loaderData }: Route.ComponentProps) {
                     alt={image.alt}
                     className="full-image object-contain rounded"
                 />
-                <p className='font-semibold mt-2'>{image.display_name}</p>
+                <p className='font-semibold mt-2'>{image.display_name.toString().replaceAll("-", " ")}</p>
             </div>
         </main>
     );
