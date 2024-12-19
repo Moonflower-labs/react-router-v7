@@ -83,7 +83,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
   return (
     <section className="flex flex-col justify-center mb-6">
       <div
-        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto mb-8 align-middle bg-neutral-content/40 overflow-x-hidden overflow-y-auto"
+        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-neutral-content/40 overflow-x-hidden overflow-y-auto"
         onTouchStart={handleTouchStart} // Set up touch start event
         onTouchEnd={handleTouchEnd} // Set up touch end event
       >
