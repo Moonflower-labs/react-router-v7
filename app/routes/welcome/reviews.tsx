@@ -73,6 +73,21 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
     }
   };
 
+  const variants = {
+    initial: (direction: 'left' | 'right') => ({
+      x: direction === 'left' ? 700 : -700,
+      opacity: 0
+    }),
+    animate: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: 'left' | 'right') => ({
+      x: direction === 'left' ? -700 : 700,
+      opacity: 0
+    })
+  };
+
   return (
     <section className="flex flex-col justify-center mb-6">
       <h2 className="font-semibold text-center text-3xl text-primary mb-4">Opiniones</h2>
@@ -81,18 +96,19 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
         onTouchStart={handleTouchStart} // Set up touch start event
         onTouchEnd={handleTouchEnd} // Set up touch end event
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={slideDirection}>
           {reviews?.length > 0 ? (
             reviews.map((slide, index) => (
               activeSlide === index ?
                 <motion.div
                   key={slide.id}
-                  className={`w-full h-full flex flex-col justify-center items-center`}
-                  initial={{ x: slideDirection === 'left' ? 700 : -700, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
+                  custom={slideDirection}
+                  variants={variants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                   transition={{ duration: 0.6 }}
-                  exit={{ x: slideDirection === 'right' ? 700 : -700 }}
-
+                  className={`w-full h-full flex flex-col justify-center items-center`}
                 >
                   <div className="rating pt-4 flex justify-center">{renderStars(slide.score)}</div>
                   <div className="w-full p-8 text-center">{slide.text}</div>
