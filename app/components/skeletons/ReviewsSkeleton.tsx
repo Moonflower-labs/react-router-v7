@@ -1,7 +1,7 @@
 const ReviewsSkeleton = () => {
   return (
-    <div className="w-full text-center">
-      <div className="carousel w-full lg:w-[70%] border rounded-lg shadow-lg mx-auto mb-8 px-8 py-4">
+    <div className="w-full h-60 text-center">
+      <div className="carousel w-full bg-primary-content/25 lg:w-[70%] border rounded-lg shadow-lg mx-auto mb-8 px-8 py-4">
         <div className="carousel-item relative w-full flex-col items-center text-start">
           <div className="skeleton h-4 w-28 mb-3"></div>
           <div className="skeleton h-4 w-full mb-3"></div>
