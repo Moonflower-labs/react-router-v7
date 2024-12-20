@@ -12,7 +12,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         prefix: "susurros/",
         max_results: 10
     })
-    console.log(images.resources[0])
+
     return { images: images.resources, cloudName: process.env.CLOUD_NAME }
 }
 
