@@ -11,12 +11,11 @@ cloudinary.config({
 export default cloudinary;
 
 export async function uploadImage(
-  data: ReadableStream<Uint8Array>,
-  publicId: string | undefined
+  data: ReadableStream<Uint8Array>
 ): Promise<any> {
   const uploadPromise = new Promise(async (resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: "susurros", public_id: publicId },
+      { folder: "susurros" },
       (error, result) => {
         if (error) {
           reject(error);

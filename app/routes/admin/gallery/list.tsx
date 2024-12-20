@@ -49,16 +49,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                     loaderData.images.map((image: any) =>
                         <div key={image.url} className="flex flex-col justify-start items-center gap-2">
                             <img src={image.secure_url} alt={image?.display_name} className="w-4/5 m-auto aspect-square object-cover rounded" />
-                            <div className="flex gap-3 justify-between items-center">
-                                <p>{image.display_name.toString().replaceAll("-", " ")}</p>
-                                <Form method="post" className="flex justify-center items-center">
-                                    <button
-                                        type="submit"
-                                        name="imageId" value={image.public_id} className="text-error cursor-pointer m-auto justify-self-center">
-                                        <ImBin size={20} />
-                                    </button>
-                                </Form>
-                            </div>
+                            <Form method="post">
+                                <button
+                                    type="submit"
+                                    name="imageId" value={image.public_id} className="flex gap-3 justify-center items-center text-error/80 cursor-pointer m-auto py-2 hover:text-error">
+                                    <ImBin size={24} />
+                                </button>
+                            </Form>
                         </div>
                         // <AdvancedImage key={image.url} cldImg={cld.image(image?.public_id)} />
                     ) : (

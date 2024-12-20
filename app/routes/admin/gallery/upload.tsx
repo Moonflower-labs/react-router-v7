@@ -1,6 +1,6 @@
 import { type FileUpload, parseFormData, } from "@mjackson/form-data-parser";
 import type { Route } from "./+types/upload";
-import { redirect, useNavigation, useSubmit, type SubmitOptions } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
 import { uploadImage } from "~/integrations/cloudinary/service.server";
 import { MultipartParseError } from "@mjackson/multipart-parser";
 import { toast } from "react-toastify";
@@ -10,17 +10,13 @@ import { BiUpload } from "react-icons/bi";
 const MAX_FILE_SIZE = 3000000; // 3MB
 
 export async function action({ request }: Route.ActionArgs) {
-    const url = new URL(request.url)
-    const searchparams = url.searchParams
-    const imgName = searchparams.get("name") as string
 
     const uploadHandler = async (fileUpload: FileUpload) => {
         if (fileUpload.fieldName === "image") {
             // process the upload and return a File
             // upload to cloudinary
             try {
-
-                const uploadedImage = await uploadImage(fileUpload.stream(), imgName)
+                const uploadedImage = await uploadImage(fileUpload.stream())
                 return uploadedImage.secure_url;
 
             } catch (error) {
@@ -41,11 +37,10 @@ export async function action({ request }: Route.ActionArgs) {
         );
         // 'image' has already been processed at this point
         const imgSource = formData.get("image");
-        const imgDescription = formData.get("name");
         if (!imgSource) {
             return { error: "something is wrong", };
         }
-        return { imgSource, imgDescription }
+        return { imgSource }
 
     } catch (error) {
         console.log(error)
@@ -66,7 +61,6 @@ export default function Component({ actionData }: Route.ComponentProps) {
             {actionData?.imgSource && (
                 <section className="w-full flex flex-col gap-3 justify-center items-center mb-4">
                     <h2>Uploaded Image: </h2>
-                    <p>{actionData?.imgDescription?.toString()}</p>
                     <img src={actionData?.imgSource as string} alt={"Upload result"} className="w-52 aspect-square mx-auto rounded" />
                 </section>
             )}
@@ -78,24 +72,9 @@ export default function Component({ actionData }: Route.ComponentProps) {
 function UploadForm({ error }: { error: string | undefined }) {
     const navigation = useNavigation();
     const [dragActive, setDragActive] = useState(false);
-    const submit = useSubmit()
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isDraggingOutside, setIsDraggingOutside] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const params = new URLSearchParams();
-        const name = formData.get('name')
-        params.set("name", name?.toString().replaceAll(" ", "-") as string)
-
-        const options: SubmitOptions = {
-            action: `/admin/gallery/upload?${params}`,
-            method: "post",
-            encType: "multipart/form-data"
-        }
-        submit(formData, options)
-    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -108,6 +87,7 @@ function UploadForm({ error }: { error: string | undefined }) {
             setSelectedFile(e.target.files[0]);
         }
     };
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setDragActive(false);
@@ -160,9 +140,8 @@ function UploadForm({ error }: { error: string | undefined }) {
     }, []);
 
     return (
-        <form
+        <Form
             method="post"
-            onSubmit={handleSubmit}
             encType="multipart/form-data"
             className="max-w-xl mx-auto mb-4"
             onDragOver={(e) => {
@@ -201,16 +180,6 @@ function UploadForm({ error }: { error: string | undefined }) {
                 </p>
             )}
 
-            {/* Name input appears after file selection */}
-            {selectedFile && (
-                <input
-                    type="text"
-                    className="input input-bordered input-primary w-full max-w-xs mx-auto mt-4 block"
-                    name="name"
-                    placeholder="Nombre"
-                />
-            )}
-
             {/* Loading and error states */}
             {navigation.state === "submitting" && (
                 <span className="mx-auto loading loading-spinner text-primary mt-3 block"></span>
@@ -230,6 +199,6 @@ function UploadForm({ error }: { error: string | undefined }) {
                     Submit
                 </button>
             )}
-        </form>
+        </Form>
     );
 }
