@@ -36,7 +36,7 @@ export function Header() {
             <div tabIndex={0} role="button" className={`${isHomePage ? "text-primary hover:bg-base-200" : "hover:bg-primary/80"} cursor-pointer opacity-90 hover:opacity-100 p-2 rounded-full transition-all`}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={`menu menu-sm dropdown-content mt-3 z-[1]  ${!isHomePage ? "p-2 bg-primary/90 rounded-box w-52" : ""}`}>
+            <ul tabIndex={0} className={`menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 ${!isHomePage ? "p-2 bg-primary/90" : "p-2 bg-base-100/90"}`}>
               {user ? (
                 <>
                   <li onClick={handleDropdown}>
