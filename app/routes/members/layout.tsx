@@ -18,19 +18,19 @@ export default function MembersLayout() {
       <div
         role="navigation"
         data-testid="members-layout"
-        className="bg-base-100 flex flex-col gap-1 py-1 justify-center sticky top-[72px] z-50 md:w-fit rounded-lg md:bg-transparent mx-auto">
-        <div className="grid grid-cols-3 gap-1 w-full max-w-3xl bg-base-100 rounded-md">
+        className="bg-base-100 flex flex-col gap-1 justify-center sticky top-[72px] z-50 md:w-fit rounded-lg bg-transparent mx-auto pb-5">
+        <div className="grid grid-cols-3 gap-1 w-full max-w-3xl px-2">
           <NavLink
             to={"/members/personality"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 rounded-lg p-2 shadow-md ${isActive ? "bg-primary text-primary-content" : "bg-base-100"} transition-all ease-out duration-200`
             }
             // preventScrollReset={true}
             viewTransition
           >
             <div className="avatar">
-              <div className="w-8 rounded">
+              <div className="w-6 rounded">
                 <img src={personalityImg} />
               </div>
             </div>
@@ -40,13 +40,13 @@ export default function MembersLayout() {
             to={"/members/soul"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 rounded-lg p-2 shadow-md ${isActive ? "bg-primary text-primary-content" : "bg-base-100"} transition-all ease-out duration-200`
             }
             // preventScrollReset={true}
             viewTransition
           >
             <div className="avatar">
-              <div className="w-8 rounded">
+              <div className="w-6 rounded">
                 <img src={soulImg} />
               </div>
             </div>
@@ -56,13 +56,13 @@ export default function MembersLayout() {
             to={"/members/spirit"}
             role="tab"
             className={({ isActive }) =>
-              `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
+              `flex flex-row justify-center items-center gap-1 rounded-lg p-2 shadow-md ${isActive ? "bg-primary text-primary-content" : "bg-base-100"} transition-all ease-out duration-200`
             }
             // preventScrollReset={true}
             viewTransition
           >
-            <div className=" avatar">
-              <div className="w-8 rounded">
+            <div className="avatar">
+              <div className="w-6 rounded">
                 <img src={spiritImg} />
               </div>
             </div>
