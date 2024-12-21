@@ -29,7 +29,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[200] w-screen bg-base-100">
-      <div className={`navbar bg-gradient-to-r ${!isHomePage ? "from-primary/80 via-primary/70 to-secondary/80" : ""} text-primary-content/75`}>
+      <div className={`navbar bg-gradient-to-r ${!isHomePage ? "from-primary/80 via-primary/70 to-secondary/80 text-primary-content/75" : ""}`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
