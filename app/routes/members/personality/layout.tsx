@@ -7,7 +7,7 @@ export default function Layout() {
 
     return (
         <>
-            <div className='flex gap-2 justify-center items-center sticky top-[120px]  pt-3'>
+            <div className='flex flex-wrap gap-2 justify-center items-center sticky top-[120px]  pt-3'>
                 {links.map((link: any, index) => (
                     <div key={index} className="flex flex-wrap gap-4 justify-center items-center">
                         <Link key={link.to} to={link.to}
