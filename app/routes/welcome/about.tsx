@@ -9,7 +9,7 @@ import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import ReviewsSection from "./reviews";
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: "La Flor Blanca: Home" }, { name: "description", content: "Health and wellbeing" }];
+  return [{ title: "La Flor Blanca: About" }, { name: "description", content: "Health and wellbeing" }];
 };
 
 export async function loader({ }: Route.LoaderArgs) {
