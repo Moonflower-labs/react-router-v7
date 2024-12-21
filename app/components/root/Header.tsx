@@ -1,5 +1,5 @@
 import { AiOutlineUser } from "react-icons/ai";
-import { Form, Link, useFetcher, useRouteLoaderData, useSubmit } from "react-router";
+import { Form, Link, useFetcher, useLocation, useRouteLoaderData, useSubmit } from "react-router";
 import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -10,6 +10,8 @@ import { Navbar } from "./Navbar";
 import logo from "./logo.svg"
 
 export function Header() {
+  const { pathname } = useLocation()
+  const isHomePage = pathname === "/"
   const user = useRouteLoaderData("root")?.user as User;
   const theme = useRouteLoaderData("root")?.theme as string;
   const totalItemCount = useRouteLoaderData("root")?.totalItemCount;
@@ -27,7 +29,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[200] w-screen bg-base-100">
-      <div className="navbar bg-gradient-to-r from-primary/80 via-primary/70 to-secondary/80 text-primary-content/75">
+      <div className={`navbar bg-gradient-to-r ${!isHomePage ? "from-primary/80 via-primary/70 to-secondary/80" : ""} text-primary-content/75`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
@@ -73,7 +75,7 @@ export function Header() {
             </ul>
           </div>
         </div>
-        <div className="navbar-center md:flex-row gap-2">
+        {!isHomePage ? <div className="navbar-center md:flex-row gap-2">
           <Link to={"/"} onClick={handleDropdown} className="btn btn-ghost text-2xl" viewTransition>
             <span className="hidden md:block me-2">La Flor Blanca</span>
             <div className="avatar">
@@ -86,7 +88,7 @@ export function Header() {
             <span data-testid="username">{user?.username}</span>
           </div>
           <ShoppingCartIcon count={optimisticCount} />
-        </div>
+        </div> : null}
         <div className="navbar-end">
           <div className="hidden dropdown dropdown-end dropdown-bottom">
             <div tabIndex={0} className="m-1 btn btn-ghost flex flex-col">
