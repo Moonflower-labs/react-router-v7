@@ -47,8 +47,8 @@ export default function Welcome({ }: Route.ComponentProps) {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.6,
-                duration: 1.5,
+                staggerChildren: 0.3,
+                duration: 0.6,
                 ease: "easeOut"
             }
         }
@@ -61,7 +61,7 @@ export default function Welcome({ }: Route.ComponentProps) {
             y: 0,
             opacity: 1,
             transition: {
-                duration: 2,
+                duration: 0.8,
                 type: "spring",
                 bounce: 0.2,
                 damping: 20
