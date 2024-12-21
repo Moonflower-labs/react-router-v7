@@ -2,7 +2,7 @@ import cloudinary from "~/integrations/cloudinary/service.server";
 import type { Route } from "./+types/list";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { fill } from "@cloudinary/url-gen/actions/resize";
-import { Form, Link } from "react-router";
+import { Form, Link, useNavigation } from "react-router";
 import { ImBin } from "react-icons/im";
 import { BiUpload } from "react-icons/bi";
 
@@ -28,6 +28,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 
 export default function Component({ loaderData }: Route.ComponentProps) {
+    const navigation = useNavigation()
+
     const cld = new Cloudinary({
         cloud: {
             cloudName: loaderData?.cloudName,
@@ -52,7 +54,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                             <Form method="post">
                                 <button
                                     type="submit"
-                                    name="imageId" value={image.public_id} className="flex gap-3 justify-center items-center text-error/80 cursor-pointer m-auto py-2 hover:text-error">
+                                    name="imageId"
+                                    value={image.public_id}
+                                    disabled={navigation.state === "submitting"}
+                                    className="flex gap-3 justify-center items-center text-error/80 cursor-pointer m-auto py-2 hover:text-error">
                                     <ImBin size={24} />
                                 </button>
                             </Form>
