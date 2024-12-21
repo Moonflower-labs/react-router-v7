@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client/default.js";
 export type { Prisma } from "@prisma/client";
 
 let prisma: PrismaClient;
