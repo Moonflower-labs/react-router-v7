@@ -1,4 +1,4 @@
-import { Link, type MetaFunction } from "react-router";
+import { Link } from "react-router";
 import type { Route } from "./+types/index";
 import { getUserId } from "~/utils/session.server";
 import { createReview, getReviews } from "~/models/review.server";
@@ -8,7 +8,7 @@ import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
     return [{ title: "La Flor Blanca: Home" }, { name: "description", content: "Health and wellbeing" }];
 };
 
