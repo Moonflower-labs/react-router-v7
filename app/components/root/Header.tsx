@@ -29,11 +29,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[200] w-screen bg-base-100">
-      <div className={`navbar bg-gradient-to-r ${!isHomePage ? "from-primary/80 via-primary/70 to-secondary/80 text-primary-content/75" : ""}`}>
+      <div className={`navbar shadow-md ${!isHomePage ? "bg-gradient-to-r from-primary/80 via-primary/70 to-secondary/80 text-primary-content/75" : ""}`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+            <div tabIndex={0} role="button" className={`${isHomePage ? "text-primary hover:bg-base-200" : "hover:bg-primary/80"} cursor-pointer opacity-90 hover:opacity-100 p-2 rounded-full transition-all`}>
               <AiOutlineUser size={26} />
             </div>
             <ul tabIndex={0} className={`menu menu-sm dropdown-content mt-3 z-[1]  ${!isHomePage ? "p-2 bg-primary/90 rounded-box w-52" : ""}`}>
@@ -75,20 +75,24 @@ export function Header() {
             </ul>
           </div>
         </div>
-        {!isHomePage ? <div className="navbar-center md:flex-row gap-2">
-          <Link to={"/"} onClick={handleDropdown} className="btn btn-ghost text-2xl" viewTransition>
-            <span className="hidden md:block me-2">La Flor Blanca</span>
-            <div className="avatar">
-              <div className="w-10 rounded">
-                <img src={logo} alt="logo" className="transform scale-150" />
+        <div className="navbar-center md:flex-row gap-2">
+          {!isHomePage ?
+            <>
+              <Link to={"/"} onClick={handleDropdown} className="btn btn-ghost text-2xl" viewTransition>
+                <span className="hidden md:block me-2">La Flor Blanca</span>
+                <div className="avatar">
+                  <div className="w-10 rounded">
+                    <img src={logo} alt="logo" className="transform scale-150" />
+                  </div>
+                </div>
+              </Link>
+              <div className="text-2xl flex">
+                <span data-testid="username">{user?.username}</span>
               </div>
-            </div>
-          </Link>
-          <div className="text-2xl flex">
-            <span data-testid="username">{user?.username}</span>
-          </div>
-          <ShoppingCartIcon count={optimisticCount} />
-        </div> : null}
+              <ShoppingCartIcon count={optimisticCount} />
+            </>
+            : <span className="font-bold text-primary/90 text-2xl">Bienvenidos</span>}
+        </div>
         <div className="navbar-end">
           <div className="hidden dropdown dropdown-end dropdown-bottom">
             <div tabIndex={0} className="m-1 btn btn-ghost flex flex-col">
