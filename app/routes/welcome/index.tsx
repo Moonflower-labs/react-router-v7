@@ -202,19 +202,6 @@ export default function Welcome({ }: Route.ComponentProps) {
                     className="flex flex-col gap-4 p-8 w-full shadow-xl"
                     variants={itemVariants}
                 >
-                    <h2 className="text-xl font-semibold">Soy ...</h2>
-                    <p className="">
-                        Conoce la historia de La Flor Blanca y explora vídeos , blah, blah,  blah...
-                    </p>
-                    <Link to={"/about"} viewTransition className="flex justify-between items-center link-primary">
-                        <span>Qué es La Flor Blanca?</span>
-                        <IoMdArrowDroprightCircle size={24} />
-                    </Link>
-                </motion.div>
-                <motion.div
-                    className="flex flex-col gap-4 p-8 w-full shadow-xl"
-                    variants={itemVariants}
-                >
                     <h2 className="text-xl font-semibold">Tengo dudas sobre..</h2>
                     <p className="">
                         Visita la sección de ayuda, donde encontrarás la solución a las dudas mâs comunes.
