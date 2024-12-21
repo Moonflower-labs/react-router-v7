@@ -130,7 +130,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                         stiffness: 300
                     }}
                 >
-                    <Link to={"/personality"} viewTransition>
+                    <Link to={"/members/personality"} viewTransition>
                         Miembros
                     </Link>
                 </motion.div>
