@@ -7,9 +7,6 @@ import { FilterComponent } from "~/components/members/FilterComponent";
 import { Paginator } from "~/components/members/Pagination";
 import { fetchCategories } from "~/models/category.server";
 
-export const handle = {
-  links: [{ to: "/soul#videos", name: "Videos" }, { to: "/soul#podcasts", name: "Podcasts" }, { to: "/soul/question", name: "Pregunta" }]
-}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);

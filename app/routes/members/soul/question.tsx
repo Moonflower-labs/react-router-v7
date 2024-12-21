@@ -1,4 +1,4 @@
-import { data, Link, useFetcher } from "react-router";
+import { data, useFetcher } from "react-router";
 import { useCallback, useEffect } from "react";
 import type { Route } from "./+types/question";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
@@ -6,9 +6,7 @@ import { requireUserId } from "~/utils/session.server";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
 
-export const handle = {
-  links: [{ to: "/soul#videos", name: "Videos" }, { to: "/soul#podcasts", name: "Podcasts" }, { to: "/soul/question", name: "Pregunta" }]
-}
+
 export async function loader({ request }: Route.LoaderArgs) {
   try {
     const userId = await requireUserId(request);

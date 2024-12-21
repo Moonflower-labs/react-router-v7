@@ -1,4 +1,4 @@
-import { type MutableRefObject, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/question";
 import { requireUserId } from "~/utils/session.server";
@@ -6,9 +6,6 @@ import { createBasicQuestion, getQuestionCount, incrementQuestionCount } from "~
 import { toast } from "react-toastify";
 import ActionError from "~/components/framer-motion/ActionError";
 
-export const handle = {
-  links: [{ to: "/personality#blogs", name: "Blogs" }, { to: "/personality#podcasts", name: "Podcasts" }, { to: "/personality/question", name: "Pregunta" }]
-}
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -82,7 +79,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
   const questionCount = loaderData;
   const fetcher = useFetcher();
   const errors = fetcher.data?.errors;
-  const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = document.querySelector('input[name="another"]') as HTMLInputElement;

@@ -31,13 +31,13 @@ export function Navbar() {
               <Link to="/plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Planes de subscripción
               </Link>
-              <Link to="personality" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+              <Link to="/members/personality" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Rincón de miembros
               </Link>
               <Link to="gallery" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Susurros de La Flor Blanca
               </Link>
-              <Link to="/reviews" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
+              <Link to="/#reviews" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
                 Reviews
               </Link>
               <Link to="store" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>

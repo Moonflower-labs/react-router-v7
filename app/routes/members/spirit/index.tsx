@@ -7,10 +7,6 @@ import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";
 
 
-export const handle = {
-  links: [{ to: "/spirit#videos", name: "Videos" }, { to: "/spirit#podcasts", name: "Podcasts" }, { to: "/spirit/question", name: "Pregunta" }, { to: "/spirit/live", name: "Sesión en directo" }, { to: "/spirit/live/chat", name: "Live Chat" }]
-}
-
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("search");

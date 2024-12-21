@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useLocation, useMatches } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
@@ -12,8 +12,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MembersLayout() {
-  const matches = useMatches();
-  const { hash, pathname } = useLocation();
 
   return (
     <>
@@ -23,7 +21,7 @@ export default function MembersLayout() {
         className="bg-base-100 flex flex-col gap-1 py-1 justify-center sticky top-[72px] z-50 md:w-fit rounded-lg md:bg-transparent mx-auto">
         <div className="grid grid-cols-3 gap-1 w-full max-w-3xl bg-base-100 rounded-md">
           <NavLink
-            to={"/personality"}
+            to={"/members/personality"}
             role="tab"
             className={({ isActive }) =>
               `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
@@ -39,7 +37,7 @@ export default function MembersLayout() {
             <span>Personalidad</span>
           </NavLink>
           <NavLink
-            to={"/soul"}
+            to={"/members/soul"}
             role="tab"
             className={({ isActive }) =>
               `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
@@ -55,7 +53,7 @@ export default function MembersLayout() {
             <span>Alma</span>
           </NavLink>
           <NavLink
-            to={"/spirit"}
+            to={"/members/spirit"}
             role="tab"
             className={({ isActive }) =>
               `flex flex-row justify-center items-center gap-1 border rounded-md p-2 shadow ${isActive && "bg-primary text-primary-content"}`
@@ -72,23 +70,6 @@ export default function MembersLayout() {
           </NavLink>
         </div>
         <ScrollToHash />
-        {matches
-          .filter(
-            (match: any) =>
-              match.handle && match.handle.links
-          )
-          .map((match: any, index) => (
-            <div key={index} className="md:bg-base-100 rounded flex flex-wrap gap-4 justify-center items-center">
-              {match.handle.links.map((link: any) =>
-                <Link key={link.to} to={link.to}
-                  className={`hover:scale-110 transition-all ease-in-out duration-300 ${link.to === pathname + hash && "badge badge-primary"}`}
-                  viewTransition
-                >
-                  {link.name}
-                </Link>
-              )}
-            </div>
-          ))}
       </div>
       <Outlet />
     </>

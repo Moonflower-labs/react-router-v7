@@ -23,9 +23,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return { posts, pagination, categories, q: title };
 }
-export const handle = {
-  links: [{ to: "/personality#blogs", name: "Blogs" }, { to: "/personality#podcasts", name: "Podcasts" }, { to: "/personality/question", name: "Pregunta" }]
-}
+
 
 export default function Personality({ loaderData }: Route.ComponentProps) {
   const data = loaderData?.posts as Post[];

@@ -46,24 +46,30 @@ export default [
   ]),
 
   // Members
-  route("", "routes/members/layout.tsx", [
+  route("members", "routes/members/layout.tsx", [
     // Personality plan
-    route("personality", "routes/members/personality/index.tsx"),
-    route("personality/post/:id", "routes/members/personality/detail.tsx"),
-    route("personality/question", "routes/members/personality/question.tsx"),
+    route("personality", "routes/members/personality/layout.tsx", [
+      index("routes/members/personality/index.tsx"),
+      route("post/:id", "routes/members/personality/detail.tsx"),
+      route("question", "routes/members/personality/question.tsx")
+    ]),
 
     // Soul plan
-    route("soul", "routes/members/soul/index.tsx"),
-    route("soul/video/:id", "routes/members/soul/detail.tsx"),
-    route("soul/question", "routes/members/soul/question.tsx"),
+    route("soul", "routes/members/soul/layout.tsx", [
+      index("routes/members/soul/index.tsx"),
+      route("video/:id", "routes/members/soul/detail.tsx"),
+      route("question", "routes/members/soul/question.tsx")
+    ]),
     // Spirit plan
-    route("spirit", "routes/members/spirit/index.tsx"),
-    route("spirit/video/:id", "routes/members/spirit/detail.tsx"),
-    route("spirit/question", "routes/members/spirit/question.tsx"),
-    route("spirit/live", "routes/members/spirit/live.tsx"),
-    route("spirit/live/chat", "routes/chat/index.tsx"),
-    // Live Stream Chat
-    route("spirit/live/chat/stream", "routes/chat/stream.tsx")
+    route("spirit", "routes/members/spirit/layout.tsx", [
+      index("routes/members/spirit/index.tsx"),
+      route("video/:id", "routes/members/spirit/detail.tsx"),
+      route("question", "routes/members/spirit/question.tsx"),
+      route("live", "routes/members/spirit/live.tsx"),
+      route("live/chat", "routes/chat/index.tsx"),
+      // Live Stream Chat
+      route("live/chat/stream", "routes/chat/stream.tsx")
+    ])
   ]),
 
   // API Routes
@@ -78,4 +84,6 @@ export default [
 
   // Add the admin routes
   ...adminRoutes
+  // PWA Manifest Route
+  // route("/manifest", "routes/manifest.ts")
 ] satisfies RouteConfig;
