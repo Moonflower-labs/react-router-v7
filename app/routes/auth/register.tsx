@@ -48,7 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   const user = await createUser(email, password, username);
 
-  throw await createUserSession({
+  return createUserSession({
     redirectTo,
     remember: false,
     request,

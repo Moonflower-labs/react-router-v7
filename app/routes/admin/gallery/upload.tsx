@@ -49,7 +49,7 @@ export async function action({ request }: Route.ActionArgs) {
         }
         return { error: "Upload  unsuccessfull" }
     }
-    throw redirect("/admin/gallery")
+    return redirect("/admin/gallery")
 }
 
 export default function Component({ actionData }: Route.ComponentProps) {

@@ -38,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
         console.error(error);
         return { success: false, message: "Ha ocurrido un error" };
       }
-      throw redirect("/profile/plan/confirmation");
+      return redirect("/profile/plan/confirmation");
     }
 
     case "POST": {

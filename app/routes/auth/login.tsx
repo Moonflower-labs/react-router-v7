@@ -44,7 +44,7 @@ export async function action({ request }: Route.ActionArgs) {
   await mergeGuestCart(guestId, user?.id);
   const toastMessage = { message: "Sesión iniciada!", type: "info" };
   // create user session
-  throw await createUserSession({
+  return createUserSession({
     redirectTo,
     remember: remember === "on" ? true : false,
     request,
