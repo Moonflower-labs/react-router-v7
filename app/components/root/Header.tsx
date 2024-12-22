@@ -91,10 +91,10 @@ export function Header() {
               </div>
               <ShoppingCartIcon count={optimisticCount} />
             </>
-            : <span className="font-bold text-primary/90 text-2xl">Bienvenidos</span>}
+            : <span className="font-bold text-primary/90 text-2xl">Bienvenid@ {user?.username ? user.username : ""}</span>}
         </div>
         <div className="navbar-end">
-          <div className="hidden dropdown dropdown-end dropdown-bottom">
+          {/* <div className=" hidden dropdown dropdown-end dropdown-bottom">
             <div tabIndex={0} className="m-1 btn btn-ghost flex flex-col">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
@@ -117,7 +117,7 @@ export function Header() {
                 </div>
               </div>
             </Form>
-          </div>
+          </div> */}
           <Navbar />
         </div>
       </div>
@@ -126,7 +126,7 @@ export function Header() {
 }
 
 const themes = [
-  { value: 'default', label: 'Default' },
+  { value: 'florBlanca', label: 'Default' },
   { value: 'garden', label: 'Garden' },
   { value: 'dracula', label: 'Dracula' },
   { value: 'emerald', label: 'Emerald' },
