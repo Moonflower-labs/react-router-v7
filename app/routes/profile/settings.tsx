@@ -10,6 +10,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const formData = await request.formData();
     const theme = formData.get("theme-buttons") as string;
     return setUserPrefs(request, { theme });
+
 };
 
 export default function Settings() {
@@ -25,7 +26,7 @@ export default function Settings() {
                     <IoColorPalette size={24} />
                     <span>Theme</span>
                 </div>
-                <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
+                <Form method="post" onChange={e => submit(e.currentTarget, { preventScrollReset: true })}>
                     <div className=" z-[1] p-0 m-0  rounded-full max-w-screen-lg mx-auto">
                         <div className="flex flex-row flex-wrap justify-center gap-1 bg-neutral/10 p-1 rounded-md">
                             {themes.map((themeOption) => (

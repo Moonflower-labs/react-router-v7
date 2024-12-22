@@ -8,9 +8,9 @@ export default function Layout() {
 
     return (
         <>
-            <div className='flex flex-wrap gap-2 justify-center items-center sticky top-[120px] z-50 pt-3'>
+            <div className='flex flex-wrap gap-2 justify-center items-center sticky top-[120px] z-50 py-2 px-2 bg-base-200/90 w-fit mx-auto rounded-lg'>
                 {links.map((link: any, index) => (
-                    <div key={index} className="flex flex-wrap gap-4 justify-center items-center">
+                    <div key={index} className="flex flex-wrap gap-4 justify-center items-center mx-auto">
                         <Link key={link.to} to={link.to}
                             className={`hover:scale-110 transition-all ease-in-out duration-300 badge badge-${link.to === pathname + hash ? "primary" : "ghost"}`}
                             viewTransition
