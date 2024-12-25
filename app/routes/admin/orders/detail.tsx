@@ -4,9 +4,7 @@ import { Form } from "react-router";
 import { FaCheck } from "react-icons/fa";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { formatDate } from "~/utils/format";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { LuCopy, LuCopyCheck } from "react-icons/lu";
+import { CopyToClipBoard } from "~/components/shared/CopyToClipBoard";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const order = await fetchOrder(params.id);
@@ -15,20 +13,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function OrderDetail({ loaderData }: Route.ComponentProps) {
   const order = loaderData;
-  const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    const emailToCopy = order?.user?.email as string;
-    navigator.clipboard.writeText(emailToCopy)
-      .then(() => {
-        setCopied(true); // Set copied state to true
-        setTimeout(() => setCopied(false), 10000); // Reset after 2 seconds
-        toast.success("Email copiado")
-      })
-      .catch(err => {
-        console.error('Could not copy text: ', err);
-      });
-  };
 
   return (
     <div className="mb-6 lg:w-2/3 mx-auto">
@@ -40,12 +25,7 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
         ? <p className="font-semibold mb-4 text-warning/75">Pedido de invitado</p>
         : <div className="flex flex-row gap-2 items-center mb-4">
           <p className="font-semibold">Usuario: {order?.user?.username} / Email: {order?.user?.email}</p>
-          <button
-            onClick={handleCopy}
-            className="text-info"
-          >
-            {copied ? <LuCopyCheck size={24} /> : <LuCopy size={24} />}
-          </button>
+          <CopyToClipBoard href={order?.user?.email as string} />
         </div>}
 
       <div className="flex flex-row gap-4 items-center mb-4">
