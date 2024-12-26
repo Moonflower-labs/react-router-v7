@@ -1,4 +1,4 @@
-import { getStripeEvent, handleCustomerCreated, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
+import { getStripeEvent, handleCustomerCreated, handlePaymentIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
 import type { Route } from "./+types/webhooks";
 import { prisma } from "~/db.server";
 
@@ -29,6 +29,7 @@ export async function action({ request }: Route.ActionArgs) {
     case "payment_intent.succeeded":
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
+      await handlePaymentIntentSucceeded(event)
       // Then define and call a method to handle the successful payment intent.
       // handlePaymentIntentSucceeded(paymentIntent);
       break;

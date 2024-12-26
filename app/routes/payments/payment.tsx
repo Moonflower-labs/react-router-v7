@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { PaymentElement, useStripe, useElements, AddressElement } from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements, AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import type { StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
-import { Form, useNavigate, useOutletContext } from "react-router";
+import { Form, useNavigate, useOutletContext, useRouteLoaderData } from "react-router";
 import type { ContextType } from "./layout";
 import type { Route } from "./+types/payment";
+import type { User } from "~/models/user.server";
 
 export async function action({ request }: Route.ActionArgs) { }
 
@@ -21,7 +22,7 @@ function CheckoutForm() {
   const elements = useElements();
   const navigate = useNavigate();
   const { amount, customerBalance } = (useOutletContext() as ContextType) || 0;
-  // const { user } = useRouteLoaderData("root") as { user: User }
+  const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) * -1 > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,7 @@ function CheckoutForm() {
   return (
     <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-lg border shadow-lg px-8 min-w-[400px] w-[30vw] text-center">
       <h3 className="text-primary text-lg font-semibold my-3">Email</h3>
-      {/* <LinkAuthenticationElement options={{ defaultValues: { email: user?.email || "" } }} className="my-3" /> */}
+      <LinkAuthenticationElement options={{ defaultValues: { email: user?.email || "" } }} className="my-3" />
       <h3 className="text-primary text-lg font-semibold my-3">Dirección postal</h3>
       <AddressElement options={{ mode: "shipping" }} />
       <h3 className="text-primary text-lg font-semibold my-3">Pago</h3>

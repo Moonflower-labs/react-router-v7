@@ -2,6 +2,8 @@ import { Form } from "react-router";
 import type { Route } from "./+types/plans";
 
 export default function SubscriptionPlans({ }: Route.ComponentProps) {
+
+
     return (
         <main className="text-center mb-8" id="plans">
             <h1 className="text-4xl py-8 text-primary font-bold">Planes de Suscripción</h1>

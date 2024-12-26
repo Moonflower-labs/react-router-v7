@@ -2,11 +2,21 @@ import type Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
 import { createSubscription, stripe } from "~/integrations/stripe";
-import { createSubscriptionPlan, getSubscriptionPlan } from "~/models/plan.server";
-import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/models/user.server";
+import {
+  createSubscriptionPlan,
+  getSubscriptionPlan
+} from "~/models/plan.server";
+import {
+  getUserByCustomerId,
+  getUserByEmail,
+  updateUserCustomerId
+} from "~/models/user.server";
 
 export async function getStripeEvent(request: Request) {
-  invariant(process.env.WEBHOOK_SIGNING_SECRET, "Please set the WEBHOOK_SIGNING_SECRET env variable");
+  invariant(
+    process.env.WEBHOOK_SIGNING_SECRET,
+    "Please set the WEBHOOK_SIGNING_SECRET env variable"
+  );
   try {
     const signature = request.headers.get("Stripe-Signature");
     if (!signature) {
@@ -14,7 +24,11 @@ export async function getStripeEvent(request: Request) {
     }
     const payload = await request.text();
 
-    const event = stripe.webhooks.constructEvent(payload, signature, process.env.WEBHOOK_SIGNING_SECRET);
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.WEBHOOK_SIGNING_SECRET
+    );
 
     return event;
   } catch (error) {
@@ -22,7 +36,11 @@ export async function getStripeEvent(request: Request) {
   }
 }
 
-export async function createWebhookEndpoint(url: string | null, endpoint: string, description: string) {
+export async function createWebhookEndpoint(
+  url: string | null,
+  endpoint: string,
+  description: string
+) {
   const webhookEndpoint = await stripe.webhookEndpoints.create({
     enabled_events: [
       "customer.subscription.created",
@@ -38,7 +56,9 @@ export async function createWebhookEndpoint(url: string | null, endpoint: string
       "invoice.finalized",
       "invoice.finalization_failed"
     ],
-    url: !url ? `https://laflorblanca.vercel.app/${endpoint}` : `${url}/${endpoint}`,
+    url: !url
+      ? `https://laflorblanca.vercel.app/${endpoint}`
+      : `${url}/${endpoint}`,
     description
   });
   return webhookEndpoint;
@@ -70,13 +90,17 @@ export async function handleCustomerCreated(event: Stripe.Event) {
   if (updateResponse) {
     console.info(`Customer ID ${customer.id} added to user ${user.id}.`);
   } else {
-    console.error(`Failed to update user ${user.id} with customer ID ${customer.id}.`);
+    console.error(
+      `Failed to update user ${user.id} with customer ID ${customer.id}.`
+    );
   }
 }
 
 export async function handleSubscriptionCreated(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
-  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
+  const plan = await stripe.products.retrieve(
+    subscription.items.data[0].plan.product as string
+  );
   // Check if plan exists in db or create it
   const existingPlan = await getSubscriptionPlan(plan.id);
   if (!existingPlan) {
@@ -111,7 +135,9 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
 
 export async function handleSubscriptionUpdated(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
-  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
+  const plan = await stripe.products.retrieve(
+    subscription.items.data[0].plan.product as string
+  );
   // Check if plan exists in db or create it
   const existingPlan = await getSubscriptionPlan(plan.id);
   if (!existingPlan) {
@@ -129,7 +155,9 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
     where: { userId: user?.id }
   });
   if (!existingSubscription) {
-    console.error(`Subscription for user with Id ${user?.id} not found!\nUnable to update`);
+    console.error(
+      `Subscription for user with Id ${user?.id} not found!\nUnable to update`
+    );
     // As backup create the new sunsbcription. This should never be triggered
     return prisma.subscription.create({
       data: {
@@ -169,19 +197,50 @@ export async function handleSubscriptionDeleted(event: Stripe.Event) {
     return;
   }
 
-  // Udate Plan and Status for the user Subscription
+  // Delete the user Subscription
   const deletedSubscription = await prisma.subscription.delete({
     where: { id: existingSubscription.id }
   });
 }
 
-// def handle_customer_subscription_deleted(self, event):
-// subscription = event.data.object
-// user = self.get_user_by_customer_id(subscription.customer)
-// try:
-//     membership = Membership.objects.get(user=user)
-//     # Delete the membership
-//     membership.delete()
-//     logger.info(f"Membership for {user.username} deleted.")
-// except Membership.DoesNotExist:
-//     logger.info(f"No membership found for {user.username}")
+export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent;
+  const orderId = paymentIntent.metadata?.orderId;
+  try {
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    console.log("order: ", order);
+    //todo:  // Update the order status to paid
+    //  await prisma.order.update({data:{status:"Paid"},where:{id:orderId}});
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+}
+
+// def handle_setup_intent_succeeded(self, event):
+// """ Create a free subscription """
+// setup_intent = event.data.object
+// metadata = setup_intent.metadata
+// customer_id = setup_intent.customer
+// price_id = os.environ.get('FREE_PLAN_PRICE_ID')
+// if metadata is not None:
+//     if 'reason' in metadata and metadata.reason == "free plan":
+//         try:
+//             # Create the subscription
+//             subscription = stripe.Subscription.create(
+//                 customer=customer_id,
+//                 items=[{'price': price_id}],
+//                 trial_end='now',
+//                 payment_settings={"payment_method_types": ["card"]},
+//                 expand=['latest_invoice.payment_intent'],
+
+//             )
+//             logger.info(f"new free subscription created")
+//             return {'subscriptionId': subscription.id}
+//         except stripe.error.StripeError as e:
+//             # You can handle specific Stripe errors if required
+//             return {'error': str(e)}
+//         except Exception as e:
+//             return {'error': str(e)}
+// else:
+//     logger.info("No metadata found")
