@@ -13,6 +13,7 @@ import logo from "../app/components/root/logo.svg"
 
 
 export const links: Route.LinksFunction = () => [
+  // { rel: "manifest", href: "/manifest" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -42,10 +43,9 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     });
   }
   const userPrefs = await getUserPrefs(request);
-  const theme = userPrefs?.theme || "florBlanca";
+  const theme = userPrefs?.theme ?? "florBlanca";
   const user = await getUserById(userId);
   const totalItemCount = await getCartItemsCount(String(userId));
-
   return { user, totalItemCount, theme };
 };
 
@@ -74,7 +74,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Footer />
         <ScrollRestoration
           getKey={(location, _matches) => {
-            const paths = ["/gallery", "/personality", "/soul", "/spirit"];
+            const paths = ["/gallery", "/gallery/image/*", "/personality", "/soul", "/spirit"];
             return paths.includes(location.pathname)
               ? //  restore by pathname
               location.pathname
@@ -88,6 +88,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+
   return <Outlet />;
 }
 
