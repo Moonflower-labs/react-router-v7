@@ -47,7 +47,7 @@ export async function createOrder(userId: string, cartItems: CartItem[]) {
     }
   };
   if (data.guest) {
-    // We create a guest cart by providing a guestId
+    // We create a guest order by providing a guestId
     data.guestId = userId;
   } else {
     data.user = { connect: { id: userId } };
