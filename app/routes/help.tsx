@@ -1,6 +1,5 @@
 import { useActionState, useTransition } from "react";
 import { Link } from "react-router";
-import { FadeInComponent } from "~/components/framer-motion/FadeInComponent";
 import type { Route } from "./+types/help";
 
 async function search(_: any, formData: FormData) {
@@ -46,17 +45,15 @@ export default function HelpPage({ }: Route.ComponentProps) {
 
       <div className="flex flex-col gap-3 md:w-2/3 mx-auto">
         {data && data.map((q, index) => (
-          <FadeInComponent key={q.id}>
-            <div className="collapse collapse-arrow shadow-lg p-4">
-              <input type="radio" name="my-accordion-2" />
-              <div className="collapse-title text-xl font-medium">
-                {index + 1}. {q.question}
-              </div>
-              <div className="collapse-content">
-                <p>{q.answer}</p>
-              </div>
+          <div className="collapse collapse-arrow shadow-lg p-4">
+            <input type="radio" name="my-accordion-2" />
+            <div className="collapse-title text-xl font-medium">
+              {index + 1}. {q.question}
             </div>
-          </FadeInComponent>
+            <div className="collapse-content">
+              <p>{q.answer}</p>
+            </div>
+          </div>
         ))}
       </div>
     </div>
