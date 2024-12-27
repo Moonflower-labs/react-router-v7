@@ -46,7 +46,7 @@ export default function HelpPage({ }: Route.ComponentProps) {
       <div className="flex flex-col gap-3 md:w-2/3 mx-auto">
         {data && data.map((q, index) => (
           <div key={q.id} className="collapse collapse-arrow shadow-lg p-4">
-            <input type="radio" name="my-accordion-2" className="grow text-base" />
+            <input type="radio" name="my-accordion-2" className="grow text-lg" />
             <div className="collapse-title text-xl font-medium">
               {index + 1}. {q.question}
             </div>
