@@ -5,21 +5,27 @@ import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
+import { requireUserId } from "~/utils/session.server";
 
 export async function loader({ }: Route.LoaderArgs) {
   const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } } } });
   return users;
 }
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
+  const [formData, currentUserId] = await Promise.all([
+    request.formData(), requireUserId(request)
+  ]);
   const userId = formData.get("userId");
+  if (currentUserId && currentUserId === userId) {
+    return { success: false, message: "No te puedes borrar a ti mismo" };
+  }
   if (!userId || typeof userId !== "string") {
     return { success: false, message: "No puedes borrar este usuario" };
   }
   // Check if the user has an Active Subscription
   const userSubscription = await getUserSubscription(userId);
   if (userSubscription?.status === "active") {
-    return { success: false, message: "No puedes borrar este usuario" };
+    return { success: false, message: "No puedes borrar un usuario con subscripción activa" };
   }
   const deletedUser = await prisma.user.delete({ where: { id: userId } });
   return { success: true, username: deletedUser.username };
