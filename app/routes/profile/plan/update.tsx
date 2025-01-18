@@ -1,46 +1,26 @@
 import { data, Form, Link, redirect, useNavigation, useOutletContext, useSubmit } from "react-router";
 import { useCallback, useState } from "react";
-import { PLANS, retrieveSubscription, stripe } from "~/integrations/stripe";
+import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeSubscription } from "~/integrations/stripe";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
-import { requireUserId } from "~/utils/session.server";
+import { getUserId, requireUserId } from "~/utils/session.server";
 import { formatUnixDate } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
+import InfoAlert from "~/components/shared/info";
+import { getUserSubscription } from "~/models/subscription.server";
 
-export async function loader() {
-  return PLANS;
+export async function loader({ request }: Route.LoaderArgs) {
+  const userId = await getUserId(request);
+  const userSubscription = await getUserSubscription(userId as string)
+  let error = null
+  if (!await isSubscriptionDefaultPaymentMethodValid(userSubscription?.id as string)) {
+    error = "No default payment method attached"
+  }
+  return { PLANS, error };
 }
 
 export async function action({ request }: Route.ActionArgs) {
   switch (request.method) {
-    case "PUT": {
-      const formData = await request.formData();
-      const subscriptionId = formData.get("subscriptionId");
-      const newPriceId = formData.get("priceId");
-
-      if (!subscriptionId || !newPriceId) {
-        return { success: false, message: "Missing required parameters" };
-      }
-      try {
-        const subscription = await retrieveSubscription(String(subscriptionId));
-        await stripe.subscriptions.update(String(subscriptionId), {
-          items: [
-            {
-              id: subscription.items.data[0].id,
-              price: String(newPriceId)
-            }
-          ],
-          proration_behavior: "always_invoice",
-          proration_date: Math.floor(Date.now() / 1000),
-          expand: ["latest_invoice.payment_intent"]
-        });
-      } catch (error) {
-        console.error(error);
-        return { success: false, message: "Ha ocurrido un error" };
-      }
-      return redirect("/profile/plan/confirmation");
-    }
-
     case "POST": {
       const userId = await requireUserId(request);
       const user = await getUserById(userId);
@@ -51,19 +31,30 @@ export async function action({ request }: Route.ActionArgs) {
       if (!customerId || !subscriptionId || !newPriceId) {
         return { error: "Missing required parameters" };
       }
-      // Check customer balance
-      const customer = await stripe.customers.retrieve(customerId);
-      console.log(customer);
 
       try {
-        const subscription = await retrieveSubscription(subscriptionId);
-        const itemId = subscription.items.data[0].id;
-        const preview = await createPreviewInvoice({ customerId, subscriptionId, itemId, newPriceId });
+        const preview = await createPreviewInvoice({ customerId, subscriptionId, newPriceId });
         return { preview };
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
         return { success: false, message: "Ha ocurrido un error" };
       }
+    }
+    case "PUT": {
+      const formData = await request.formData();
+      const subscriptionId = formData.get("subscriptionId");
+      const newPriceId = formData.get("priceId") as string;
+
+      if (!subscriptionId || !newPriceId) {
+        return { success: false, message: "Missing required parameters" };
+      }
+      try {
+        await updateStripeSubscription(String(subscriptionId), newPriceId)
+      } catch (e) {
+        console.error(e);
+        return { success: false, message: "Ha ocurrido un error" };
+      }
+      return redirect("/profile/plan/confirmation");
     }
     default: {
       throw data(null, { status: 400 });
@@ -71,20 +62,21 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function UpdateSubscription({ loaderData, actionData }: Route.ComponentProps) {
+export default function UpdateSubscriptionPage({ loaderData, actionData }: Route.ComponentProps) {
   const { subscription }: any = useOutletContext() || {};
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const previewInvoice = actionData?.preview;
   const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
   const navigation = useNavigation();
   const submit = useSubmit();
-  const plans = loaderData;
-
+  const plans = loaderData?.PLANS;
+  // console.log(previewInvoice)
 
   return (
     <div className="text-center">
       <h2 className="text-2xl text-primary my-3">Actualiza tu plan</h2>
       <p className="mb-6">Elige el plan al que deseas cambiar.</p>
+      {loaderData?.error && <InfoAlert level="Importante" className="alert alert-error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </InfoAlert>}
       <div className="flex flex-col md:flex-row gap-3 md:w-2/3 mx-auto justify-around mb-4">
         {plans
           .filter((p) => p.name !== subscription?.plan?.name)
@@ -94,6 +86,10 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
               className={`label cursor-pointer max-w-xs p-4 border rounded-lg shadow-xl mx-auto ${selectedPlan === plan.priceId ? "border-primary" : "border-gray-200"
                 }`}
               onClick={() => {
+                // if (loaderData?.error?.toString().trim() === "") {
+                //   const searchParams = new URLSearchParams([["plan", plan.name]])
+                //   return submit(searchParams, { action: "/payments/subscribe" });
+                // }
                 setSelectedPlan(plan.priceId);
                 submit({ priceId: plan.priceId, subscriptionId: subscription?.id }, { method: "post", encType: "application/json" });
               }}>
@@ -114,7 +110,8 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
           ))}
       </div>
       {navigation.state === "submitting" && <span className="loading loading-spinner text-primary"></span>}
-      {actionData?.message && <span className="text-error">{actionData.message}</span>}
+      {actionData?.message && <span className="text-error">{actionData.message} </span>}
+      <Link to="/payments/setup" className="link link-primary">Actualizar mi método de pago</Link>
       <Form method="put" className="py-2 mx-auto">
         <input type="hidden" name="priceId" value={String(selectedPlan)} />
         {previewInvoice && (
@@ -124,10 +121,16 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
           >
             <p>INFO </p>
             <p>
-              Periodo de facturación desde el {formatUnixDate(previewInvoice.period_start)} al {formatUnixDate(previewInvoice.period_end)}{" "}
+              Fecha de prorrateo <span className="font-bold">{formatUnixDate(previewInvoice.subscription_proration_date!)}</span>
+            </p>
+            <p>
+              Periodo de facturado del <span className="font-bold">{formatUnixDate(previewInvoice.period_start)}</span> al <span className="font-bold">{formatUnixDate(previewInvoice.period_end)}</span>{" "}
             </p>
             {previewInvoice?.lines?.data.map((item) => (
               <div key={item.description}>
+                <p>
+                  PERIODO: del <span className="font-bold">{formatUnixDate(item.period.start)}</span> al <span className="font-bold">{formatUnixDate(item.period.end)}</span>{" "}
+                </p>
                 <p>
                   {item?.description} <span className="font-bold">£{item?.amount / 100}</span>
                 </p>
@@ -144,7 +147,7 @@ export default function UpdateSubscription({ loaderData, actionData }: Route.Com
                 type="submit"
                 name="subscriptionId"
                 value={subscription?.id}
-                disabled={navigation.state === "submitting"}
+                disabled={navigation.state === "submitting" || loaderData?.error !== null}
                 className="btn btn-outline btn-primary btn-sm">
                 Confirmar
               </button>

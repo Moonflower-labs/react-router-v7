@@ -76,7 +76,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div className={`font-bold ${subscription.status !== "active" ? "text-error/95" : ""}`}>
                     Estado <span>{translateSubscriptionStatus(subscription?.status)}</span>
                   </div>
                   <div>
@@ -90,7 +90,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             ) : (
               <>
                 <div className="mb-4">Todavía no te has suscrito a nigún plan 🙁</div>
-                <Link to={"/#plans"} className="btn btn-sm btn-primary" viewTransition>
+                <Link to={"/plans"} className="btn btn-sm btn-primary" viewTransition>
                   Planes de suscripción
                 </Link>
               </>

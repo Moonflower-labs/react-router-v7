@@ -57,8 +57,17 @@ export async function addShoppingCart(userId: string) {
   });
 }
 
-export async function addToCart(userId: string, productId: string, priceId: string, quantity: number = 1) {
-  let [cart, product, price] = await Promise.all([getShoppingCart(userId), getProduct(productId), getPrice(priceId)]);
+export async function addToCart(
+  userId: string,
+  productId: string,
+  priceId: string,
+  quantity: number = 1
+) {
+  let [cart, product, price] = await Promise.all([
+    getShoppingCart(userId),
+    getProduct(productId),
+    getPrice(priceId)
+  ]);
   if (!product || !price) {
     throw new Response("Product or price not found", { status: 404 });
   }
@@ -67,7 +76,9 @@ export async function addToCart(userId: string, productId: string, priceId: stri
     cart = { ...newCart, cartItems: [] };
   }
   // If the product is already in the cart, just update the quantity
-  const cartItem = cart.cartItems.find(item => item.productId === productId && item.price.id === priceId);
+  const cartItem = cart.cartItems.find(
+    item => item.productId === productId && item.price.id === priceId
+  );
   if (cartItem) {
     const newQuantity = cartItem.quantity + quantity;
     const newTotalPrice = Number(price.amount) * newQuantity;
@@ -107,7 +118,8 @@ export async function mergeGuestCart(guestId: string, userId: string) {
   const guestCart = await getShoppingCart(guestId);
   if (!guestCart) return;
   // Ensured the user has a cart before procceding to merge!
-  const cart = (await getShoppingCart(userId)) || (await addShoppingCart(userId));
+  const cart =
+    (await getShoppingCart(userId)) || (await addShoppingCart(userId));
   for (const item of guestCart.cartItems) {
     await addToCart(userId, item.product.id, item.price.id, item.quantity);
   }
@@ -116,7 +128,11 @@ export async function mergeGuestCart(guestId: string, userId: string) {
   return cart.id;
 }
 export async function deleteCart(cartId: string) {
-  return prisma.cart.delete({ where: { id: cartId } });
+  try {
+    await prisma.cart.delete({ where: { id: cartId } });
+  } catch (e) {
+    return;
+  }
 }
 
 export async function syncStripeProducts() {
@@ -155,7 +171,9 @@ export async function syncStripeProducts() {
       }
 
       // Handle associated prices for the product
-      const associatedPrices = stripePrices.data.filter(price => price.product === stripeProduct.id);
+      const associatedPrices = stripePrices.data.filter(
+        price => price.product === stripeProduct.id
+      );
 
       for (const price of associatedPrices) {
         // Check if the price already exists in Strapi
@@ -169,7 +187,10 @@ export async function syncStripeProducts() {
             where: { id: price.id },
             data: {
               amount: price.unit_amount!,
-              info: price.metadata?.color || price.metadata?.title || price.metadata?.size
+              info:
+                price.metadata?.color ||
+                price.metadata?.title ||
+                price.metadata?.size
             }
           });
         } else {
@@ -179,7 +200,11 @@ export async function syncStripeProducts() {
               id: price.id,
               product: { connect: { id: stripeProduct.id } },
               amount: price.unit_amount!,
-              info: price.metadata?.color || price.metadata?.title || price.metadata?.size || ""
+              info:
+                price.metadata?.color ||
+                price.metadata?.title ||
+                price.metadata?.size ||
+                ""
             }
           });
         }

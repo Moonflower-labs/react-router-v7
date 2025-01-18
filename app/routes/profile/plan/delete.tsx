@@ -1,27 +1,41 @@
-import { Form } from "react-router";
+import { Form, useOutletContext } from "react-router";
 import type { Route } from "./+types/delete";
+import { cancelStripeSubscription } from "~/integrations/stripe";
+
+export async function loader({ request }: Route.LoaderArgs) {
+
+}
 
 export async function action({ request }: Route.LoaderArgs) {
+  const formData = await request.formData();
   const method = request.method;
   if (method === "DELETE") {
+    const subscriptionId = formData.get("subscriptionId") as string
     try {
-    } catch (error) {
-      console.error(error);
+      const canceledSubscription = await cancelStripeSubscription(subscriptionId)
+      return { cancellationDate: new Date(canceledSubscription.current_period_end * 1000) }
+    } catch (e) {
+      console.error(e);
     }
   }
   return null;
 }
 
-export default function Component() {
+export default function Component({ loaderData, actionData }: Route.ComponentProps) {
+  const subscriptionData = useOutletContext() as any;
+  const cancellationDate = actionData?.cancellationDate
+  console.log(subscriptionData?.subscription.id)
+
   return (
     <div className="text-center">
       <h2 className="text-2xl text-primary my-3">Cancela tu suscripción</h2>
       <p className="mb-4 max-w-xl mx-auto px-3">
         Al cancelar tu suscripción ya no se volverá a renovar, y perderás acceso a las páginas y contenido desde esa misma fecha.
       </p>
-      <Form method="delete" className="py-2 mx-auto">
-        <button className="btn btn-outline btn-error btn-sm">Cancelar ahora</button>
+      <Form method="delete" className="py-2 mx-auto mb-4">
+        <button type="submit" name="subscriptionId" value={subscriptionData.subscription.id} className="btn btn-outline btn-error btn-sm">Cancelar ahora</button>
       </Form>
+      {cancellationDate ? <p className="mb-4 max-w-xl mx-auto px-3">Tu subscripción será cancelada el <span className="text-error">{cancellationDate.toLocaleDateString()}</span>. Hasta entonces si por algún motivo cambiases de plan, la cancelación será suspendida y continuarás con el plan elegido.</p> : null}
     </div>
   );
 }

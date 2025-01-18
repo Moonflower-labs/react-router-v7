@@ -6,6 +6,7 @@ import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
 import { Link } from "react-router";
 import { getSubscriptionData } from "~/integrations/stripe";
+import InfoAlert from "~/components/shared/info";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
@@ -13,6 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const planData = getSubscriptionData(subscription?.plan?.name as string);
   return { subscription, planData };
 }
+
 
 export default function Component({ loaderData }: Route.ComponentProps) {
   const subscription = loaderData?.subscription;
@@ -45,13 +47,16 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <p>
           Próxima renovación <span className="font-semibold">{formatDate(calculateRenewalDate(subscription?.updatedAt))}</span>
         </p>
+        {subscription?.cancellationDate &&
+          <InfoAlert level="Atención" className="alert-error">Subscripción pendiente de cancelación el {formatDate(subscription.cancellationDate)}</InfoAlert>}
         <div className="flex gap-3 justify-center">
           <Link to={"/profile/plan/update"} className="btn btn-sm btn-primary btn-outline">
             Cambiar Plan
           </Link>
-          <Link to={"/profile/plan/delete"} className="btn btn-sm btn-error">
-            Cancelar my Suscripción
-          </Link>
+          {!subscription?.cancellationDate &&
+            <Link to={"/profile/plan/delete"} className="btn btn-sm btn-error">
+              Cancelar my Suscripción
+            </Link>}
         </div>
       </div>
     </div>

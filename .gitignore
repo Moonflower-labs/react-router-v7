@@ -9,3 +9,12 @@ node_modules
 prisma/dev.db
 package-lock.json
 .*.*.icloud
+pnpm-lock.yaml
+app/routes/gallery/index-old.tsx
+app/routes/gallery/detail copy.tsx
+app/entry.worker.ts
+app/entry.server.tsx
+app/entry.client.tsx
+app/routes/manifest.ts
+app/routes/gallery/layout.tsx
+react-email-starter

@@ -41,10 +41,11 @@ export async function setGuestId(request: Request) {
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
-  if (userId === undefined) return null;
+  if (userId === undefined || userId.toString().startsWith("guest-"))
+    return null;
 
   const user = await getUserById(userId);
-  if (user) return user;
+  if (user) return user as User;
 
   throw await logout(request);
 }

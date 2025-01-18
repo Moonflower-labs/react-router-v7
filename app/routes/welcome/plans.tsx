@@ -1,11 +1,23 @@
-import { Form } from "react-router";
+import { Form, Link } from "react-router";
 import type { Route } from "./+types/plans";
+import { getUserId } from "~/utils/session.server";
+import InfoAlert from "~/components/shared/info";
 
-export default function SubscriptionPlans({ }: Route.ComponentProps) {
+
+export async function loader({ request }: Route.LoaderArgs) {
+    const userId = getUserId(request)
+    return { isLoggedIn: !!(userId && !userId.toString().startsWith("guest")) }
+}
+
+export default function SubscriptionPlans({ loaderData }: Route.ComponentProps) {
+
     return (
-        <main className="text-center mb-8" id="plans">
+        <main className="text-center mb-8 px-2" id="plans">
             <h1 className="text-4xl py-8 text-primary font-bold">Planes de Suscripción</h1>
             <p className="text-xl max-w-screen-sm py-8 px-3 mx-auto">La Flor Blanca consiste en tres planes de subscripción. Cada uno te dará acceso a contenido diferente y podrás realizar distintos tipos de preguntas.</p>
+            {!loaderData?.isLoggedIn &&
+                <InfoAlert level="Info" className="text-xl max-w-screen-sm py-8 px-3 mx-auto">Para suscribirte a un plan necesitas registrarte en La Flor Blanca. Si todavía no te has registrado crea una cuenta <Link to="/register" className="link link-primary">aquí</Link></InfoAlert>
+            }
             <div className="grid md:grid-cols-2 gap-4 mx-auto pb-3 justify-items-center">
                 <div className="card bg-neutral-content/10 w-[95%] max-w-[30rem] shadow-xl">
                     <figure className="px-10 pt-10">

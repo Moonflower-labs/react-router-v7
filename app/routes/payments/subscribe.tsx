@@ -22,20 +22,25 @@ type ConfirmResponse = {
 };
 
 export default function Subscribe() {
-  const { planName } = useOutletContext() as ContextType;
+  const { planName, img } = useOutletContext() as ContextType;
 
   return (
-    <div className="pb-3">
+    <main className="pb-3 text-center">
       <h1 className="text-center text-3xl text-primary font-semibold pt-3 my-6">
         Confirma tu suscripción a <span>{planName}</span>
       </h1>
+      <div className="avatar mb-4">
+        <div className="w-14 rounded">
+          <img src={img} alt="logo" className="transform scale-110" />
+        </div>
+      </div>
       <SubscriptionForm />
-    </div>
+    </main>
   );
 }
 
 function SubscriptionForm() {
-  const { amount, priceId } = useOutletContext() as ContextType;
+  const { amount, priceId, planName, type } = useOutletContext() as ContextType;
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -55,40 +60,24 @@ function SubscriptionForm() {
     }
     // Handle loading state
     setLoading(true);
-    // Trigger client-side validation
-    const { error: submitError } = await elements.submit();
-    if (submitError) return handleError(submitError);
 
     try {
-      const response = await fetch("/api/subscription", {
-        method: "POST",
-        body: JSON.stringify({ priceId })
-      });
-      const { type, clientSecret, error, subscriptionId } = await response.json();
-      if (error) return handleError(error);
-
-      if (!clientSecret) return;
       const confirmIntent = type === "setup" ? stripe.confirmSetup : stripe.confirmPayment;
-
-      const res = (await confirmIntent({
+      const { paymentIntent, setupIntent, error } = (await confirmIntent({
         elements,
-        clientSecret: clientSecret,
         confirmParams: {
           return_url: `${window.location.origin}/payments/success`
         },
         redirect: "if_required"
       })) as ConfirmResponse;
-      if (res.error) return handleError(res.error);
+      if (error) return handleError(error);
 
-      const { paymentIntent, setupIntent } = res;
       const result = type === "setup" ? setupIntent : paymentIntent;
       // Handle successful payment confirmation
-      console.log("Payment successful!");
-
       const params = new URLSearchParams();
       params.set("clientSecret", result?.client_secret as string);
-      params.set("paymentIntentId", result?.id as string);
-      params.set("subscriptionId", subscriptionId);
+      type === "setup" ? params.set("setupIntentId", result?.id as string) : params.set("paymentIntentId", result?.id as string);;
+      params.set("plan", planName as string);
 
       // Redirect to success page with parameters
       return navigate(`/payments/success?${params}`);
