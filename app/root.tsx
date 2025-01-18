@@ -7,7 +7,6 @@ import { getUserById } from "./models/user.server";
 import { getCartItemsCount } from "./models/cart.server";
 import { ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
-import toastifySlyles from "react-toastify/dist/ReactToastify.css?url";
 import stylesheet from "./app.css?url";
 import logo from "../app/components/root/logo.svg"
 
@@ -29,7 +28,6 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Faculty+Glyphic&family=Poppins:ital,wght@0,500;1,400&family=Roboto:wght@500&display=swap"
   },
   { rel: "stylesheet", href: stylesheet },
-  { rel: "stylesheet", href: toastifySlyles },
 ];
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

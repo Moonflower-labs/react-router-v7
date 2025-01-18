@@ -1,80 +1,85 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
-import type { PaymentIntent } from "@stripe/stripe-js";
-import { retrieveSubscription } from "~/integrations/stripe";
+import { Link, useLocation } from "react-router";
+import type { PaymentIntent, SetupIntent } from "@stripe/stripe-js";
+import { getSubscriptionData } from "~/integrations/stripe";
 import { retrievePaymentIntent } from "~/integrations/stripe/payment.server";
 import type { Route } from "./+types/success";
+import { deleteCart } from "~/models/cart.server";
+import { retrieveSetupIntent } from "~/integrations/stripe/setup.server";
 
-export interface Subscription {
-  current_period_start: number;
-  current_period_end: number;
-}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
-  const subscriptionId = url.searchParams.get("subscriptionId");
-  const invoiceUrl = url.searchParams.get("invoiceUrl");
-  if (subscriptionId) {
-    const subscription = (await retrieveSubscription(subscriptionId)) as Subscription;
-    return { subscription };
-  }
-  // const paymentIntentClentSecret = url.searchParams.get("clientSecret");
+  const plan = url.searchParams.get("plan");
+  const cartId = url.searchParams.get("cartId");
   const paymentIntentId = url.searchParams.get("paymentIntentId");
+  const setupIntentId = url.searchParams.get("setupIntentId");
+  const success = url.searchParams.get("success");
+  const mode = plan ? "subscription" : paymentIntentId ? "payment" : "setup"
+  // Clear the cart
+  if (cartId) {
+    await deleteCart(cartId);
+  }
+  if (plan) {
+    const planData = getSubscriptionData(plan)
+    return { planData, mode };
+  }
+
   if (paymentIntentId) {
     const paymentIntent = (await retrievePaymentIntent(paymentIntentId)) as PaymentIntent;
-    return { paymentIntent, invoiceUrl };
+    return { paymentIntent, mode };
   }
+  if (setupIntentId) {
+    const paymentIntent = (await retrieveSetupIntent(setupIntentId)) as SetupIntent;
+    return { paymentIntent, mode };
+  }
+
   return null;
 }
 
 export default function Success({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const subscription = loaderData?.subscription;
+  const planData = loaderData?.planData;
   const clientSecret = searchParams.get("clientSecret");
+  const mode = loaderData?.mode
   const [message, setMessage] = useState("");
-  const paymentIntent = loaderData?.paymentIntent;
-
-  // TODO: fetch data to display, invoice link etc.
-  // console.log(subscription)
+  const paymentOrSetupIntent = loaderData?.paymentIntent;
 
   useEffect(() => {
-    if (paymentIntent) {
-      switch (paymentIntent?.status) {
+    if (paymentOrSetupIntent) {
+      switch (paymentOrSetupIntent?.status) {
         case "succeeded":
           setMessage("Pago realizado con éxito!");
           break;
         case "processing":
-          setMessage("Your payment is processing.");
+          setMessage("El pago se está procesando");
           break;
         case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
+          setMessage("El pago no se ha podido realizar");
           break;
         default:
           setMessage("Something went wrong.");
           break;
       }
     }
-  }, [clientSecret, paymentIntent]);
+  }, [clientSecret, paymentOrSetupIntent]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-center">
-      <div className="text-3xl text-primary">Success</div>
+    <div className="min-h-[80vh] flex flex-col gap-6 justify-center items-center text-center">
       {message && <div className="text-xl">{message}</div>}
-      {subscription && (
+      {mode === "subscription" && planData ? (
         <div>
-          <p>
-            Periodo de facturación actual del <span className="font-bold"> {new Date(subscription?.current_period_start * 1000).toLocaleDateString()}</span> al{" "}
-            <span className="font-bold"> {new Date(subscription?.current_period_end * 1000).toLocaleDateString()}</span>
-          </p>
+          <h1 className="text-3xl mb-4">Bienvenido a {planData.name}!</h1>
+          <div className="avatar mb-4">
+            <div className="w-14 rounded">
+              <img src={planData.img} alt="logo" className="transform scale-110" />
+            </div>
+          </div>
+          <p>Visita la <Link to={"/members"} className="link link-primary">sección de miembros</Link></p>
         </div>
-      )}
-      <>
-        {loaderData?.invoiceUrl &&
-          <a className="link-primary underline" href={loaderData.invoiceUrl} target="_blank" rel="noreferrer">
-            Ver/Descargar factura
-          </a>}
-      </>
+      ) :
+        <p className="p-10">Gracias por tu compra!. Estamos procesando el pedido y pronto estará contigo.</p>}
     </div>
   );
 }

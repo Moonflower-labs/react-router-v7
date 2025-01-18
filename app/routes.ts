@@ -34,13 +34,15 @@ export default [
     index("routes/profile/index.tsx"),
     route("favorites", "routes/profile/favorites.tsx"),
     route("invoices", "routes/profile/invoices.tsx"),
-    route("subscription", "routes/profile/subscription.tsx"),
     route("orders", "routes/profile/orders.tsx"),
-    route("plan", "routes/profile/plan/index.tsx", [
-      route("update", "routes/profile/plan/update.tsx"),
-      route("delete", "routes/profile/plan/delete.tsx"),
-      route("confirmation", "routes/profile/plan/confirmation.tsx")
+    route("subscription", "routes/profile/subscription/index.tsx", [
+      route("update", "routes/profile/subscription/update.tsx"),
+      route("delete", "routes/profile/subscription/delete.tsx")
     ]),
+    route(
+      "subscription/confirmation",
+      "routes/profile/subscription/confirmation.tsx"
+    ),
     route("questions", "routes/profile/questions.tsx"),
     route("settings", "routes/profile/settings.tsx")
   ]),
@@ -75,12 +77,9 @@ export default [
   // API Routes
   ...prefix("api", [
     route("/comments", "routes/api/comments.tsx"),
-    route("/create-payment-intent", "routes/api/paymentIntent.tsx"),
-    route("/invoice", "routes/api/invoice.tsx"),
-    route("/deduct-balance", "routes/api/deduct-balance.tsx"),
-    route("/subscription", "routes/api/subscription.tsx"),
     route("/webhook", "routes/api/webhooks.tsx")
   ]),
+  route("email", "routes/email.tsx"),
 
   // Add the admin routes
   ...adminRoutes

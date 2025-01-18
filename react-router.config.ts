@@ -5,7 +5,7 @@ export default {
   ssr: true,
 
   // any url
-  //   prerender: ["/", "/blog", "/blog/popular-post"],
+  // prerender: ["/", "/help"],
 
   // async prerender({ getStaticPaths }) {
   //   let posts = await fetchPosts({ page: 1, pageSize: 10 });

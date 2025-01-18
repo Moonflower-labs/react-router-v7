@@ -46,14 +46,28 @@ export async function getCustomerId(userId: string) {
 
     const customerId = user.customerId;
     return customerId;
-  } catch (error) {
+  } catch (e) {
     return null;
   }
 }
 
-export async function deductBalanceUsed(customerId: string, amountUsed: number) {
+export async function getCustomer(customerId: string) {
+  try {
+    const customer = await stripe.customers.retrieve(customerId);
+    return customer as Stripe.Customer;
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function deductBalanceUsed(
+  customerId: string,
+  amountUsed: number
+) {
   // Fetch the current balance
-  const customer = (await stripe.customers.retrieve(customerId)) as Stripe.Customer;
+  const customer = (await stripe.customers.retrieve(
+    customerId
+  )) as Stripe.Customer;
   const currentBalance = customer.balance ?? 0;
   const avaliableCredit = Math.abs(currentBalance);
   if (avaliableCredit >= amountUsed) {
@@ -69,6 +83,99 @@ export async function deductBalanceUsed(customerId: string, amountUsed: number) 
 
 export async function getCustomerBalance(customerId: string) {
   // Fetch the current balance
-  const customer = (await stripe.customers.retrieve(customerId)) as Stripe.Customer;
-  return customer.balance ?? 0;
+  const customer = (await stripe.customers.retrieve(
+    customerId
+  )) as Stripe.Customer;
+  return customer.balance !== undefined ? Math.abs(customer.balance) : 0;
+}
+
+export async function isSubscriptionDefaultPaymentMethodValid(
+  subscriptionId: string
+) {
+  try {
+    const userSubscription = await stripe.subscriptions.retrieve(
+      subscriptionId,
+      { expand: ["default_payment_method"] }
+    );
+    // If the subscription is active and has default_payment_method
+    if (
+      userSubscription.status === "active" &&
+      typeof userSubscription.default_payment_method === "object"
+    ) {
+      switch (userSubscription?.default_payment_method?.type) {
+        case "card": {
+          const card = userSubscription.default_payment_method.card;
+          const isCardExpired =
+            card?.exp_year! < new Date().getFullYear() ||
+            (card?.exp_year! === new Date().getFullYear() &&
+              card?.exp_month! < new Date().getMonth() + 1);
+          return !isCardExpired;
+        }
+        case "link":
+        case "cashapp":
+        case "amazon_pay":
+        case "paypal": {
+          return true;
+        }
+        case "acss_debit":
+        case "sepa_debit":
+        case "bacs_debit": {
+          return true;
+        }
+        default: {
+          console.warn(
+            `Unsupported payment method type: ${userSubscription?.default_payment_method?.type}`
+          );
+          return false;
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+export async function isCustomerDefaultPaymentMethodValid(customerId: string) {
+  try {
+    const customer = (await stripe.customers.retrieve(
+      customerId
+    )) as Stripe.Customer;
+    const defaultPaymentMethodId =
+      customer?.invoice_settings.default_payment_method;
+    if (!defaultPaymentMethodId) {
+      return false;
+    }
+    const paymentMethod = await stripe.paymentMethods.retrieve(
+      String(defaultPaymentMethodId)
+    );
+    switch (paymentMethod.type) {
+      case "card": {
+        const card = paymentMethod.card;
+        const isCardExpired =
+          card?.exp_year! < new Date().getFullYear() ||
+          (card?.exp_year! === new Date().getFullYear() &&
+            card?.exp_month! < new Date().getMonth() + 1);
+        return !isCardExpired;
+      }
+      case "link":
+      case "cashapp":
+      case "amazon_pay":
+      case "paypal": {
+        return true;
+      }
+      case "acss_debit":
+      case "sepa_debit":
+      case "bacs_debit": {
+        return true;
+      }
+      default: {
+        console.warn(`Unsupported payment method type: ${paymentMethod.type}`);
+        return false;
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 }

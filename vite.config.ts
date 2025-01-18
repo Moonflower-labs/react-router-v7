@@ -4,8 +4,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import autoprefixer from "autoprefixer";
 import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
+import { remixPWA } from "@remix-pwa/dev";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => ({
   css: {
     postcss: {
       plugins: [tailwindcss, autoprefixer]
@@ -14,6 +15,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     mode === "development" && reactRouterDevTools(),
     reactRouter(),
-    tsconfigPaths()
+    tsconfigPaths(),
+    remixPWA()
   ].filter(Boolean)
 }));

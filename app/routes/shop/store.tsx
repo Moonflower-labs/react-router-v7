@@ -46,7 +46,7 @@ export default function Store({ loaderData }: Route.ComponentProps) {
   }, [fetcher.data]);
 
   return (
-    <>
+    <main className="min-h-screen">
       <h2 className="text-3xl text-center text-primary font-semibold pt-3 mb-4">Tienda</h2>
       {!user && (
         <div role="alert" className="alert bg-warning/60 b mb-4 w-fit mx-auto">
@@ -77,6 +77,6 @@ export default function Store({ loaderData }: Route.ComponentProps) {
           }
         </Await>
       </Suspense>
-    </>
+    </main>
   );
 }

@@ -3,6 +3,7 @@ import { createUserSession, getUserId } from "~/utils/session.server";
 import type { Route } from "./+types/register";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail, validateUsername } from "~/utils/helpers";
+import { sendWelcomeEmail } from "~/integrations/mailer/utils.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -46,14 +47,21 @@ export async function action({ request }: Route.ActionArgs) {
     return { errors: { email: "A user already exists with this email", password: null } }
   }
 
-  const user = await createUser(email, password, username);
+  try {
+    const user = await createUser(email, password, username);
 
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id
-  });
+    await sendWelcomeEmail(user.email, user.username)
+
+    return createUserSession({
+      redirectTo,
+      remember: false,
+      request,
+      userId: user.id
+    });
+  } catch (e) {
+    console.log(e)
+    return { errors: { username: "This username already exists", password: null } }
+  }
 }
 
 export default function ResgisterPage({ actionData }: Route.ComponentProps) {

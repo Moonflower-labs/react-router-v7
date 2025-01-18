@@ -71,26 +71,24 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 <div className="flex-grow">
                   <div className="flex-grow flex flex-col items-center">
                     <div className="avatar">
-                      <div className="w-20 rounded-lg mb-6">
+                      <div className="w-20 rounded-lg mb-3">
                         <img src={loaderData?.planData?.img} />
                       </div>
                     </div>
                   </div>
-                  <div>
-                    Estado <span>{translateSubscriptionStatus(subscription?.status)}</span>
-                  </div>
+                  <span className={`badge mb-4 ${subscription?.status === "active" ? "badge-success" : "badge-warning"}`}>{translateSubscriptionStatus(subscription?.status)}</span>
                   <div>
                     Plan <span>{subscription?.plan?.name}</span>
                   </div>
                 </div>
-                <Link to={"subscription"} className="text-primary flex justify-end" viewTransition>
+                <Link to={"subscription"} className="text-primary flex justify-end badge-s" viewTransition>
                   <IoOptionsOutline size={24} />
                 </Link>
               </>
             ) : (
               <>
                 <div className="mb-4">Todavía no te has suscrito a nigún plan 🙁</div>
-                <Link to={"/#plans"} className="btn btn-sm btn-primary" viewTransition>
+                <Link to={"/plans"} className="btn btn-sm btn-primary" viewTransition>
                   Planes de suscripción
                 </Link>
               </>

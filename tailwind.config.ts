@@ -38,7 +38,7 @@ export default {
           "base-content": "#151514",
           info: "#5cc3ff",
           "info-content": "#051016",
-          success: "#2bb800",
+          success: "#64ed62",
           "success-content": "#0c1400",
           warning: "#facc15",
           "warning-content": "#150f00",

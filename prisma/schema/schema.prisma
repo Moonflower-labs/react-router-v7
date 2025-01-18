@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+    previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource db {
@@ -103,13 +104,14 @@ model Review {
 model Subscription {
   id     String @id
   status String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId String @unique
   plan   Plan   @relation(fields: [planId], references: [id])
   planId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cancellationDate DateTime?
 }
 
 model Plan {

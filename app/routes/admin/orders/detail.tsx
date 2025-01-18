@@ -12,8 +12,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function OrderDetail({ loaderData }: Route.ComponentProps) {
-  const order = loaderData;
-
+  const order = loaderData as any;
+  // console.log(order)
 
   return (
     <div className="mb-6 lg:w-2/3 mx-auto">
@@ -30,18 +30,18 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
 
       <div className="flex flex-row gap-4 items-center mb-4">
         <div>
-          {order?.status === "complete" ? <div className="badge badge-primary">Completado</div> : <div className="badge badge-secondary">Pendiente</div>}
+          {order?.status === "succeeded" ? <div className="badge badge-primary">Pagada</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
         </div>
         <Form method="put" action="/admin/orders" navigate={false}>
-          <input type="hidden" name="status" value={order?.status === "complete" ? "incomplete" : "complete"} />
+          <input type="hidden" name="status" value={order?.status === "succeeded" ? "incomplete" : "succeeded"} />
           <button type="submit" name="orderId" value={order?.id} className="btn btn-sm btn-outline btn-info">
-            {order?.status === "complete" ? <FaCheck /> : <MdOutlinePendingActions size={20} />}
+            {order?.status === "succeeded" ? <FaCheck /> : <MdOutlinePendingActions size={20} />}
           </button>
         </Form>
       </div>
       <h3 className="font-bold text-xl mb-4">Artículos:</h3>
       <div className="flex flex-col gap-4">
-        {order?.orderItems.map(item => (
+        {order?.orderItems.map((item: any) => (
           <div key={item.id} className="flex items-center gap-4 bg-neutral-content/10 rounded-lg shadow p-3">
             <div className="avatar">
               <div className="w-12 rounded">

@@ -3,6 +3,7 @@ import { stripe } from "~/integrations/stripe";
 import personalitImg from "../../icons/plan-personality.svg";
 import soulImg from "../../icons/plan-soul.svg";
 import spiritImg from "../../icons/plan-spirit.svg";
+import type Stripe from "stripe";
 
 export const PLANS = [
   {
@@ -35,10 +36,16 @@ export function getSubscriptionData(name: string) {
   }
   const { mode, amount, priceId, img } = data;
 
-  return { mode, amount, priceId, img };
+  return { name, mode, amount, priceId, img };
 }
 
-export async function createSubscription({ priceId, customerId }: { priceId: string; customerId: string }) {
+export async function createSubscription({
+  priceId,
+  customerId
+}: {
+  priceId: string;
+  customerId: string;
+}) {
   try {
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
@@ -51,58 +58,34 @@ export async function createSubscription({ priceId, customerId }: { priceId: str
       payment_settings: { save_default_payment_method: "on_subscription" },
       expand: ["latest_invoice.payment_intent", "pending_setup_intent"]
     });
-    // Check if it's a setup intent
-    if (subscription.pending_setup_intent !== null) {
+    // ? This code block will only execute when creating a Free subscription
+    if (
+      subscription?.pending_setup_intent &&
+      typeof subscription.pending_setup_intent === "object"
+    ) {
       return {
         type: "setup",
-        clientSecret: typeof subscription.pending_setup_intent === "string" ? null : subscription.pending_setup_intent.client_secret
-      };
-    } else {
-      return {
-        type: "payment",
-        clientSecret:
-          subscription.latest_invoice &&
-          typeof subscription.latest_invoice !== "string" &&
-          subscription.latest_invoice.payment_intent &&
-          typeof subscription.latest_invoice.payment_intent !== "string"
-            ? subscription.latest_invoice?.payment_intent.client_secret
-            : null,
+        clientSecret: subscription.pending_setup_intent.client_secret,
         subscriptionId: subscription.id
       };
     }
-  } catch (error) {
+
     return {
-      error: {
-        message: error instanceof Error ? error?.message : "Error creating a subscription"
-      }
+      type: "payment",
+      clientSecret:
+        subscription.latest_invoice &&
+        typeof subscription.latest_invoice !== "string" &&
+        subscription.latest_invoice.payment_intent &&
+        typeof subscription.latest_invoice.payment_intent !== "string"
+          ? subscription.latest_invoice?.payment_intent.client_secret
+          : null,
+      subscriptionId: subscription.id
     };
-  }
-}
-
-export async function updateSubscription({
-  priceId,
-  SubItemId, // the subscription item to replace the current price with the new price.
-  subscriptionId
-}: {
-  priceId: string;
-  SubItemId: string;
-  subscriptionId: string;
-}) {
-  try {
-    const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
-      items: [
-        {
-          id: SubItemId,
-          price: priceId
-        }
-      ]
-    });
-
-    return updatedSubscription;
-  } catch (error) {
+  } catch (e) {
     return {
       error: {
-        message: error instanceof Error ? error?.message : "Error updating a subscription"
+        message:
+          e instanceof Error ? e?.message : "Error creating a subscription"
       }
     };
   }
@@ -113,19 +96,78 @@ export async function retrieveSubscription(subscriptionId: string) {
   return subscription;
 }
 
-export async function retrieveStripeSubscription({ userId }: { userId: string }) {
+export async function updateStripeSubscription(
+  subscriptionId: string,
+  priceId: string
+) {
+  const subscription = await retrieveSubscription(String(subscriptionId));
+  if (subscription.status !== "active") {
+    // Todo: Allow for inactive subscription scenario by creating a new one and confirm it
+    const customerId = subscription.customer as string;
+    return await createSubscription({ priceId, customerId });
+  }
+  const customer = (await stripe.customers.retrieve(
+    subscription.customer as string
+  )) as Stripe.Customer;
+  console.log(subscription);
+  const subscriptionWithPayment = await stripe.subscriptions.update(
+    String(subscriptionId),
+    {
+      expand: ["latest_invoice.payment_intent"],
+      default_payment_method: customer.invoice_settings
+        .default_payment_method as string
+    }
+  );
+  console.log(subscriptionWithPayment);
+  const newSubscription = await stripe.subscriptions.update(
+    String(subscriptionId),
+    {
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          price: String(priceId)
+        }
+      ],
+      proration_behavior: "always_invoice",
+      proration_date: Math.floor(Date.now() / 1000),
+      expand: ["latest_invoice.payment_intent"],
+      default_payment_method: customer.invoice_settings
+        .default_payment_method as string,
+      cancel_at_period_end: false
+    }
+  );
+  return newSubscription;
+}
+
+export async function retrieveStripeSubscription({
+  userId
+}: {
+  userId: string;
+}) {
   try {
     const userSubscription = await prisma.subscription.findUnique({
       where: { userId }
     });
     if (!userSubscription) return null;
-    const subscription = await stripe.subscriptions.retrieve(userSubscription.id);
+    const subscription = await stripe.subscriptions.retrieve(
+      userSubscription.id
+    );
     return subscription;
   } catch (error) {
     return {
       error: {
-        message: error instanceof Error ? error?.message : "Error updating a subscription"
+        message:
+          error instanceof Error
+            ? error?.message
+            : "Error retrieving the subscription"
       }
     };
   }
+}
+
+export async function cancelStripeSubscription(subscriptionId: string) {
+  // return stripe.subscriptions.cancel(subscriptionId);
+  return stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: true
+  });
 }

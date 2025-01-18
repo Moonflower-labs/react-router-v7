@@ -1,4 +1,4 @@
-import { getStripeEvent, handleCustomerCreated, handlePaymentIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
+import { getStripeEvent, handleCustomerCreated, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
 import type { Route } from "./+types/webhooks";
 import { prisma } from "~/db.server";
 
@@ -27,36 +27,29 @@ export async function action({ request }: Route.ActionArgs) {
       await handleCustomerCreated(event);
       break;
     case "payment_intent.succeeded":
-      const paymentIntent = event.data.object;
-      console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
-      await handlePaymentIntentSucceeded(event)
-      // Then define and call a method to handle the successful payment intent.
-      // handlePaymentIntentSucceeded(paymentIntent);
+      await handlePaymentIntentSucceeded(event);
       break;
     case "payment_method.attached":
       const paymentMethod = event.data.object;
-      console.info(`PaymentMethod for customer ${paymentMethod.customer} was successful!`);
-      // Then define and call a method to handle the successful payment intent.
-      // handlePaymentIntentSucceeded(paymentIntent);
+      console.info(`PaymentMethod attached for customer ${paymentMethod.customer}`);
+      console.info(`Missing event handler for PaymentMethod attached`);
       break;
     case "setup_intent.succeeded":
-      const setupIntent = event.data.object;
-      console.log(setupIntent);
-      // handlePaymentMethodAttached(paymentMethod);
+      await handleSetupIntentSucceeded(event);
       break;
     case "customer.subscription.created":
-      const subscription = event.data.object;
-      console.log(subscription);
       await handleSubscriptionCreated(event);
       break;
     case "customer.subscription.updated":
-      console.info("Attempting to update subscription");
       await handleSubscriptionUpdated(event);
       break;
     case "customer.subscription.deleted":
-      const deletedSubscription = event.data.object;
-      console.log(deletedSubscription);
       await handleSubscriptionDeleted(event);
+      break;
+    case "customer.subscription.paused":
+    // await handleSubscriptionPaused(event);
+    case "customer.subscription.resumed":
+      // await handleSubscriptionResumed(event);
       break;
     default:
       // Unexpected event type

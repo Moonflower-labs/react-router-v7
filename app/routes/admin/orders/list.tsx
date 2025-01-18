@@ -119,16 +119,16 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               <span className="me-5">{formatDate(order.createdAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
-              {order?.status?.toLowerCase() === "complete" ? (
-                <div className="badge badge-primary">Completado</div>
+              {order?.status?.toLowerCase() === "succeeded" ? (
+                <div className="badge badge-primary">Pagada</div>
               ) : (
-                <div className="badge badge-secondary">Pendiente</div>
+                <div className="badge badge-error">Incompleta</div>
               )}
               <Link to={`${order.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
                 <FaEye size={24} />
               </Link>
               <Form method="put">
-                <input type="hidden" name="status" value={order.status === "complete" ? "Pending" : "complete"} />
+                <input type="hidden" name="status" value={order.status === "succeeded" ? "Pending" : "succeeded"} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-accent">
                   <FaCheck />
                 </button>
