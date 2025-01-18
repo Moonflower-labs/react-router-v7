@@ -5,8 +5,28 @@ export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,
-    subject: "Resetea tu contraseña",
-    text: `testing`,
+    subject: "Bienvenido a La Flor Blanca!",
+    text: `Bienvenido a La Flor Blanca!`,
+    html: await renderWelcomeEmail({ username })
+  });
+}
+
+export async function sendSubscriptionEmail(email: string, username: string) {
+  return transporter.sendMail({
+    from: "admin@thechicnoir.com",
+    to: email,
+    subject: "Tu suscripción a La Flor Blanca",
+    text: `Tu suscripción a La Flor Blanca`,
+    html: await renderWelcomeEmail({ username })
+  });
+}
+
+export async function sendOrderEmail(email: string, username: string) {
+  return transporter.sendMail({
+    from: "admin@thechicnoir.com",
+    to: email,
+    subject: "Tu pedido con La Flor Blanca",
+    text: `Tu pedido con La Flor Blanca`,
     html: await renderWelcomeEmail({ username })
   });
 }

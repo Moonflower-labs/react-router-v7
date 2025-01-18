@@ -3,7 +3,7 @@ import { getUserByEmail } from "~/models/user.server";
 import type { Route } from "./+types/forgot-password";
 import { generateResetUrl, generateToken, validateEmail } from "~/utils/helpers";
 import { prisma } from "~/db.server";
-import { sendResetPasswordEmail } from "~/integrations/mailer/auth.server";
+import { sendResetPasswordEmail } from "~/integrations/mailer/utils.server";
 
 export async function action({ request }: Route.LoaderArgs) {
     const formData = await request.formData();
