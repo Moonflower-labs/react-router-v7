@@ -35,18 +35,14 @@ export default [
     route("favorites", "routes/profile/favorites.tsx"),
     route("invoices", "routes/profile/invoices.tsx"),
     route("orders", "routes/profile/orders.tsx"),
-    route("subscription", "routes/profile/subscription.tsx", [
-      // route("plan", "routes/profile/plan/index.tsx", [
-      //   route("update", "routes/profile/plan/update.tsx"),
-      //   route("delete", "routes/profile/plan/delete.tsx"),
-      //   route("confirmation", "routes/profile/plan/confirmation.tsx")
-      // ])
+    route("subscription", "routes/profile/subscription/index.tsx", [
+      route("update", "routes/profile/subscription/update.tsx"),
+      route("delete", "routes/profile/subscription/delete.tsx")
     ]),
-    route("plan", "routes/profile/plan/index.tsx", [
-      route("update", "routes/profile/plan/update.tsx"),
-      route("delete", "routes/profile/plan/delete.tsx"),
-      route("confirmation", "routes/profile/plan/confirmation.tsx")
-    ]),
+    route(
+      "subscription/confirmation",
+      "routes/profile/subscription/confirmation.tsx"
+    ),
     route("questions", "routes/profile/questions.tsx"),
     route("settings", "routes/profile/settings.tsx")
   ]),

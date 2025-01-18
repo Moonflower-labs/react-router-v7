@@ -335,8 +335,8 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
         console.info(`Free subscription created for ${customerId}`);
         return;
         // TODO: send email with invoice details
-      } catch (error) {
-        console.log(error);
+      } catch (e) {
+        console.log(e);
         return;
       }
     }
@@ -363,6 +363,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
       return;
     }
     // This sets the payment method as default for the customer
+    //
     await stripe.paymentMethods.attach(String(setupIntent.payment_method), {
       customer: setupIntent.customer as string
     });
@@ -373,6 +374,17 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
     });
     console.info(
       `Default payment method attached to customer for: ${customerId}`
+    );
+    // This sets the payment method as default for the SUBSCRIPTION
+    const userSubscription = await stripe.subscriptions.list({
+      customer: setupIntent.customer as string,
+      status: "active"
+    });
+    await stripe.subscriptions.update(userSubscription.data[0].id, {
+      default_payment_method: setupIntent.payment_method as string
+    });
+    console.info(
+      `Default payment method attached to Subscription ${userSubscription.data[0].id}`
     );
   }
 }

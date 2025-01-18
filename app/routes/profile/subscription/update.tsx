@@ -54,7 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
         console.error(e);
         return { success: false, message: "Ha ocurrido un error" };
       }
-      return redirect("/profile/plan/confirmation");
+      return redirect("/profile/subscription/confirmation");
     }
     default: {
       throw data(null, { status: 400 });
@@ -111,7 +111,6 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
       </div>
       {navigation.state === "submitting" && <span className="loading loading-spinner text-primary"></span>}
       {actionData?.message && <span className="text-error">{actionData.message} </span>}
-      <Link to="/payments/setup" className="link link-primary">Actualizar mi método de pago</Link>
       <Form method="put" className="py-2 mx-auto">
         <input type="hidden" name="priceId" value={String(selectedPlan)} />
         {previewInvoice && (
