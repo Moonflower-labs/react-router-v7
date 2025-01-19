@@ -1,0 +1,79 @@
+model Cart {
+  id        String     @id
+  cartItems CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  guest     Boolean    @default(false)
+  user      User[]
+}
+
+model CartItem {
+  id         String  @id @default(cuid())
+  cart       Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  cartId     String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productId  String
+  quantity   Int
+  price      Price   @relation(fields: [priceId], references: [id])
+  totalPrice Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  priceId   String
+}
+
+model Order {
+  id      String  @id @default(cuid())
+  guest   Boolean
+  guestId String?
+
+  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId     String?
+  orderItems OrderItem[]
+
+  status String @default("Pending")
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  price     Price   @relation(fields: [priceId], references: [id])
+  priceId   String
+
+  quantity Int
+
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  orderId   String
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  description String
+  prices      Price[]
+  thumbnail   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartItems CartItem[]
+  OrderItem OrderItem[]
+}
+
+model Price {
+  id        String  @id @default(cuid())
+  amount    Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  info      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems OrderItem[]
+  cartItem   CartItem[]
+}
