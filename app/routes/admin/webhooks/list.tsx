@@ -42,7 +42,7 @@ export default function Webhooks({ loaderData }: Route.ComponentProps) {
                             <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
                                 <IoMdAdd size={24} />
                             </Link>
-                            <Link to={`${endpoint.id}/edit`} className="btn btn-sm btn-outline btn-info" viewTransition>
+                            <Link to={`edit/${endpoint.id}`} className="btn btn-sm btn-outline btn-info" viewTransition>
                                 <CiEdit size={24} />
                             </Link>
                             <Form method="post">

@@ -64,6 +64,14 @@ export async function createWebhookEndpoint(
   });
   return webhookEndpoint;
 }
+
+export async function editWebhookEndpoint(id: string) {
+  const webhookEndpoint = await stripe.webhookEndpoints.update(id, {
+    enabled_events: ["*"]
+  });
+  return webhookEndpoint;
+}
+
 export async function deleteWebhookEndpoint(id: string) {
   const webhookEndpoint = await stripe.webhookEndpoints.del(id);
   return webhookEndpoint;
@@ -171,7 +179,12 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
     });
   }
   const user = await getUserByCustomerId(String(subscription.customer));
-
+  // if (!user) {
+  //   console.error(
+  //     `Subscription can't be updated as no user found with customerId: ${subscription.customer}!`
+  //   );
+  //   return;
+  // }
   // Retrieve the user subscription
   const existingSubscription = await prisma.subscription.findUnique({
     where: { userId: user?.id }
