@@ -62,11 +62,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Subscription payment flow will have a plan name
     const { amount, priceId, img } = getSubscriptionData(planName);
     if (!customerId) {
-      return null
+      return;
     }
     if (amount <= 0) {
       // Create a SetupIntent
-      const { clientSecret, type } = await createFreeSubscriptionSetupIntent({ priceId, customerId })
+      const { clientSecret, type } = await createFreeSubscriptionSetupIntent({ priceId, customerId, metadata: { plan: planName } })
 
       return {
         clientSecret, amount, planName, customerSessionSecret, priceId, img, type

@@ -79,7 +79,6 @@ export default [
     route("/comments", "routes/api/comments.tsx"),
     route("/webhook", "routes/api/webhooks.tsx")
   ]),
-  route("email", "routes/email.tsx"),
 
   // Add the admin routes
   ...adminRoutes
