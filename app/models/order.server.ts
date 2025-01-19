@@ -78,10 +78,7 @@ export async function updateOrderItem(orderItemId: string, quantity: number) {
 export async function fetchOrders(status?: string) {
   return prisma.order.findMany({
     where: { status },
-    orderBy: {
-      status: "desc"
-      //  createdAt: "desc"
-    }
+    orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
 

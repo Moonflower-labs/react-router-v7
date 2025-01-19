@@ -377,19 +377,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
       // TODO: send email with invoice and order details
       return;
     }
-    // This sets the payment method as default for the customer
 
-    // await stripe.paymentMethods.attach(String(setupIntent.payment_method), {
-    //   customer: setupIntent.customer as string
-    // });
-    // await stripe.customers.update(String(setupIntent.customer), {
-    //   invoice_settings: {
-    //     default_payment_method: setupIntent.payment_method as string
-    //   }
-    // });
-    // console.info(
-    //   `Default payment method attached to customer for: ${customerId}`
-    // );
     // This sets the payment method as default for the SUBSCRIPTION
     const userSubscription = await stripe.subscriptions.list({
       customer: setupIntent.customer as string,
@@ -407,7 +395,6 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
 export async function handlePaymentAttached(event: Stripe.Event) {
   const paymentMethod = event.data.object as Stripe.PaymentMethod;
   // This sets the payment method as default for the customer
-
   await stripe.paymentMethods.attach(String(paymentMethod.id), {
     customer: paymentMethod.customer as string
   });

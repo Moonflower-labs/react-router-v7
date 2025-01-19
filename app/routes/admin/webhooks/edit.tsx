@@ -33,7 +33,6 @@ export default function EditEndpoint({ actionData, loaderData }: Route.Component
     const errors = actionData?.errors;
     const endpoint = loaderData?.weebhookEndpoint
 
-
     return (
         <div>
             <div className="min-h-screen text-center w-full">
