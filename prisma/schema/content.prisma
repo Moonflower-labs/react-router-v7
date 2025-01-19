@@ -15,7 +15,6 @@ model Post {
   rating     Rating[]
 }
 
-// todo: add enums for production db
 enum Section {
   Spirit
   Soul
