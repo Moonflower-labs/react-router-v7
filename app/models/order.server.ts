@@ -1,40 +1,6 @@
 import { prisma } from "~/db.server";
 import { type CartItem } from "./cart.server";
 
-export async function createOrder1(userId: string, cartItems: CartItem[]) {
-  if (userId.startsWith("guest-")) {
-    const guestOrder = await prisma.order.create({
-      data: {
-        guest: true,
-        userId,
-        orderItems: {
-          create: cartItems.map(item => ({
-            product: { connect: { id: item.product.id } },
-            price: { connect: { id: item.price.id } },
-            quantity: item.quantity || 1
-          }))
-        }
-      }
-    });
-
-    return guestOrder.id;
-  }
-  const order = await prisma.order.create({
-    data: {
-      guest: userId.startsWith("guest-") ?? false,
-      user: { connect: { id: userId } },
-      orderItems: {
-        create: cartItems.map(item => ({
-          product: { connect: { id: item.product.id } },
-          price: { connect: { id: item.price.id } },
-          quantity: item.quantity || 1
-        }))
-      }
-    }
-  });
-
-  return order.id;
-}
 export async function createOrder(userId: string, cartItems: CartItem[]) {
   const data: any = {
     guest: userId.startsWith("guest-"),
