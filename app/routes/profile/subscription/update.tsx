@@ -67,15 +67,15 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const previewInvoice = actionData?.preview;
   const previewInvoiceRef = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
-  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth", block: "end" }), [])
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth", block: "center" }), [])
 
   const navigation = useNavigation();
   const submit = useSubmit();
   const plans = loaderData?.PLANS;
 
   return (
-    <div className="text-center" ref={ref}>
-      <h2 className="text-2xl text-primary my-3">Actualiza tu plan</h2>
+    <div className="text-center">
+      <h2 className="text-2xl text-primary my-3" ref={ref}>Actualiza tu plan</h2>
       <p className="mb-6">Elige el plan al que deseas cambiar.</p>
       {loaderData?.error && <InfoAlert level="Importante" className="alert alert-error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </InfoAlert>}
       <div className="flex flex-col md:flex-row gap-3 md:w-2/3 mx-auto justify-around mb-4">
@@ -103,7 +103,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
                 onChange={() => setSelectedPlan(plan.priceId)}
               />
               <div className="flex flex-col items-center">
-                <img src={plan.img} alt={plan.name} className="mb-2 rounded-lg" height={250} width={250} />
+                <img src={plan.img} alt={plan.name} className="mb-2 rounded-lg aspect-square object-cover" height={250} width={250} />
                 <span className="label-text font-bold text-primary text-xl">{plan.name}</span>
                 <span className="label-text font-bold">£{plan.amount / 100}</span>
               </div>

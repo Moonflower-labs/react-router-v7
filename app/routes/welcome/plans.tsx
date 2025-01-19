@@ -45,7 +45,7 @@ export default function SubscriptionPlans({ loaderData }: Route.ComponentProps) 
 
                 <div className="card bg-neutral-content/10 w-[95%] max-w-[30rem] shadow-xl">
                     <figure className="px-10 pt-10">
-                        <img src={"/plan-soul.jpeg"} alt="" className="rounded-xl" />
+                        <img src={"/plan-soul.jpeg"} alt="" className="rounded-xl aspect-square object-cover" />
                     </figure>
                     <div className="card-body items-center text-center">
                         <h2 className="card-title">ALMA</h2>
