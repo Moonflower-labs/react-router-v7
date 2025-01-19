@@ -1,9 +1,7 @@
 import cloudinary from '~/integrations/cloudinary/service.server.js'
-import type { Route } from './+types/index.tsx'
-import { Link, NavLink } from 'react-router'
-import InfoAlert from '~/components/shared/info.js'
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import type { Route } from './+types/index.js'
+import { NavLink } from 'react-router'
+import InfoAlert from '~/components/shared/info'
 
 export async function loader({ request }: Route.LoaderArgs) {
     const images = await cloudinary.api.resources({
@@ -14,10 +12,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 
-
 export default function Gallery({ loaderData }: Route.ComponentProps) {
-    const images = loaderData?.images
-    const [selectedImage, setSelectedImage] = useState<any | null>(null)
+
 
     return (
 
@@ -27,50 +23,33 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
             <InfoAlert level='Info'>
                 Pincha en cada imagen para ampliar.
             </InfoAlert>
-            <div className="gallery relative">
-                <motion.div layout className="gallery grid gap-5 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
-
-                    {/* <AnimatePresence> */}
-                    {images.map((image: any) => (
-                        <Link key={image.public_id} to={`/gallery/image/${encodeURIComponent(image.public_id)}`}>
-                            <motion.img
-                                key={image.public_id}
-                                layoutId={image.public_id}
-                                // onClick={() => setSelectedImage(image)}
-                                animate={{ opacity: 1 }}
-                                transition={{ type: "spring" }}
-                                src={image.url}
-                                alt={image.resource_type}
-                                className={`w-full aspect-square p-4 object-cover object-top cursor-pointer m-auto rounded 
-                                   
-                                     transition-all ease-in-out duration-500`}// hover:rotate-2
-                                style={{
-
-                                }}
-                            />
-                        </Link>
+            <div className="gallery">
+                <div className="gallery grid gap-5 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
+                    {loaderData?.images.map((image: any) => (
+                        <NavLink
+                            key={image.public_id}
+                            to={`/gallery/image/${encodeURIComponent(image.public_id)}`}
+                            viewTransition
+                            className={"w-fit mx-auto"}
+                            prefetch='viewport'>
+                            {({ isTransitioning }) => (
+                                <>
+                                    <img
+                                        src={image.url}
+                                        alt={image.resource_type}
+                                        className={`gallery-item w-full aspect-square object-cover object-top m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500`}
+                                        style={{
+                                            viewTransitionName: isTransitioning
+                                                ? "full-image"
+                                                : "none",
+                                        }}
+                                    />
+                                    {/* <AdvancedImage key={image.url} cldImg={cld.image(image?.public_id)} /> */}
+                                </>
+                            )}
+                        </NavLink>
                     ))}
-                    {/* </AnimatePresence> */}
-                </motion.div>
-                {/* {selectedImage ?
-                    <motion.div
-                        layoutId={selectedImage.url}
-                        animate={{}}
-                        className='w-full h-full flex justify-center bg-pink-500/80 absolute top-[50vh] m-auto'
-                        onClick={() => setSelectedImage(null)}
-                    // onClick={() => setSelectedImage(null)}
-                    >
-                        <img
-                            src={selectedImage.url}
-                            alt={selectedImage.resource_type}
-                            className={` w-full object-top m-auto cursor-pointer rounded transition-all ease-in-out duration-500`}
-                            style={{
-
-                            }}
-                        />
-                    </motion.div>
-                    : null
-                } */}
+                </div>
             </div>
         </main>
     )
