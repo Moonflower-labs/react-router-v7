@@ -67,7 +67,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const previewInvoice = actionData?.preview;
   const previewInvoiceRef = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
-  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth", block: "center" }), [])
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth", block: "end" }), [])
 
   const navigation = useNavigation();
   const submit = useSubmit();
