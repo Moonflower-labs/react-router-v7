@@ -109,16 +109,13 @@ export async function updateStripeSubscription(
   const customer = (await stripe.customers.retrieve(
     subscription.customer as string
   )) as Stripe.Customer;
-  console.log(subscription);
-  const subscriptionWithPayment = await stripe.subscriptions.update(
-    String(subscriptionId),
-    {
-      expand: ["latest_invoice.payment_intent"],
-      default_payment_method: customer.invoice_settings
-        .default_payment_method as string
-    }
-  );
-  console.log(subscriptionWithPayment);
+  // TODO: review this code block potencially redundant
+  // Attach the payment method
+  await stripe.subscriptions.update(String(subscriptionId), {
+    expand: ["latest_invoice.payment_intent"],
+    default_payment_method: customer.invoice_settings
+      .default_payment_method as string
+  });
   const newSubscription = await stripe.subscriptions.update(
     String(subscriptionId),
     {

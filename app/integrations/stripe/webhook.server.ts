@@ -134,29 +134,31 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
   const existingUserSubscription = await prisma.subscription.findUnique({
     where: { userId: user?.id }
   });
-  if (
-    existingUserSubscription &&
-    existingUserSubscription.status !== "active"
-  ) {
-    console.info(`Subscription for user with Id ${user?.id} already exists!`);
-    const updatedSubscription = await prisma.subscription.update({
-      where: { userId: user?.id },
-      data: {
-        id: subscription.id,
-        status: subscription.status,
-        plan: { connect: { id: plan.id } }
-      }
-    });
-    console.info(`Subscription plan for user with Id ${user?.id} updated!`);
+  if (existingUserSubscription) {
+    if (existingUserSubscription.status !== "active") {
+      console.info(`Subscription for user with Id ${user?.id} already exists!`);
+      const updatedSubscription = await prisma.subscription.update({
+        where: { userId: user?.id },
+        data: {
+          id: subscription.id,
+          status: subscription.status,
+          plan: { connect: { id: plan.id } }
+        }
+      });
+      console.info(`Subscription plan for user with Id ${user?.id} updated!`);
 
-    return updatedSubscription;
+      return updatedSubscription;
+    } else if (existingUserSubscription.status === "active") {
+      console.error(`CONFLICT WITH USER ${user.username} SUBSCRIPTION`);
+      return;
+    }
   }
 
   // Create a new Subscription for the user
   return await prisma.subscription.create({
     data: {
       id: subscription.id,
-      user: { connect: { id: user?.id } },
+      user: { connect: { id: user.id } },
       status: subscription.status,
       plan: { connect: { id: plan.id } }
     }
@@ -179,15 +181,15 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
     });
   }
   const user = await getUserByCustomerId(String(subscription.customer));
-  // if (!user) {
-  //   console.error(
-  //     `Subscription can't be updated as no user found with customerId: ${subscription.customer}!`
-  //   );
-  //   return;
-  // }
+  if (!user) {
+    console.error(
+      `Subscription can't be updated as no user found with customerId: ${subscription.customer}!`
+    );
+    return;
+  }
   // Retrieve the user subscription
-  const existingSubscription = await prisma.subscription.findUnique({
-    where: { userId: user?.id }
+  const userSubscription = await prisma.subscription.findUnique({
+    where: { userId: user.id }
   });
 
   // Handle canceled subscription
@@ -199,7 +201,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       )}`
     );
     return prisma.subscription.update({
-      where: { id: existingSubscription?.id },
+      where: { id: userSubscription?.id },
       data: {
         cancellationDate: new Date(subscription.current_period_end * 1000)
       }
@@ -208,7 +210,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
   console.log("SUBS STATUS: ", subscription.status);
   switch (subscription.status) {
     case "active": {
-      if (!existingSubscription) {
+      if (!userSubscription) {
         console.info(
           `✅ Saving active subscription for user with Id ${user?.id}...`
         );
@@ -217,7 +219,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         return prisma.subscription.create({
           data: {
             id: subscription.id,
-            user: { connect: { id: user?.id } },
+            user: { connect: { id: user.id } },
             status: subscription.status,
             plan: { connect: { id: plan.id } }
           }
@@ -225,7 +227,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       }
       // Udate Plan and Status for the user Subscription
       const updatedUserSubscription = await prisma.subscription.update({
-        where: { id: existingSubscription.id },
+        where: { id: userSubscription.id },
         data: {
           status: subscription.status,
           plan: { connect: { id: plan.id } },
@@ -238,27 +240,27 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
     }
     // Todo: handle updates to canceled, incomplete, incomplete_expired, past_due, paused, unpaid, trialing
     case "past_due": {
-      if (!existingSubscription) return;
+      if (!userSubscription) return;
       // Udate Plan and Status for the user Subscription
       const updatedUserSubscription = await prisma.subscription.update({
-        where: { id: existingSubscription.id },
+        where: { id: userSubscription.id },
         data: {
           status: subscription.status,
           plan: { connect: { id: plan.id } }
         }
       });
 
-      console.info("Subscription succesfully updated!");
+      console.info("Subscription updated to past_due !");
       // TODO: Contact user requesting payment method update!!!
       return updatedUserSubscription;
     }
     case "unpaid":
     case "incomplete_expired":
     case "canceled": {
-      if (!existingSubscription) return;
+      if (!userSubscription) return;
 
       await prisma.subscription.delete({
-        where: { id: existingSubscription.id }
+        where: { id: userSubscription.id }
       });
       console.info(
         `Subscription with status: ${subscription?.status} deleted!`

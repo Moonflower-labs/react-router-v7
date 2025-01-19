@@ -13,7 +13,6 @@ export default function ImagePage({ loaderData }: Route.ComponentProps) {
     const image = loaderData as any;
 
     return (
-
         <main className="flex text-center justify-center items-center min-h-screen p-4">
             {image &&
                 <div>

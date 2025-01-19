@@ -9,7 +9,7 @@ export async function createSetupIntent({
 }) {
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
-    payment_method_types: ["card", "link", "paypal"],
+    payment_method_types: ["card", "link"],
     usage: "off_session",
     metadata
   });
@@ -30,10 +30,10 @@ export async function createFreeSubscriptionSetupIntent({
 }) {
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
-    // payment_method_types: ["card"],
-    automatic_payment_methods: {
-      enabled: true
-    },
+    payment_method_types: ["card", "link"],
+    // automatic_payment_methods: {
+    //   enabled: true
+    // },
     usage: "off_session",
     metadata: {
       ...metadata,
