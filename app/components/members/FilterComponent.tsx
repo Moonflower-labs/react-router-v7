@@ -37,7 +37,6 @@ export const FilterComponent = React.memo(() => {
     (document.getElementById("search") as HTMLInputElement).value = q || "";
   }, [q]);
 
-  console.log("Filter component rendered!!");
 
   const handleReset = useCallback(() => {
     if (formRef.current) {
