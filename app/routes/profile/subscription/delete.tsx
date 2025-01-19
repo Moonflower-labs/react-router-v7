@@ -1,10 +1,9 @@
 import { Form, useOutletContext } from "react-router";
 import type { Route } from "./+types/delete";
 import { cancelStripeSubscription } from "~/integrations/stripe";
+import { formatDate } from "~/utils/format";
 
-export async function loader({ request }: Route.LoaderArgs) {
 
-}
 
 export async function action({ request }: Route.LoaderArgs) {
   const formData = await request.formData();
@@ -24,18 +23,25 @@ export async function action({ request }: Route.LoaderArgs) {
 export default function Component({ loaderData, actionData }: Route.ComponentProps) {
   const subscriptionData = useOutletContext() as any;
   const cancellationDate = actionData?.cancellationDate
-  console.log(subscriptionData?.subscription.id)
 
   return (
     <div className="text-center">
       <h2 className="text-2xl text-primary my-3">Cancela tu suscripción</h2>
-      <p className="mb-4 max-w-xl mx-auto px-3">
-        Al cancelar tu suscripción ya no se volverá a renovar, y perderás acceso a las páginas y contenido desde esa misma fecha.
-      </p>
-      <Form method="delete" className="py-2 mx-auto mb-4">
-        <button type="submit" name="subscriptionId" value={subscriptionData.subscription.id} className="btn btn-outline btn-error btn-sm">Cancelar ahora</button>
-      </Form>
-      {cancellationDate ? <p className="mb-4 max-w-xl mx-auto px-3">Tu subscripción será cancelada el <span className="text-error">{cancellationDate.toLocaleDateString()}</span>. Hasta entonces si por algún motivo cambiases de plan, la cancelación será suspendida y continuarás con el plan elegido.</p> : null}
+      {subscriptionData?.subscription.cancellationDate ?
+        <p className="mb-4 max-w-xl mx-auto px-3">
+          Tu suscripción no se volverá a renovar, y será cancelada el {formatDate(subscriptionData?.subscription.cancellationDate)} .
+        </p> :
+        <>
+          {cancellationDate ? <p className="mb-4 max-w-xl mx-auto px-3">Tu subscripción será cancelada el <span className="text-error">{cancellationDate.toLocaleDateString()}</span>. Hasta entonces si por algún motivo cambiases de plan, la cancelación será suspendida y continuarás con el plan elegido.</p> :
+            <>
+              <p className="mb-4 max-w-xl mx-auto px-3">
+                Al cancelar tu suscripción ya no se volverá a renovar, y perderás acceso a las páginas y contenido desde esa misma fecha.
+              </p>
+              <Form method="delete" className="py-2 mx-auto mb-4">
+                <button type="submit" name="subscriptionId" value={subscriptionData.subscription.id} className="btn btn-outline btn-error btn-sm">Cancelar ahora</button>
+              </Form></>}
+        </>}
+
     </div>
   );
 }
