@@ -21,10 +21,12 @@ export async function createSetupIntent({
 
 export async function createFreeSubscriptionSetupIntent({
   customerId,
-  priceId
+  priceId,
+  metadata
 }: {
   priceId: string;
   customerId: string;
+  metadata: Record<string, string> | undefined;
 }) {
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
@@ -34,6 +36,7 @@ export async function createFreeSubscriptionSetupIntent({
     },
     usage: "off_session",
     metadata: {
+      ...metadata,
       free_subscription: "true",
       price_id: priceId
     }

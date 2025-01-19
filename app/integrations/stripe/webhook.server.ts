@@ -123,12 +123,14 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
   }
 
   // Check if user has a subscription already
-  const existingSubscription = await prisma.subscription.findUnique({
+  const existingUserSubscription = await prisma.subscription.findUnique({
     where: { userId: user?.id }
   });
-  if (existingSubscription && existingSubscription.status !== "active") {
+  if (
+    existingUserSubscription &&
+    existingUserSubscription.status !== "active"
+  ) {
     console.info(`Subscription for user with Id ${user?.id} already exists!`);
-    // todo: handle this scenario by updating the existing subscription
     const updatedSubscription = await prisma.subscription.update({
       where: { userId: user?.id },
       data: {
@@ -183,7 +185,6 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         subscription.current_period_end * 1000
       )}`
     );
-    // TODO: flag subscription in db
     return prisma.subscription.update({
       where: { id: existingSubscription?.id },
       data: {
@@ -198,6 +199,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         console.info(
           `✅ Saving active subscription for user with Id ${user?.id}...`
         );
+        // TODO: send email notification here
         // Create a new subsbcription
         return prisma.subscription.create({
           data: {
@@ -217,7 +219,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
           cancellationDate: null
         }
       });
-
+      // TODO: send email notification here
       console.info("Subscription succesfully updated!");
       return updatedUserSubscription;
     }
@@ -334,7 +336,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
         });
         console.info(`Free subscription created for ${customerId}`);
         return;
-        // TODO: send email with invoice details
+        // TODO: send email with invoice details plan Personalidad
       } catch (e) {
         console.log(e);
         return;
@@ -359,22 +361,22 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
           `Deducted ${usedBalance} from customer ${setupIntent.customer}`
         );
       }
-
+      // TODO: send email with invoice and order details
       return;
     }
-    // This sets the payment method as default for the customer
+    // This sets the payment method as default for the customer NOT NEEDED HERE
     //
-    await stripe.paymentMethods.attach(String(setupIntent.payment_method), {
-      customer: setupIntent.customer as string
-    });
-    await stripe.customers.update(String(setupIntent.customer), {
-      invoice_settings: {
-        default_payment_method: setupIntent.payment_method as string
-      }
-    });
-    console.info(
-      `Default payment method attached to customer for: ${customerId}`
-    );
+    // await stripe.paymentMethods.attach(String(setupIntent.payment_method), {
+    //   customer: setupIntent.customer as string
+    // });
+    // await stripe.customers.update(String(setupIntent.customer), {
+    //   invoice_settings: {
+    //     default_payment_method: setupIntent.payment_method as string
+    //   }
+    // });
+    // console.info(
+    //   `Default payment method attached to customer for: ${customerId}`
+    // );
     // This sets the payment method as default for the SUBSCRIPTION
     const userSubscription = await stripe.subscriptions.list({
       customer: setupIntent.customer as string,
