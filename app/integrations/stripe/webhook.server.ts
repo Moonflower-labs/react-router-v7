@@ -192,7 +192,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       }
     });
   }
-
+  console.log("SUBS STATUS: ", subscription.status);
   switch (subscription.status) {
     case "active": {
       if (!existingSubscription) {
@@ -323,7 +323,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
     if (freeSubscription && priceId) {
       try {
         // Create a free subscription with the default payment method attached
-        await stripe.subscriptions.create({
+        const stripeSubscription = await stripe.subscriptions.create({
           customer: customerId,
           items: [
             {
@@ -364,8 +364,8 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
       // TODO: send email with invoice and order details
       return;
     }
-    // This sets the payment method as default for the customer NOT NEEDED HERE
-    //
+    // This sets the payment method as default for the customer
+
     // await stripe.paymentMethods.attach(String(setupIntent.payment_method), {
     //   customer: setupIntent.customer as string
     // });
@@ -389,4 +389,21 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
       `Default payment method attached to Subscription ${userSubscription.data[0].id}`
     );
   }
+}
+
+export async function handlePaymentAttachedSucceeded(event: Stripe.Event) {
+  const paymentMethod = event.data.object as Stripe.PaymentMethod;
+  // This sets the payment method as default for the customer
+
+  await stripe.paymentMethods.attach(String(paymentMethod.id), {
+    customer: paymentMethod.customer as string
+  });
+  await stripe.customers.update(String(paymentMethod.customer), {
+    invoice_settings: {
+      default_payment_method: paymentMethod.id
+    }
+  });
+  console.info(
+    `Default payment method attached to customer for: ${paymentMethod.customer}`
+  );
 }
