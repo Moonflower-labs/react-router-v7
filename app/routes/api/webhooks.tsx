@@ -1,4 +1,4 @@
-import { getStripeEvent, handleCustomerCreated, handlePaymentAttachedSucceeded, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
+import { getStripeEvent, handleCustomerCreated, handlePaymentAttached, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
 import type { Route } from "./+types/webhooks";
 import { prisma } from "~/db.server";
 
@@ -30,7 +30,7 @@ export async function action({ request }: Route.ActionArgs) {
       await handlePaymentIntentSucceeded(event);
       break;
     case "payment_method.attached":
-      await handlePaymentAttachedSucceeded(event)
+      await handlePaymentAttached(event)
       break;
     case "setup_intent.succeeded":
       await handleSetupIntentSucceeded(event);

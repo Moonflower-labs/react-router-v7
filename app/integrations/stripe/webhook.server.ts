@@ -391,7 +391,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   }
 }
 
-export async function handlePaymentAttachedSucceeded(event: Stripe.Event) {
+export async function handlePaymentAttached(event: Stripe.Event) {
   const paymentMethod = event.data.object as Stripe.PaymentMethod;
   // This sets the payment method as default for the customer
 
