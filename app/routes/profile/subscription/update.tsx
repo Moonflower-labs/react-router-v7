@@ -66,14 +66,15 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
   const { subscription }: any = useOutletContext() || {};
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const previewInvoice = actionData?.preview;
-  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
+  const previewInvoiceRef = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth", block: "center" }), [])
+
   const navigation = useNavigation();
   const submit = useSubmit();
   const plans = loaderData?.PLANS;
-  // console.log(previewInvoice)
 
   return (
-    <div className="text-center">
+    <div className="text-center" ref={ref}>
       <h2 className="text-2xl text-primary my-3">Actualiza tu plan</h2>
       <p className="mb-6">Elige el plan al que deseas cambiar.</p>
       {loaderData?.error && <InfoAlert level="Importante" className="alert alert-error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </InfoAlert>}
@@ -116,7 +117,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
         {previewInvoice && (
           <div
             className="py-8 px-6 focus:outline-none"
-            ref={ref}
+            ref={previewInvoiceRef}
           >
             <p>INFO </p>
             <p>

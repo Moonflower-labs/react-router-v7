@@ -2,6 +2,7 @@ import { Form, useOutletContext } from "react-router";
 import type { Route } from "./+types/delete";
 import { cancelStripeSubscription } from "~/integrations/stripe";
 import { formatDate } from "~/utils/format";
+import { useCallback } from "react";
 
 
 
@@ -23,9 +24,10 @@ export async function action({ request }: Route.LoaderArgs) {
 export default function Component({ loaderData, actionData }: Route.ComponentProps) {
   const subscriptionData = useOutletContext() as any;
   const cancellationDate = actionData?.cancellationDate
+  const ref = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [])
 
   return (
-    <div className="text-center">
+    <div className="text-center" ref={ref}>
       <h2 className="text-2xl text-primary my-3">Cancela tu suscripción</h2>
       {subscriptionData?.subscription.cancellationDate ?
         <p className="mb-4 max-w-xl mx-auto px-3">
