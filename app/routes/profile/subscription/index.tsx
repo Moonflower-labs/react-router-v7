@@ -60,7 +60,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <span className="font-bold">
             Cambiar Plan
           </span>
-          <Link to={"/profile/subscription/update"} className="btn btn-sm btn-primary btn-outline" preventScrollReset>
+          <Link to={"/profile/subscription/update"} className="btn btn-sm btn-primary btn-outline" preventScrollReset viewTransition>
             <GrUpdate size={24} />
           </Link>
         </div>
@@ -69,7 +69,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <span className="font-bold">
               Cancelar suscripción
             </span>
-            <Link to={"/profile/subscription/delete"} className="btn btn-sm btn-error btn-outline " preventScrollReset>
+            <Link to={"/profile/subscription/delete"} className="btn btn-sm btn-error btn-outline " preventScrollReset viewTransition>
               <RiDeleteBin6Line size={24} />
             </Link>
           </div>
