@@ -18,3 +18,4 @@ app/entry.client.tsx
 app/routes/manifest.ts
 app/routes/gallery/layout.tsx
 react-email-starter
+app/routes/email.tsx
