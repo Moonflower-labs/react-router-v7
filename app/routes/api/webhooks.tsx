@@ -45,13 +45,14 @@ export async function action({ request }: Route.ActionArgs) {
       await handleSubscriptionDeleted(event);
       break;
     case "customer.subscription.paused":
-    // await handleSubscriptionPaused(event);
+      // await handleSubscriptionPaused(event);
+      break;
     case "customer.subscription.resumed":
       // await handleSubscriptionResumed(event);
       break;
     default:
       // Unexpected event type
-      console.info(`Unhandled event type ${event?.type}.`);
+      console.info(`Unhandled event type: ${event?.type}.`);
   }
   return Response.json(null, { status: 200 });
 }

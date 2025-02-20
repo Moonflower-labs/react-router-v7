@@ -86,8 +86,8 @@ export async function listWebhookEndpoints() {
 
 export async function handleCustomerCreated(event: Stripe.Event) {
   const customer = event.data.object as Stripe.Customer;
-  const email = customer.email as string;
-  const user = await getUserByEmail(email);
+  const email = customer.email;
+  const user = email ? await getUserByEmail(email) : null;
 
   if (!user) {
     console.error(`No user found with email: ${email}`);
@@ -397,14 +397,12 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
 export async function handlePaymentAttached(event: Stripe.Event) {
   const paymentMethod = event.data.object as Stripe.PaymentMethod;
   // This sets the payment method as default for the customer
-  await stripe.paymentMethods.attach(String(paymentMethod.id), {
-    customer: paymentMethod.customer as string
-  });
   await stripe.customers.update(String(paymentMethod.customer), {
     invoice_settings: {
       default_payment_method: paymentMethod.id
     }
   });
+
   console.info(
     `Default payment method attached to customer for: ${paymentMethod.customer}`
   );
