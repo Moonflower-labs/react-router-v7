@@ -8,12 +8,9 @@ import type {
   Section
 } from "@prisma/client";
 
-export interface Video extends PrismaVideo {
-  comments: Comment[];
-  categories: Category[];
-  likes: Like[];
-  favorites: Favorite[];
-}
+export type Video = Prisma.VideoGetPayload<{
+  include: { comments: true; likes: true };
+}>;
 
 export async function fetchVideos({
   section,
@@ -52,12 +49,15 @@ export async function fetchVideos({
   const take = pageSize; // The number of items to return
   const skip = (Number(page) - 1) * pageSize; // Number of items to skip for pagination
 
-  const videos = await prisma.video.findMany({
+  const videos = (await prisma.video.findMany({
     where,
     take, // Limit results
     skip,
+    include: { likes: true, comments: true },
     orderBy: { createdAt: "desc" }
-  });
+  })) as Prisma.VideoGetPayload<{
+    include: { likes: true; comments: true };
+  }>[];
   const totalCount = await prisma.video.count({
     where
   });
@@ -68,7 +68,7 @@ export async function fetchVideos({
 }
 
 export async function fetchVideo(videoId: string) {
-  return prisma.video.findUnique({
+  const video = await prisma.video.findUnique({
     where: { id: videoId },
     include: {
       favorites: { include: { user: true } },
@@ -76,6 +76,9 @@ export async function fetchVideo(videoId: string) {
       categories: true
     }
   });
+  return video as Prisma.VideoGetPayload<{
+    include: { likes: true; favorites: true; categories: true };
+  }>;
 }
 export async function fetchVideoComments(
   videoId: string,

@@ -1,5 +1,5 @@
 import type { Route } from "./+types/index";
-import { fetchVideos, type Video } from "~/models/video.server";
+import { fetchVideos } from "~/models/video.server";
 import VideoListCard from "~/components/members/VideoListCard";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { Paginator } from "~/components/members/Pagination";
@@ -21,7 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Spirit({ loaderData }: Route.ComponentProps) {
-  const videos = loaderData?.videos as Video[];
+  const videos = loaderData?.videos;
   const pagination = loaderData?.pagination;
 
   return (

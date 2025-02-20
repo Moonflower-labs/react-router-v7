@@ -21,7 +21,7 @@ const VideoListCard = ({ video }: { video: Video }) => {
           </div>
           <div className="flex gap-4 text-xl">
             <FaRegCommentAlt size={30} />
-            <div className="">{video.comments?.length}</div>
+            <div className="">{video?.comments?.length || 0}</div>
           </div>
         </div>
       </div>

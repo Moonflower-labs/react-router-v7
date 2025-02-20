@@ -1,6 +1,6 @@
 import type { Route } from "./+types/index";
 import { useEffect } from "react";
-import { fetchVideos, type Video } from "~/models/video.server";
+import { fetchVideos } from "~/models/video.server";
 import VideoListCard from "~/components/members/VideoListCard";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { FilterComponent } from "~/components/members/FilterComponent";
@@ -22,7 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Soul({ loaderData }: Route.ComponentProps) {
-  const videos = loaderData?.videos as Video[];
+  const videos = loaderData?.videos;
   const pagination = loaderData?.pagination;
 
   useEffect(() => {
