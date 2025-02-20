@@ -95,7 +95,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
       </div>
       <Form method="post" replace>
         <HoneypotInputs label="Please leave this field blank" />
-        <div className="card shrink-0 w-full shadow-2xl mx-auto border">
+        <div className="card shrink-0 w-full shadow-2xl mx-auto bg-base-200 border">
           <div className="card-body">
             <input type="hidden" name="redirectTo" value={from} />
             <label htmlFor="email" className="floating-label mb-3">

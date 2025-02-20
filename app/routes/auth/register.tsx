@@ -93,36 +93,29 @@ export default function ResgisterPage({ actionData }: Route.ComponentProps) {
       </div>
       <Form method="post" className="w-full">
         <HoneypotInputs label="Please leave this field blank" />
-        <div className="card text-center max-w-sm shadow-2xl bg-base-100 mx-auto">
+        <div className="card text-center max-w-sm shadow-2xl bg-base-200 border mx-auto">
           <div className="card-body">
-            <div className="form-control mb-3">
-              <input type="text" placeholder="Usuario" className="floating-label-input peer" name="username" id="username" />
-              <label className="floating-label" htmlFor="username">
-                <span className="label-text">Nombre de usuario</span>
-              </label>
-            </div>
+            <label className="floating-label mb-3" htmlFor="username">
+              <span>Nombre de usuario</span>
+              <input type="text" placeholder="Usuario" className="input input-md input-primary" name="username" id="username" />
+
+            </label>
             {actionErrors?.errors?.username && <div className="text-error mb-3">{actionErrors.errors.username}</div>}
-            <div className="form-control mb-3">
-              <input type="email" placeholder="Email" className="floating-label-input peer" name="email" id="email" />{" "}
-              <label className="floating-label" htmlFor="email">
-                Email
-              </label>
-            </div>
+            <label className="floating-label mb-3" htmlFor="email">
+              <input type="email" placeholder="Email" className="input input-md input-primary" name="email" id="email" />{" "}
+              <span>Email</span>
+            </label>
             {actionErrors?.errors?.email && <div className="text-error mb-3">{actionErrors.errors.email}</div>}
 
-            <div className="form-control mb-3">
-              <input type="password" placeholder="Contraseña" className="floating-label-input peer" name="password" id="password" />
-              <label className="floating-label" htmlFor="password">
-                Contraseña
-              </label>
-            </div>
+            <label className="floating-label mb-3" htmlFor="password">
+              <input type="password" placeholder="Contraseña" className="input input-md input-primary" name="password" id="password" />
+              <span>Contraseña</span>
+            </label>
             {actionErrors?.errors?.password && <div className="text-error mb-3">{actionErrors.errors.password}</div>}
-            <div className="form-control mb-3">
-              <input type="password" placeholder="Contraseña" className="floating-label-input peer" name="confirmation" id="confirmation" />
-              <label className="floating-label" htmlFor="confirmation">
-                Confirma la contraseña
-              </label>
-            </div>
+            <label className="floating-label mb-3" htmlFor="confirmation">
+              <input type="password" placeholder="Contraseña" className="input input-md input-primary" name="confirmation" id="confirmation" />
+              <span>Confirma la contraseña</span>
+            </label>
             <div className="form-control mt-6">
               <button className="btn btn-primary" disabled={navigation.state === "submitting"}>
                 {navigation.state === "idle"
