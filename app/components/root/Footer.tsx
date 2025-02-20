@@ -7,7 +7,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="footer justify-center md:justify-normal p-10 bg-gradient-to-r from-secondary/80 to-primary/70 text-primary-content/75">
+    <footer className="footer justify-center md:justify-normal p-10 bg-base-300">
       <aside>
         <div className="avatar">
           <div className="w-10 rounded">

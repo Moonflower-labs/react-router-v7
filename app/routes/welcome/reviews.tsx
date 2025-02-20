@@ -11,8 +11,8 @@ const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
   const user = useRouteLoaderData("root")?.user as User;
 
   return (
-    <main>
-      <h1 className="font-semibold text-center text-3xl text-primary mb-4">Opiniones</h1>
+    <main id="reviews">
+      <h1 className="font-semibold text-center text-3xl mb-4">Opiniones</h1>
       <Suspense fallback={<ReviewsSkeleton />}>
         <ReviewsCarousel reviewsPromise={reviews} />
       </Suspense>
@@ -35,7 +35,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
   const renderStars = useCallback((score: number) => {
     const starArray = Array.from({ length: 5 });
     return starArray.map((_, index) => (
-      <FaStar key={index} className={index < score ? "text-warning" : "text-gray-400"} size={20} />
+      <FaStar key={index} className={index < score ? "text-warning" : "text-base-300"} size={24} />
     ));
   }, []);
 
@@ -83,7 +83,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
   return (
     <section className="flex flex-col justify-center mb-6">
       <div
-        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-neutral-content/40 overflow-x-hidden overflow-y-auto"
+        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-base-100 border border-base-300 overflow-x-hidden overflow-y-auto"
         onTouchStart={handleTouchStart} // Set up touch start event
         onTouchEnd={handleTouchEnd} // Set up touch end event
       >
@@ -101,7 +101,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
                   transition={{ duration: 0.6 }}
                   className={`w-full h-full flex flex-col justify-center items-center`}
                 >
-                  <div className="rating pt-4 flex justify-center">{renderStars(slide.score)}</div>
+                  <div className="pt-4 flex justify-center">{renderStars(slide.score)}</div>
                   <div className="w-full p-8 text-center">{slide.text}</div>
                   <div className="flex justify-center text-sm opacity-80 pb-3 font-bold">
                     {slide?.user?.username} {formatDate(slide.createdAt)}
@@ -145,8 +145,8 @@ function ReviewForm() {
 
   return (
     <>
-      <div className="font-semibold text-2xl text-center text-primary mb-6">Deja tu opinión</div>
-      <fetcher.Form method="post" ref={formRef} className="text-center bg-neutral-content/40 p-6 rounded-lg shadow-lg w-96 mx-auto mb-6">
+      <div className="font-semibold text-3xl text-center mb-6">Deja tu opinión</div>
+      <fetcher.Form method="post" ref={formRef} className="text-center bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-96 mx-auto mb-6">
         <div className="rating mx-auto mb-6">
           <input type="radio" name="score" defaultValue={1} className="mask mask-star-2 bg-warning" />
           <input type="radio" name="score" defaultValue={2} className="mask mask-star-2 bg-warning" />
@@ -154,8 +154,8 @@ function ReviewForm() {
           <input type="radio" name="score" defaultValue={4} className="mask mask-star-2 bg-warning" />
           <input type="radio" name="score" defaultValue={5} defaultChecked className="mask mask-star-2 bg-warning" />
         </div>
-        <label className="form-control mb-3">
-          <textarea name="text" className="textarea textarea-bordered h-24" placeholder="Review"></textarea>
+        <label>
+          <textarea name="text" className="textarea textarea-bordered h-24 mb-3" placeholder="Review"></textarea>
         </label>
         {fetcher?.data?.error && <div className="text-error mb-4">{fetcher?.data?.error}</div>}
         <button className="btn btn-sm btn-primary">Confirmar</button>

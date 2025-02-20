@@ -1,5 +1,5 @@
 import { AiOutlineUser } from "react-icons/ai";
-import { Form, Link, useFetcher, useLocation, useRouteLoaderData, useSubmit } from "react-router";
+import { Form, href, Link, useFetcher, useLocation, useRouteLoaderData, useSubmit } from "react-router";
 import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -28,32 +28,32 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-[200] w-screen bg-base-100">
-      <div className={`navbar shadow-md z-50 ${!isHomePage ? "bg-gradient-to-r from-primary/80 via-primary/70 to-secondary/80 text-primary-content/75" : ""}`}>
+    <header className="sticky top-0 z-[200] w-screen bg-base-200/90 backdrop-blur">
+      <div className={`navbar shadow-md z-50 h-full`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
-            <div tabIndex={0} role="button" className={`${isHomePage ? "text-primary hover:bg-base-200" : "hover:bg-primary/80"} cursor-pointer opacity-90 hover:opacity-100 p-2 rounded-full transition-all`}>
+            <div tabIndex={0} role="button" className={"hover:bg-base-200 cursor-pointer opacity-90 hover:opacity-100 p-2 rounded-full transition-all"}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={`menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 ${!isHomePage ? "p-2 bg-primary/90" : "p-2 bg-base-100/90"}`}>
+            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-100/90"}>
               {user ? (
                 <>
                   <li onClick={handleDropdown}>
                     <LogoutBtn />
                   </li>
                   <li>
-                    <Link to={"/profile"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/profile")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Perfil
                     </Link>
                   </li>
                   <li>
-                    <Link to={"/profile/settings"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/profile/settings")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Ajustes
                     </Link>
                   </li>
                   <li>
-                    <Link to={"/admin"} onClick={handleDropdown} className={"min-w-40 font-bold"} viewTransition>
+                    <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold"} viewTransition>
                       Admin
                     </Link>
                   </li>
@@ -61,12 +61,12 @@ export function Header() {
               ) : (
                 <>
                   <li>
-                    <Link to={"/login"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/login")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Iniciar sesión
                     </Link>
                   </li>
                   <li>
-                    <Link to={"/register"} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/register")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Registro
                     </Link>
                   </li>
@@ -75,10 +75,10 @@ export function Header() {
             </ul>
           </div>
         </div>
-        <div className="navbar-center md:flex-row gap-2">
+        <div className="navbar-center md:flex-row gap-2 text-primary">
           {!isHomePage ?
             <>
-              <Link to={"/"} onClick={handleDropdown} className="btn btn-ghost text-2xl" viewTransition>
+              <Link to={"/"} onClick={handleDropdown} className="flex hover:bg-base-200 rounded px-2.5 py-1 text-2xl" viewTransition>
                 <span className="hidden md:block me-2">La Flor Blanca</span>
                 <div className="avatar">
                   <div className="w-10 rounded">
@@ -91,11 +91,11 @@ export function Header() {
               </div>
               <ShoppingCartIcon count={optimisticCount} />
             </>
-            : <span className="font-bold text-primary/90 text-2xl">Bienvenid@ {user?.username ? user.username : ""}</span>}
+            : <span className="font-bold text-2xl">Bienvenid@ {user?.username ? user.username : ""}</span>}
         </div>
         <div className="navbar-end">
-          {/* <div className=" hidden dropdown dropdown-end dropdown-bottom">
-            <div tabIndex={0} className="m-1 btn btn-ghost flex flex-col">
+          <div className="dropdown dropdown-end dropdown-bottom">
+            <div tabIndex={0} className="btn btn-ghost">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
@@ -109,7 +109,7 @@ export function Header() {
                       type="radio"
                       name="theme-buttons"
                       defaultChecked={theme === themeOption.value}
-                      className="btn btn-sm theme-controller bg-base-100"
+                      className="btn btn-sm theme-controller"
                       aria-label={themeOption.label}
                       value={themeOption.value}
                     />
@@ -117,7 +117,7 @@ export function Header() {
                 </div>
               </div>
             </Form>
-          </div> */}
+          </div>
           <Navbar />
         </div>
       </div>
@@ -129,10 +129,11 @@ const themes = [
   { value: 'florBlanca', label: 'Default' },
   { value: 'garden', label: 'Garden' },
   { value: 'dracula', label: 'Dracula' },
-  { value: 'emerald', label: 'Emerald' },
   { value: 'cupcake', label: 'Cupcake' },
   { value: 'coffee', label: 'Coffee' },
   { value: 'aqua', label: 'Aqua' },
+  { value: 'caramellatte', label: 'Caramellatte' },
+  { value: 'abyss', label: 'Abyss' },
   { value: 'dark', label: 'Dark' },
 ];
 
@@ -169,7 +170,7 @@ function ShoppingCartIcon({ count }: { count: number }) {
                   repeat: 1,
                   repeatDelay: 0.3
                 }}>
-                <span className="badge badge-sm badge-primary border-primary-content/40 indicator-item">{count}</span>
+                <span className="badge badge-sm badge-primary indicator-item">{count}</span>
               </motion.div>
             </motion.div>
           )}

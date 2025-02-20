@@ -4,6 +4,9 @@ import type { Route } from "./+types/register";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail, validateUsername } from "~/utils/helpers";
 import { sendWelcomeEmail } from "~/integrations/mailer/utils.server";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { honeypot } from "~/utils/honeypot.server";
+import { SpamError } from "remix-utils/honeypot/server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -21,6 +24,15 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get("password");
   const confirmation = formData.get("confirmation");
   const redirectTo = (formData.get("redirectTo") as string) || "/";
+
+  try {
+    await honeypot.check(formData)
+  } catch (error) {
+    if (error instanceof SpamError) {
+      console.error("honeypot full!", error)
+    }
+    throw error
+  }
 
   if (!validateUsername(username)) {
     return { errors: { email: null, password: null, username: "Nombre de usuario no puede contener espacios ni sobrepasar los 18 caracteres!" } }
@@ -80,6 +92,7 @@ export default function ResgisterPage({ actionData }: Route.ComponentProps) {
         </p>
       </div>
       <Form method="post" className="w-full">
+        <HoneypotInputs label="Please leave this field blank" />
         <div className="card text-center max-w-sm shadow-2xl bg-base-100 mx-auto">
           <div className="card-body">
             <div className="form-control mb-3">

@@ -19,7 +19,7 @@ export default function MembersLayout({ }: Route.ComponentProps) {
         key={'members-nav'}
         role="navigation"
         data-testid="members-layout"
-        className="bg-base-100 flex flex-col gap-1 justify-center sticky top-[72px] z-40 md:w-fit rounded-lg bg-transparent mx-auto pb-5">
+        className="flex flex-col gap-1 justify-center sticky top-[72px] z-40 md:w-fit rounded-lg mx-auto pb-5">
         <div className="grid grid-cols-3 gap-1 w-full max-w-3xl px-2">
           {LINKS.map((link: any) =>
             <NavLink
@@ -27,7 +27,7 @@ export default function MembersLayout({ }: Route.ComponentProps) {
               to={link.to}
               role="tab"
               className={({ isActive }) =>
-                `flex flex-col justify-center items-center gap-1 border-[0.5px] rounded-lg p-2 shadow ${isActive ? "bg-primary text-primary-content border-secondary" : "bg-base-100"} transition-all ease-out duration-200`
+                `flex flex-col justify-center items-center gap-1 border border-base-200 rounded-lg p-2 shadow-sm ${isActive ? "bg-primary text-primary-content" : "bg-base-100"} transition-all ease-out duration-200`
               }
               // preventScrollReset={true}
               viewTransition

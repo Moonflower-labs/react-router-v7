@@ -7,8 +7,10 @@ import { getUserById } from "./models/user.server";
 import { getCartItemsCount } from "./models/cart.server";
 import { ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
-import stylesheet from "./app.css?url";
 import logo from "../app/components/root/logo.svg"
+import "./app.css";
+import { honeypot } from "./utils/honeypot.server";
+import { HoneypotProvider } from "remix-utils/honeypot/react"
 
 
 export const links: Route.LinksFunction = () => [
@@ -27,7 +29,6 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Faculty+Glyphic&family=Poppins:ital,wght@0,500;1,400&family=Roboto:wght@500&display=swap"
   },
-  { rel: "stylesheet", href: stylesheet },
 ];
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
@@ -44,7 +45,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const theme = userPrefs?.theme ?? "florBlanca";
   const user = await getUserById(userId);
   const totalItemCount = await getCartItemsCount(String(userId));
-  return { user, totalItemCount, theme };
+
+  return { user, totalItemCount, theme, honeypotInputProps: await honeypot.getInputProps() };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -56,6 +58,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useLoaderData()?.theme // Load the theme
+  console.log("THEEEEME", theme)
 
   return (
     <html lang="es" data-theme={theme}>
@@ -85,9 +88,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+export default function App({ loaderData }: Route.ComponentProps) {
 
-  return <Outlet />;
+  return (
+    <HoneypotProvider {...loaderData?.honeypotInputProps}>
+      <Outlet />
+    </HoneypotProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

@@ -110,7 +110,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
       ) : (
         <div className="flex gap-4 justify-center items-center">
           <span>No hay ningún post, ponte a escribir ✍🏽 </span>
-          <Link to={"create"} className="shadow btn btn-outline btn-primary btn-sm">
+          <Link to={"create"} className="shadow-sm btn btn-outline btn-primary btn-sm">
             <IoMdAdd size={24} />
           </Link>
         </div>

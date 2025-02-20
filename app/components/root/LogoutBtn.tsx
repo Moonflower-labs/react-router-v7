@@ -1,11 +1,12 @@
-import { useFetcher } from "react-router";
+import React from "react";
+import { href, useFetcher } from "react-router";
 
-export function LogoutBtn() {
+export const LogoutBtn = React.memo(() => {
   const fetcher = useFetcher();
   const isLoggingOut = fetcher.formData != null;
 
   return (
-    <fetcher.Form method="post" action="/logout" className="flex justify-center w-full">
+    <fetcher.Form method="post" action={href("/logout")} className="flex justify-center w-full">
       <button className="btn btn-sm btn-outline btn-secondary w-full" type="submit" disabled={isLoggingOut}>
         {isLoggingOut ? (
           <>
@@ -18,4 +19,5 @@ export function LogoutBtn() {
       </button>
     </fetcher.Form>
   );
-}
+})
+

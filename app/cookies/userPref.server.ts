@@ -1,7 +1,7 @@
 import { createCookie, data } from "react-router";
 
 export const prefCookie = createCookie("userPref", {
-  maxAge: 60 * 60 * 24 * 365 // 1 year
+  maxAge: 60 * 60 * 24 * 365 // 1 year,
 });
 
 export async function getUserPrefs(request: Request) {

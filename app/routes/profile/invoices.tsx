@@ -28,7 +28,7 @@ export default function ListInvoices({ loaderData }: Route.ComponentProps) {
             {invoiceList.length > 0
                 ? invoiceList.map(invoice =>
                     <div key={invoice.id} className="flex flex-col gap-3 justify-center">
-                        <div className="border shadow rounded-md md:w-64 mb-3 mx-auto">
+                        <div className="border shadow-sm rounded-md md:w-64 mb-3 mx-auto">
                             <Link to={invoice.hosted_invoice_url || ""} target="_blank" className="link link-primary">{formatUnixDate(invoice.created)}</Link>
                             <Link to={invoice.invoice_pdf!} title="Descargar pdf" className="flex flex-row gap-3 p-2 justify-center" >Descargar <FaFilePdf size={24} className="text-error/80" /></Link>
                         </div>

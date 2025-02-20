@@ -77,7 +77,7 @@ export const FilterComponent = React.memo(() => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ opacity: { duration: 0.4 } }}
-                  className="absolute md:right-0 dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-72 border border-neutral-content">
+                  className="absolute md:right-0 dropdown-content z-[1] menu p-2 shadow-sm bg-base-100 rounded-box w-72 border border-neutral-content">
                   <div className="form-control">
                     <label className="cursor-pointer label">
                       <span className="label-text">Favoritos</span>

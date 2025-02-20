@@ -69,7 +69,7 @@ export default function Index({ actionData }: Route.ComponentProps) {
 
             <Form method="POST" ref={formRef}>
                 <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 w-full max-w-4xl mx-auto z-50">
-                    <label className="input input-bordered shadow flex items-center gap-2">
+                    <label className="input input-bordered shadow-sm flex items-center gap-2">
                         <input
                             className="grow text-xl"
                             type="text"

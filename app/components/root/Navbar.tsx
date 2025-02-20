@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router";
+import { href, Link } from "react-router";
 
 import { AnimatePresence, motion } from "motion/react";
 import { CgMenuBoxed } from "react-icons/cg";
@@ -24,28 +24,12 @@ export function Navbar() {
             exit={{ opacity: 0, x: 300 }}
             className="fixed top-0 right-0 w-screen h-full z-100"
             onClick={handleNav}>
-            <div className="w-full md:w-[40%] h-full fixed right-0 backdrop-blur-sm flex flex-col gap-3 items-center justify-center">
-              <Link to="/about" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Sobre La Flor Blanca
-              </Link>
-              <Link to="/plans" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Planes de subscripción
-              </Link>
-              <Link to="/members/personality" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Rincón de miembros
-              </Link>
-              <Link to="gallery" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Susurros de La Flor Blanca
-              </Link>
-              <Link to="/#reviews" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Reviews
-              </Link>
-              <Link to="store" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Tienda
-              </Link>
-              <Link to="help" className="btn btn-primary w-[80%] scale-hover group overflow-hidden" viewTransition>
-                Ayuda
-              </Link>
+            <div className="w-full md:w-[40%] h-screen fixed right-0 backdrop-blur-sm flex flex-col gap-3.5 items-center justify-center">
+              {LINKS.map((link) => (
+                <Link key={link.href} to={link.href} className="btn btn-primary w-[80%] scale-hover group overflow-hidden transition-all" viewTransition>
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </motion.nav>
         )}
@@ -53,3 +37,13 @@ export function Navbar() {
     </>
   );
 }
+
+const LINKS = [
+  { href: href("/about"), label: "Sobre La Flor Blanca" },
+  { href: href("/plans"), label: "Planes de subscripción" },
+  { href: href("/members/personality"), label: "Rincón de miembros" },
+  { href: href("/gallery"), label: "Susurros de La Flor Blanca" },
+  { href: "/about#reviews", label: "Reviews" },
+  { href: href("/store"), label: "Tienda" },
+  { href: "/help", label: "Ayuda" },
+]

@@ -6,9 +6,9 @@ const ShiningLogo = () => {
             {/* Define a vertical gradient with hints of purple */}
             <defs>
                 <linearGradient id="textGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f4f4f4" /> {/* Very light off-white */}
-                    <stop offset="50%" stopColor="#c8a6f7" /> {/* Soft lavender purple */}
-                    <stop offset="100%" stopColor="#a58dd6" /> {/* Light purple-gray */}
+                    <stop offset="0%" stopColor="#fff2fa" /> {/* Very light off-white */}
+                    <stop offset="40%" stopColor="#8a2be2" /> {/* Soft lavender purple */}
+                    <stop offset="100%" stopColor="#430054" /> {/* Light purple-gray */}
                 </linearGradient>
 
                 {/* Define the shining effect using a gradient mask */}

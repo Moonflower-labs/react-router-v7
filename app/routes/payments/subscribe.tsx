@@ -95,7 +95,7 @@ function SubscriptionForm() {
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="mx-auto rounded-lg border border-primary/40 shadow-lg p-10 min-w-[400px] w-[32vw] text-center">
+    <Form onSubmit={handleSubmit} className="mx-auto rounded-lg border border-base-300 bg-base-100 shadow-lg p-10 min-w-[400px] w-[32vw] text-center">
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="priceId" value={priceId} />
       <button disabled={!stripe || !elements} className="btn btn-primary my-3">

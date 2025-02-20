@@ -7,7 +7,6 @@ node_modules
 .DS_Store
 .prettierrc
 prisma/dev.db
-package-lock.json
 .*.*.icloud
 pnpm-lock.yaml
 app/routes/gallery/index-old.tsx

@@ -26,7 +26,7 @@ export default function Settings() {
                     <IoColorPalette size={24} />
                     <span>Theme</span>
                 </div>
-                <Form method="post" onChange={e => submit(e.currentTarget, { preventScrollReset: true })}>
+                {/* <Form method="post" onChange={e => submit(e.currentTarget, { preventScrollReset: true })}>
                     <div className=" z-[1] p-0 m-0  rounded-full max-w-screen-lg mx-auto">
                         <div className="flex flex-row flex-wrap justify-center gap-1 bg-neutral/10 p-1 rounded-md">
                             {themes.map((themeOption) => (
@@ -35,14 +35,14 @@ export default function Settings() {
                                     type="radio"
                                     name="theme-buttons"
                                     defaultChecked={theme === themeOption.value}
-                                    className="btn btn-sm theme-controller bg-base-100"
+                                    className="btn btn-sm theme-controller"
                                     aria-label={themeOption.label}
                                     value={themeOption.value}
                                 />
                             ))}
                         </div>
                     </div>
-                </Form>
+                </Form> */}
             </section>
             <section className="flex flex-col">
                 <div className="m-1 btn btn-ghost flex flex-row">
@@ -71,4 +71,6 @@ const themes = [
     { value: 'coffee', label: 'Coffee' },
     { value: 'aqua', label: 'Aqua' },
     { value: 'dark', label: 'Dark' },
+    { value: 'caramellatte', label: 'Caramellatte' },
+    { value: 'abyss', label: 'Abyss' },
 ];

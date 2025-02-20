@@ -4,10 +4,22 @@ import type { Route } from "./+types/forgot-password";
 import { generateResetUrl, generateToken, validateEmail } from "~/utils/helpers";
 import { prisma } from "~/db.server";
 import { sendResetPasswordEmail } from "~/integrations/mailer/utils.server";
+import { SpamError } from "remix-utils/honeypot/server";
+import { honeypot } from "~/utils/honeypot.server";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
 
 export async function action({ request }: Route.LoaderArgs) {
     const formData = await request.formData();
     const email = formData.get("email");
+
+    try {
+        await honeypot.check(formData)
+    } catch (error) {
+        if (error instanceof SpamError) {
+            console.error("honeypot full!", error)
+        }
+        throw error
+    }
     if (!validateEmail(email)) {
         return { success: false, error: "Email is invalid" }
     }
@@ -59,6 +71,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
 
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                 <Form method="post" className="card-body">
+                    <HoneypotInputs label="Please leave this field blank" />
                     {actionData?.success && <p className="mb-3 rounded p-2 bg-success/40">Enlace enviado! Comprueba tu email.<span> No lo encuentras? Comprueba Spam</span></p>}
                     <div className="form-control">
                         <input

@@ -32,13 +32,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <h2 className="text-2xl text-primary font-bold py-4">Mi Suscripción</h2>
       {subscription?.cancellationDate &&
         <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDate(subscription.cancellationDate)}</InfoAlert>}
-      <div className="mb-4 border shadow rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
+      <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
         <p className="flex justify-between items-center">
           <span className="font-semibold">Estado</span>
           <span className={`font-semibold badge ${subscription?.status === "active" ? "badge-success" : "badge-warning"}`}>{translateSubscriptionStatus(subscription?.status)}</span>
         </p>
       </div>
-      <div className="mb-4 border shadow rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
+      <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
         <h2 className="text-xl font-bold py-3">Plan</h2>
         <div className="flex-grow flex flex-col gap-2 items-center">
           <div className="avatar">
@@ -77,7 +77,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       </div>
       {subscription ? (
         <div className="overflow-x-auto mt-8 w-full">
-          <div className="flex flex-col gap-2 border shadow md:w-1/2 p-3 mx-auto rounded-md">
+          <div className="flex flex-col gap-2 border-base-content shadow-sm md:w-1/2 p-3 mx-auto rounded-md">
             <h2 className="text-xl text-center font-bold">Método de pago</h2>
             {paymentMethod ?
               <>

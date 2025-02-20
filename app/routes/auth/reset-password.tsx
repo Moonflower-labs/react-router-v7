@@ -2,6 +2,9 @@ import { Form, useNavigation, replace, redirect, data, } from "react-router";
 import type { Route } from "./+types/reset-password"
 import bcrypt from "bcryptjs";
 import { prisma } from "~/db.server";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { SpamError } from "remix-utils/honeypot/server";
+import { honeypot } from "~/utils/honeypot.server";
 
 
 
@@ -21,6 +24,15 @@ export async function action({ request }: Route.ActionArgs) {
     const token = formData.get("token");
     const password = formData.get("password");
     const passwordConfirmation = formData.get("confirm");
+
+    try {
+        await honeypot.check(formData)
+    } catch (error) {
+        if (error instanceof SpamError) {
+            console.error("honeypot full!", error)
+        }
+        throw error
+    }
 
     if (password !== passwordConfirmation) {
         return { error: "Passwords should match" }
@@ -69,6 +81,7 @@ export default function ResetPassword({ loaderData, actionData }: Route.Componen
 
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                 <Form method="post" className="card-body">
+                    <HoneypotInputs label="Please leave this field blank" />
                     <input value={token} type="hidden" id="token" name="token" required />
                     <div className="form-control mb-3">
                         <input

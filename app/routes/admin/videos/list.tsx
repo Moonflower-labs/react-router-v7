@@ -16,7 +16,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 2);
-  const { videos, pagination } = await fetchVideos({ title, categories, page, pageSize });
+  const { videos, pagination } = await fetchVideos({ section: undefined, title, categories, page, pageSize });
 
   return { videos, pagination, q: title };
 }
@@ -82,7 +82,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
       </h2>
       {videos?.length ? (
         videos.map(video => (
-          <div key={video.id} className="flex flex-col gap-3 justify-center p-3 border border-primary/20 rounded-lg shadow mb-3 lg:w-2/3 mx-auto">
+          <div key={video.id} className="flex flex-col gap-3 justify-center p-3 border border-primary/20 rounded-lg shadow-sm mb-3 lg:w-2/3 mx-auto">
             <div className="w-full">{video.title}</div>
             <div className="flex gap-6 m-auto">
               <div className="m-auto">
@@ -111,7 +111,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
       ) : (
         <div className="flex gap-4 justify-center items-center">
           <span>No hay ningún video todavía, ponte a escribir ✍🏽 </span>
-          <Link to={"create"} className="shadow btn btn-outline btn-primary btn-sm">
+          <Link to={"create"} className="shadow-sm btn btn-outline btn-primary btn-sm">
             <IoMdAdd size={24} />
           </Link>
         </div>

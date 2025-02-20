@@ -42,7 +42,7 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       <h3 className="font-bold text-xl mb-4">Artículos:</h3>
       <div className="flex flex-col gap-4">
         {order?.orderItems.map((item: any) => (
-          <div key={item.id} className="flex items-center gap-4 bg-neutral-content/10 rounded-lg shadow p-3">
+          <div key={item.id} className="flex items-center gap-4 bg-neutral-content/10 rounded-lg shadow-sm p-3">
             <div className="avatar">
               <div className="w-12 rounded">
                 <img src={item.product.thumbnail as string} alt={item.product.name} />

@@ -5,6 +5,9 @@ import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils/helpers";
 import React from "react";
 import { mergeGuestCart } from "~/models/cart.server";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { SpamError } from "remix-utils/honeypot/server";
+import { honeypot } from "~/utils/honeypot.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -20,6 +23,15 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get("password");
   const remember = formData.get("remember");
   const redirectTo = (formData.get("redirectTo") as string) ?? "/profile";
+
+  try {
+    await honeypot.check(formData)
+  } catch (error) {
+    if (error instanceof SpamError) {
+      console.error("honeypot full!", error)
+    }
+    throw error
+  }
 
   if (!validateEmail(email)) {
     return { errors: { email: "Email is invalid", password: null } }
@@ -46,7 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
   // create user session
   return createUserSession({
     redirectTo,
-    remember: remember === "on" ? true : false,
+    remember: Boolean(remember === "on") ? true : false,
     request,
     userId: user.id
   });
@@ -82,46 +94,35 @@ export default function Login({ actionData }: Route.ComponentProps) {
         </p>
       </div>
       <Form method="post" replace>
-        <div className="card shrink-0 w-full shadow-2xl mx-auto">
+        <HoneypotInputs label="Please leave this field blank" />
+        <div className="card shrink-0 w-full shadow-2xl mx-auto border">
           <div className="card-body">
             <input type="hidden" name="redirectTo" value={from} />
-            <div className="form-control mb-3">
-              <input ref={emailRef} type="email" placeholder="email" className="floating-label-input peer" name="email" id="email" required />
-              <label htmlFor="email" className="floating-label">
-                Email
-              </label>
-            </div>
-            {actionErrors?.errors?.email && <span className="text-error">{actionErrors.errors.email}</span>}
-
-            <div className="form-control mb-3">
-              <input ref={passwordRef} type="password" placeholder="Contraseña" className="floating-label-input peer" name="password" id="password" />
-              <label htmlFor="password" className="floating-label">
-                Contraseña
-              </label>
-              <div className="label">
-                <Link to={"/forgot-password"} className="label-text-alt link link-hover">
-                  Olvidaste tu contraseña?
-                </Link>
-              </div>
-              {actionErrors?.errors?.password && <div className="text-error mb-3">{actionErrors.errors.password}</div>}
-
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">Remember me</span>
-                  <input type="checkbox" name="remember" className="checkbox checkbox-primary" />
-                </label>
-              </div>
-            </div>
-            <div className="form-control mt-6">
-              <button type="submit" className="btn btn-primary disabled:opacity-85" disabled={navigation.state === "submitting"}>
-                {navigation.state === "idle"
-                  ? "Iniciar sesión"
-                  : navigation.state === "submitting" && (
-                    <>
-                      Iniciando sesión...
-                      <span className="loading loading-md"></span>
-                    </>
-                  )}
+            <label htmlFor="email" className="floating-label mb-3">
+              <span>Email</span>
+              <input ref={emailRef} type="email" placeholder="email" className="input input-md input-primary" name="email" id="email" required />
+            </label>
+            {actionErrors?.errors?.email && <span className="text-error mb-2">{actionErrors.errors.email}</span>}
+            <label htmlFor="password" className="floating-label mb-3">
+              <span>Contraseña</span>
+              <input ref={passwordRef} type="password" placeholder="Contraseña" className="input input-md" name="password" id="password" />
+            </label>
+            {actionErrors?.errors?.password && <div className="text-error mb-2">{actionErrors.errors.password}</div>}
+            <Link to={"/forgot-password"} className="link link-primary link-hover">
+              Olvidaste tu contraseña?
+            </Link>
+            <label className="label">
+              <span className="label-text">Remember me</span>
+              <input type="checkbox" name="remember" className="checkbox checkbox-primary" />
+            </label>
+            <div className="mx-auto">
+              <button type="submit" className="btn btn-primary mt-3 disabled:opacity-85" disabled={navigation.state === "submitting"}>
+                {navigation.state === "submitting" ? (
+                  <>
+                    Iniciando sesión...
+                    <span className="loading loading-md"></span>
+                  </>
+                ) : "Iniciar sesión"}
               </button>
             </div>
           </div>

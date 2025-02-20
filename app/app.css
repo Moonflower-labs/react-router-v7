@@ -1,18 +1,69 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-.form-control {
-  @apply relative;
+@plugin "daisyui" {
+  themes:
+    florBlanca --default,
+    garden,
+    dracula --prefersdark,
+    emerald,
+    cupcake,
+    coffee,
+    aqua,
+    dark,
+    caramellatte,
+    abyss;
 }
-.floating-label {
-  @apply label absolute left-3 pointer-events-none transition-all text-base-content text-opacity-50 -top-4 peer-placeholder-shown:top-1.5 text-xs peer-placeholder-shown:text-sm bg-base-100 peer-placeholder-shown:bg-transparent;
+
+@plugin "daisyui/theme" {
+  name: "florBlanca";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(94% 0.029 294.588);
+  --color-base-200: oklch(70% 0.183 293.541);
+  --color-base-300: oklch(60% 0.25 292.717);
+  --color-base-content: oklch(28% 0.141 291.089);
+  --color-primary: oklch(49% 0.27 292.581);
+  --color-primary-content: oklch(96% 0.016 293.756);
+  --color-secondary: oklch(68% 0.169 237.323);
+  --color-secondary-content: oklch(30% 0.056 229.695);
+  --color-accent: oklch(71% 0.202 349.761);
+  --color-accent-content: oklch(38% 0.063 188.416);
+  --color-neutral: oklch(14% 0.005 285.823);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(95% 0.026 236.824);
+  --color-success: oklch(72% 0.219 149.579);
+  --color-success-content: oklch(26% 0.051 172.552);
+  --color-warning: oklch(82% 0.189 84.429);
+  --color-warning-content: oklch(27% 0.077 45.635);
+  --color-error: oklch(64% 0.246 16.439);
+  --color-error-content: oklch(27% 0.105 12.094);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
 }
-.floating-label-input {
-  @apply input input-bordered placeholder-transparent;
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
+
 .scale-hover {
   @apply hover:scale-110 ease-in duration-200;
+}
+.border {
+  @apply border-base-300;
 }
 
 .btn-primary:disabled {
