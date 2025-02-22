@@ -8,9 +8,10 @@ import { getCartItemsCount } from "./models/cart.server";
 import { ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
-import "./app.css";
 import { honeypot } from "./utils/honeypot.server";
 import { HoneypotProvider } from "remix-utils/honeypot/react"
+import "./app.css";
+// import "cally";
 
 
 export const links: Route.LinksFunction = () => [
