@@ -2,8 +2,8 @@ import { data, Form, Link, Outlet, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
 import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { toast, type Id } from "react-toastify";
 import { deleteOrder, fetchOrders, getOrderCount, updateOrderStatus } from "~/models/order.server";
 import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
@@ -26,6 +26,11 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const orderId = formData.get("orderId");
   const status = formData.get("status");
+  const date = formData.get("date");
+  const orderDate = new Date(date as string);
+  orderDate.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   if (!orderId) {
     throw data({ message: "No order ID provided" }, { status: 400 });
@@ -37,8 +42,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   switch (request.method) {
     case "POST": {
-      if (!status || String(status).toLowerCase() !== "complete") {
-        throw data({ message: "Estas intentando borrar un pedido incompleto!" }, { status: 400 });
+      if (!status || String(status).toLowerCase() !== "complete" && orderDate.getTime() >= today.getTime()) {
+        throw data({ message: "Estas intentando borrar un pedido incompleto de hoy!" }, { status: 400 });
       }
       //  Delete the post
       await deleteOrder(String(orderId));
@@ -59,6 +64,8 @@ export async function action({ request }: Route.ActionArgs) {
 export default function ListOrders({ loaderData, actionData }: Route.ComponentProps) {
   const orders = loaderData?.orders;
   const submit = useSubmit();
+  const [toastId, setToastId] = useState<Id | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (actionData?.success) {
@@ -75,8 +82,12 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
     const form = event.currentTarget;
     const orderId = form.orderId.value;
     const status = form.status.value;
-
-    toast.warn(
+    setOrderId(orderId);
+    if (toastId) {
+      toast.dismiss(toastId);
+      setToastId(null)
+    }
+    const _toastId = toast.warn(
       <div>
         <span>Quieres borrar este pedido?</span>
         <div>Asegúrate de que ha sido completado.</div>
@@ -96,11 +107,11 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
         </div>
       </div>,
       {
-        position: "top-right",
+        // position: "top-right",
         autoClose: false,
-        draggable: false
       }
     );
+    setToastId(_toastId);
   };
 
   return (
@@ -111,7 +122,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
         orders.map((order, index) => (
           <div
             key={order.id}
-            className="flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border border-primary/20 rounded-lg shadow-md md:w-2/3 mx-auto mb-6">
+            className={`flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border ${order.id === orderId ? "border-warning border-2" : ""} rounded-lg shadow-md md:w-2/3 mx-auto mb-6`}>
             <div className="flex justify-between items-center w-full">
               <span>
                 {index + 1}. {order.id}{" "}
@@ -135,6 +146,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               </Form>
               <Form method="post" onSubmit={handleSbubmit}>
                 <input type="hidden" name="status" value={order.status} />
+                <input type="hidden" name="date" value={order.createdAt.toISOString()} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-error">
                   <ImBin size={24} />
                 </button>

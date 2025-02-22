@@ -4,8 +4,8 @@ import { FaHome, FaQuestion, FaRegImages } from "react-icons/fa";
 import { GiQuillInk } from "react-icons/gi";
 import { HiMiniShoppingBag } from "react-icons/hi2";
 import { PiUsersThreeFill } from "react-icons/pi";
-import { RiWebhookFill } from "react-icons/ri";
-import { NavLink, Outlet } from "react-router";
+import { RiLiveLine, RiWebhookFill } from "react-icons/ri";
+import { href, NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
 
@@ -19,118 +19,19 @@ export default function AdminLayout() {
       <div className="hidden md:block w-52 shrink-0" />
       <div
         role="tablist"
-        className="bg-base-200 flex flex-wrap md:flex-nowrap flex-row md:flex-col gap-1 pt-1 justify-center md:justify-start w-full overflow-x-auto md:w-52 sticky top-[72px] md:fixed md:left-0 z-50 h-auto md:h-[calc(100vh-72px)] rounded-lg">
-
-        <NavLink
-          to={"admin"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          end
-          viewTransition>
-          <FaHome size={24} />
-        </NavLink>
-        <NavLink
-          to={"/admin/post"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <GiQuillInk size={20} />
-          <span className="text-xs md:text-lg">Posts</span>
-        </NavLink>
-        <NavLink
-          to={"/admin/videos"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <BiSolidVideos size={20} />
-          <span className="text-xs md:text-lg">Videos</span>
-        </NavLink>
-        <NavLink
-          to={"/admin/categories"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <BiCategoryAlt size={20} />
-          <span className="text-xs md:text-lg">Categorías</span>
-        </NavLink>
-        <NavLink
-          to={"admin/questions"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <FaQuestion size={20} />
-          <span className="text-xs md:text-lg">Preguntas</span>
-        </NavLink>
-        <NavLink
-          to={"admin/orders"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <HiMiniShoppingBag size={20} />
-          <span className="text-xs md:text-lg">Pedidos</span>
-        </NavLink>
-        <NavLink
-          to={"admin/products"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <AiFillProduct size={20} />
-          <span className="text-xs md:text-lg">Productos</span>
-        </NavLink>
-        <NavLink
-          to={"admin/gallery"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <FaRegImages size={20} />
-          <span className="text-xs md:text-lg">Imágenes</span>
-        </NavLink>
-        <NavLink
-          to={"admin/users"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <PiUsersThreeFill size={20} />
-          <span className="text-xs md:text-lg">Usuarios</span>
-        </NavLink>
-        <NavLink
-          to={"admin/webhooks"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <RiWebhookFill size={20} />
-          <span className="text-xs md:text-lg">Webhooks</span>
-        </NavLink>
-        <NavLink
-          to={"admin/emails"}
-          role="tab"
-          className={({ isActive }) =>
-            `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-          }
-          viewTransition>
-          <RiWebhookFill size={20} />
-          <span className="text-xs md:text-lg">Emails</span>
-        </NavLink>
+        className="bg-base-200 flex flex-wrap md:flex-nowrap flex-row md:flex-col gap-1 py-1 justify-center md:justify-start w-full overflow-x-auto md:w-52 sticky top-[72px] md:fixed md:left-0 z-50 h-auto md:h-[calc(100vh-72px)] rounded-lg">
+        {LINKS.map(({ href, icon, text }) => (
+          <NavLink
+            to={href}
+            role="tab"
+            className={({ isActive }) =>
+              `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
+            }
+            end
+            viewTransition>
+            {icon}
+            {text ? <span className="text-xs md:text-lg">{text}</span> : null}
+          </NavLink>))}
       </div>
       <div className="min-h-screen px-3 w-full">
         <Outlet />
@@ -138,3 +39,18 @@ export default function AdminLayout() {
     </div>
   );
 }
+
+const LINKS = [
+  { href: href("/admin"), icon: <FaHome size={24} /> },
+  { href: href("/admin/post"), icon: <GiQuillInk size={20} />, text: "Posts" },
+  { href: href("/admin/videos"), icon: <BiSolidVideos size={20} />, text: "Videos" },
+  { href: href("/admin/categories"), icon: <BiCategoryAlt size={20} />, text: "Categorías" },
+  { href: href("/admin/questions"), icon: <FaQuestion size={20} />, text: "Preguntas" },
+  { href: href("/admin/orders"), icon: <HiMiniShoppingBag size={20} />, text: "Pedidos" },
+  { href: href("/admin/products"), icon: <AiFillProduct size={20} />, text: "Productos" },
+  { href: href("/admin/live-sessions"), icon: <RiLiveLine size={20} />, text: "Sessiones" },
+  { href: href("/admin/gallery"), icon: <FaRegImages size={20} />, text: "Imágenes" },
+  { href: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
+  { href: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },
+  { href: href("/admin/emails"), icon: <RiWebhookFill size={20} />, text: "Emails" },
+]

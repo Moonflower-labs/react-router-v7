@@ -39,9 +39,9 @@ export default function EditEndpoint({ actionData, loaderData }: Route.Component
                 <h2 className="text-2xl text-primary my-5">Edita el Webhook Endpoint</h2>
                 {actionData?.success && <div className='text-2xl font-semibold'>{actionData?.success}</div>}
                 <Form method="post" className="w-full md:w-1/2 mx-auto pb-4 flex flex-col">
-                    <input type="text" name={"desciption"} className="input input-bordered input-primary w-full mb-4" placeholder="Descripción" value={endpoint.description as string} />
-                    <input type="text" name={"url"} className="input input-bordered input-primary w-full mb-4" placeholder="Full url" value={endpoint.url} />
-                    <input type="text" name={"endpoint"} className="input input-bordered input-primary w-full mb-4" placeholder="Endpoint" value={endpoint.url} />
+                    <input type="text" name={"desciption"} className="input input-bordered input-primary w-full mb-4" placeholder="Descripción" defaultValue={endpoint.description as string} />
+                    <input type="text" name={"url"} className="input input-bordered input-primary w-full mb-4" placeholder="Full url" defaultValue={endpoint.url} />
+                    <input type="text" name={"endpoint"} className="input input-bordered input-primary w-full mb-4" placeholder="Endpoint" defaultValue={endpoint.url} />
                     {errors?.endpoint && <ActionError actionData={{ error: errors.endpoint }} />}
                     <div className="flex justify-end gap-3 mt-8">
                         <button type="reset" className="btn btn-primary btn-outline btn-sm">

@@ -17,6 +17,12 @@ export const adminRoutes = [
         index("routes/admin/gallery/list.tsx"),
         route("upload", "routes/admin/gallery/upload.tsx")
       ]),
+      // Live Sessions
+      ...prefix("/live-sessions", [
+        index("routes/admin/live-sessions/list.tsx"),
+        route("create", "routes/admin/live-sessions/create.tsx")
+        // route(":id/detail", "routes/admin/live-sessions/detail.tsx")
+      ]),
       //  Orders
       ...prefix("/orders", [
         index("routes/admin/orders/list.tsx"),

@@ -39,6 +39,13 @@ export default function Webhooks({ loaderData }: Route.ComponentProps) {
                     <div key={endpoint.id} className="flex justify-between items-center p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
                         {endpoint.description} {formatUnixDate(endpoint.created)}
                         <div className="flex gap-3 items-center">
+                            <div className="inline-grid *:[grid-area:1/1]">
+                                <div className={`status ${endpoint.status === "enabled" ? "status-success" : " status-error"} animate-ping`}></div>
+                                <div className={`status status-${endpoint.status === "enabled" ? " status-success" : " status-error"}`}></div>
+                            </div>
+                            <div>{endpoint.status}</div>
+                        </div>
+                        <div className="flex gap-3 items-center">
                             <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
                                 <IoMdAdd size={24} />
                             </Link>

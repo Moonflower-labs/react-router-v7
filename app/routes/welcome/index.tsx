@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import logo from "./logo.svg"
 import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
+import Test from "~/icons/test";
 
 
 export const meta: Route.MetaFunction = () => {
@@ -101,6 +102,9 @@ export default function Welcome({ }: Route.ComponentProps) {
                     Comunidad anónima de espiritualidad y bienestar.
                 </div>
             </motion.div>
+            <div className="w-1/2 mx-auto">
+                <Test />
+            </div>
             <div className="flex flex-row text-center justify-center items-stretch gap-2 w-[96%] md:w-[40%] font-bold text-primary">
                 {/* Link containers */}
                 <motion.div
