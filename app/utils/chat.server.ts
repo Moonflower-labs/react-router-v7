@@ -24,7 +24,7 @@ export async function getMessages(roomId: string) {
   return prisma.message.findMany({
     where: { roomId },
     orderBy: { createdAt: "asc" },
-    include: { user: true }
+    include: { user: { include: { profile: true } } }
   });
 }
 
@@ -39,7 +39,7 @@ export async function addMessage(
       roomId,
       userId
     },
-    include: { user: true }
+    include: { user: { include: { profile: true } } }
   });
 
   const channel = `chat:${roomId}`;

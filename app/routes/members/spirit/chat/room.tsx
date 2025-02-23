@@ -8,6 +8,7 @@ import type { Route } from "./+types/room";
 import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
+import type { User } from "~/models/user.server";
 
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
@@ -28,7 +29,7 @@ type Message = {
     text: string;
     createdAt: Date;
     roomId: string;
-    user: { id: string; username: string };
+    user: User;
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -109,7 +110,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             {messages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                     {messages.map((message) => (
-                        <Message key={message.id} message={message} />
+                        <Message key={message.id} message={message as Message} />
                     ))}
                 </div>
                 :
@@ -143,14 +144,13 @@ function Message({ message }: { message: Message }) {
         }
     }, []);
 
-
     return (
         <div className="w-full p-3 chat even:chat-start odd:chat-end" ref={ref}>
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img
                         alt="Tailwind CSS chat bubble component"
-                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                        src={message.user?.profile?.avatar || "/avatars/girl.jpg"} />
                 </div>
             </div>
             <div className="chat-header">
