@@ -1,7 +1,6 @@
-import { createSession } from "~/models/chat.server/session";
+import { createSession } from "~/utils/chat.server";
 import type { Route } from "./+types/create";
-import { createRoom } from "~/models/chat.server/room";
-import { Form } from "react-router";
+import { Form, href, redirect } from "react-router";
 
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
@@ -9,39 +8,38 @@ export async function action({ request }: Route.ActionArgs) {
     const endDate = formData.get("endDate");
     const description = formData.get("description");
     const name = formData.get("name");
+    const link = formData.get("link");
 
     try {
-        const session = await createSession({
+        await createSession({
             name: name as string,
             startDate: new Date(startDate as string),
             endDate: new Date(endDate as string),
-            description: description as string
+            description: description as string,
+            link: link as string
         });
-        if (session.id) {
-            const room = await createRoom({ name: session.name, sessionId: session.id });
-            return { success: true, session, room };
-        }
+
+        return redirect(href("/admin/live-sessions"));
 
     } catch (error) {
         console.error(error);
+        if (error instanceof Error) {
+            return { error: error.message };
+        }
+        return {};
     }
-
-    return {};
 }
 
 
 export default function CreateSession({ actionData }: Route.ComponentProps) {
     return (
         <main>
-            {actionData && (
-                <div>{JSON.stringify(actionData)}</div>
-            )}
             <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Crea una Sessión</h1>
             <Form action="/admin/live-sessions/create" method="post" >
                 <div className="card gap-4 w-fit p-4 mx-auto bg-base-200 border border-base-300">
                     <label className="floating-label">
                         <span>Nombre</span>
-                        <input type="text" placeholder="Nombre" className="input input-md" />
+                        <input type="text" placeholder="Nombre" name="name" className="input input-md" />
                     </label>
                     {/* <button popoverTarget="cally-popover1" className="input input-border" id="cally1" style="anchorName:--cally1">
                         Pick a date
@@ -60,6 +58,10 @@ export default function CreateSession({ actionData }: Route.ComponentProps) {
                     <label className="input">
                         <span className="label">Finaliza</span>
                         <input type="datetime-local" name="endDate" required />
+                    </label>
+                    <label className="floating-label">
+                        <span>Link</span>
+                        <input type="text" placeholder="Link" name="link" className="input input-md" required />
                     </label>
                     <label htmlFor="description">Descripción</label>
                     <textarea name="description" id="description" className="textarea" required />

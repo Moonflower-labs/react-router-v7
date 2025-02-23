@@ -68,12 +68,17 @@ export default [
       route("video/:id", "routes/members/spirit/detail.tsx"),
       route("question", "routes/members/spirit/question.tsx"),
       route("live", "routes/members/spirit/live.tsx"),
-      route("live/chat/:roomId", "routes/members/spirit/chat/index.tsx"),
+      route("live/chat", "routes/members/spirit/chat/index.tsx"),
+      route("live/chat/:roomId", "routes/members/spirit/chat/room.tsx")
+
       // Live Stream Chat
-      route("live/chat/stream", "routes/members/spirit/chat/stream.tsx")
+      // route("live/chat/stream", "routes/members/spirit/chat/stream.tsx"),
+      // route("chat/subscribe", "routes/members/spirit/chat/subscribe.tsx")
     ])
   ]),
-
+  // Live Stream Chat
+  // route("live/chat/stream", "routes/members/spirit/chat/stream.tsx"),
+  route("chat/subscribe", "routes/members/spirit/chat/subscribe.tsx"),
   // API Routes
   ...prefix("api", [
     route("/comments", "routes/api/comments.tsx"),

@@ -6,6 +6,7 @@ model Session {
   createdAt DateTime @default(now())
   startDate DateTime
   endDate   DateTime
+  link      String 
 }
 
 model Room {
@@ -13,17 +14,17 @@ model Room {
   name      String   @unique
   messages  Message[]
   createdAt DateTime @default(now())
-  Session   Session? @relation(fields: [sessionId], references: [id])
-  sessionId String? @unique
+  session   Session @relation(fields: [sessionId], references: [id],onDelete: Cascade)
+  sessionId String @unique
 }
 
 model Message {
   id        String   @id @default(uuid())
-  message   String
-  user      User     @relation(fields: [userId], references: [id])
+  text      String
+  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    String
 
-  Room      Room @relation(fields: [roomId], references: [id])
+  Room      Room @relation(fields: [roomId], references: [id],onDelete: Cascade,onUpdate: Cascade)
   roomId    String
 
   createdAt DateTime @default(now())

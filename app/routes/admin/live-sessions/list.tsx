@@ -6,19 +6,17 @@ import { toast, type Id } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
 import type { Route } from "./+types/list";
-import { deleteSession, getSessions } from "~/models/chat.server/session";
+import { deleteSession, getSessions } from "~/utils/chat.server";
 import { CiEdit } from "react-icons/ci";
+
 
 export async function loader({ request }: Route.LoaderArgs) {
     const url = new URL(request.url);
     const title = url.searchParams.get("search");
+    const liveSessions = await getSessions()
 
     // const page = Number((url.searchParams.get('page')) || 1);
     // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
-
-    const [liveSessions,] = await Promise.all([
-        getSessions(),
-    ])
 
     return { liveSessions, q: title };
 }
@@ -41,7 +39,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ListSessions({ loaderData, actionData }: Route.ComponentProps) {
-    const liveSessions = loaderData?.liveSessions;
+    const { liveSessions } = loaderData;
     const submit = useSubmit();
     const [toastId, setToastId] = useState<Id | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
@@ -49,9 +47,7 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
     useEffect(() => {
         if (actionData?.success) {
             if (actionData?.deleted) {
-                toast.success("Pedido eliminado");
-            } else {
-                toast.success("Estado actualizado!");
+                toast.success("Sesión eliminada");
             }
         }
     }, [actionData]);
@@ -68,7 +64,7 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
         }
         const _toastId = toast.warn(
             <div>
-                <span>Quieres borrar esta sesión?</span>
+                <span>Quieres eliminar esta sesión?</span>
                 <div className="flex justify-center gap-5 mt-3">
                     <button
                         onClick={() => {

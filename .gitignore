@@ -18,3 +18,5 @@ app/routes/manifest.ts
 app/routes/gallery/layout.tsx
 react-email-starter
 app/routes/email.tsx
+app/icons/file.svg
+app/icons/test.tsx

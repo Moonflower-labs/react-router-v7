@@ -92,19 +92,10 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
       <label className="flex flex-col gap-3 justify-center items-center mb-4">
         <span>Sección</span>
         <Form onChange={e => submit(e.currentTarget)} className="my-auto">
-          <div className="join join-horizontal">
-            <label className="btn btn-primary join-item cursor-pointer">
-              <span className="label-text text-primary-content">Personalidad</span>
-              <input type="radio" name="section" value={"basic"} className="radio radio-primary bg-base-100" defaultChecked={section === "basic"} />
-            </label>
-            <label className="btn join-item btn-primary cursor-pointer">
-              <span className="label-text text-primary-content">Tarot</span>
-              <input type="radio" name="section" value="tarot" className="radio radio-primary bg-base-100" defaultChecked={section === "tarot"} />
-            </label>
-            <label className="btn join-item btn-primary cursor-pointer">
-              <span className="label-text text-primary-content">Directo</span>
-              <input type="radio" name="section" value="live" className="radio radio-primary bg-base-100" defaultChecked={section === "live"} />
-            </label>
+          <div className="join">
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="basic" aria-label="Personalidad" />
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="tarot" aria-label="Tarot" />
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="live" aria-label="Directo" />
           </div>
         </Form>
       </label>

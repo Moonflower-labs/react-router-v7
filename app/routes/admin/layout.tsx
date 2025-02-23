@@ -22,6 +22,7 @@ export default function AdminLayout() {
         className="bg-base-200 flex flex-wrap md:flex-nowrap flex-row md:flex-col gap-1 py-1 justify-center md:justify-start w-full overflow-x-auto md:w-52 sticky top-[72px] md:fixed md:left-0 z-50 h-auto md:h-[calc(100vh-72px)] rounded-lg">
         {LINKS.map(({ href, icon, text }) => (
           <NavLink
+            key={href}
             to={href}
             role="tab"
             className={({ isActive }) =>

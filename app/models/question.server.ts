@@ -5,6 +5,7 @@ import type {
   PremiumQuestion as PrismaPremiumQuestion
 } from "@prisma/client";
 import type { User } from "./user.server";
+import { S } from "build/client/assets/chunk-SYFQ2XB5-Dg9M4ExN";
 
 export interface BasicQuestion extends Question {
   user?: User;
@@ -28,11 +29,15 @@ export async function getQuestions({
   const skip = (Number(page) - 1) * pageSize; // Number of items to skip for pagination
 
   let questions;
+  let totalCount = 0;
   if (!section) {
     questions = await prisma.question.findMany({
       take,
       skip,
       include: { user: { select: { username: true } } }
+    });
+    totalCount = await prisma.question.count({
+      where: {}
     });
   } else {
     questions = await prisma.premiumQuestion.findMany({
@@ -42,8 +47,8 @@ export async function getQuestions({
       skip
     });
   }
-  const totalCount = await prisma.question.count({
-    where: {}
+  totalCount = await prisma.premiumQuestion.count({
+    where: { section: section as string }
   });
 
   const totalPages = Math.ceil(totalCount / pageSize);

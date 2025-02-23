@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router'
 
-const links = [{ to: "/members/spirit#videos", name: "Videos" }, { to: "/members/spirit#podcasts", name: "Podcasts" }, { to: "/members/spirit/question", name: "Pregunta" }, { to: "/members/spirit/live", name: "Sesión en directo" }, { to: "/members/spirit/live/chat", name: "Live Chat" }]
+const links = [{ to: "/members/spirit#videos", name: "Videos" }, { to: "/members/spirit#podcasts", name: "Podcasts" }, { to: "/members/spirit/question", name: "Pregunta" }, { to: "/members/spirit/live", name: "Sesión en directo" }]
 
 
 export default function Layout() {
