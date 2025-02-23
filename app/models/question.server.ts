@@ -5,7 +5,6 @@ import type {
   PremiumQuestion as PrismaPremiumQuestion
 } from "@prisma/client";
 import type { User } from "./user.server";
-import { S } from "build/client/assets/chunk-SYFQ2XB5-Dg9M4ExN";
 
 export interface BasicQuestion extends Question {
   user?: User;

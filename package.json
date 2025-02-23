@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "react-router dev",
-    "build": "cross-env NODE_ENV=production react-router build",
-    "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
+    "build": "react-router build",
+    "start": "react-router-serve ./build/server/index.js",
     "setup": "prisma migrate dev && prisma db seed",
     "typecheck": "react-router typegen && tsc --build --noEmit"
   },
@@ -46,7 +46,6 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
-    "cross-env": "^7.0.3",
     "daisyui": "^5.0.0-beta.2",
     "prisma": "^6.4.0",
     "react-router-devtools": "^1.1.5",
