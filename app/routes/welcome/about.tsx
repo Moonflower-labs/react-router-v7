@@ -50,6 +50,9 @@ export default function About({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <FadeInComponent>
+        <h1 className="text-4xl font-bold text-center text-primary py-6">Sobre La Flor Blanca</h1>
+      </FadeInComponent>
+      <FadeInComponent>
         <div className="p-2 pt-8">
           <div className="p-[0.12rem] mx-auto md:w-1/2 bg-gradient-to-r from-primary/80 via-pink-400 to-secondary/80 rounded-lg">
             <div className="rounded-md overflow-hidden">
