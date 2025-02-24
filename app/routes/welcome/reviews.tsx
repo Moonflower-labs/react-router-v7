@@ -145,8 +145,8 @@ function ReviewForm() {
 
   return (
     <>
-      <h2 className="font-semibold text-3xl text-center mb-6">Deja tu opinión</h2>
-      <fetcher.Form method="post" ref={formRef} className="text-center bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-full lg:w-96 mx-auto mb-6">
+      <h3 className="font-semibold text-2xl text-center mb-6">Deja tu opinión</h3>
+      <fetcher.Form method="post" ref={formRef} className="text-center flex flex-col bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-full lg:w-96 mx-auto mb-6">
         <div className="rating mx-auto mb-6">
           <input type="radio" name="score" defaultValue={1} className="mask mask-star-2 bg-warning" />
           <input type="radio" name="score" defaultValue={2} className="mask mask-star-2 bg-warning" />
@@ -155,7 +155,7 @@ function ReviewForm() {
           <input type="radio" name="score" defaultValue={5} defaultChecked className="mask mask-star-2 bg-warning" />
         </div>
         <label>
-          <textarea name="text" className="textarea textarea-lg h-24 mb-3" placeholder="Review"></textarea>
+          <textarea name="text" className="textarea textarea-lg h-24 w-full mb-3" placeholder="Review"></textarea>
         </label>
         {fetcher?.data?.error && <div className="text-error mb-4">{fetcher?.data?.error}</div>}
         <button className="btn btn-sm btn-primary">Confirmar</button>
