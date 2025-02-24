@@ -27,7 +27,7 @@ export function Header() {
     }
   }, []);
 
-  const truncateUsername = (username: string, limit: number = 10) => {
+  const truncateUsername = (username: string, limit: number = 15) => {
     if (!username) return "";
     if (username.length <= limit) return username;
     return `${username.slice(0, limit)}...`;
@@ -121,7 +121,7 @@ export function Header() {
               <ShoppingCartIcon count={optimisticCount} />
             </>
             : <span className="font-bold text-xl">
-              Bienvenid@ {user?.username ? truncateUsername(user.username) : ""}
+              {user?.username ? truncateUsername(user.username) : ""}
             </span>}
         </div>
         <div className="navbar-end">

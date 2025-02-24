@@ -82,9 +82,10 @@ export default function Welcome({ }: Route.ComponentProps) {
                 className="p-2 pt-8"
                 variants={itemVariants}
             >
-                <div className="flex flex-col md:flex-row justify-center items-center py-4">
+                <div className="flex flex-col gap-4 justify-center items-center py-4">
+                    <h1 className="text-5xl font-bold text-primary mb-4 flex flex-col md:flex-row gap-5 justify-center items-center"><span>Bienvenid@</span> <span>a</span></h1>
                     <div className="avatar">
-                        <div className="w-28 rounded">
+                        <div className="w-36 rounded">
                             <img src={logo} alt="logo" className="aspect-video transform scale-150" />
                         </div>
                     </div>
