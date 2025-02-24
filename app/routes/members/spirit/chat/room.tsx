@@ -89,7 +89,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 
         }
 
-    }, [lastMessage]);
+    }, [lastMessage, initialMessages]);
 
 
     // Handle visibility change (phone lock)
