@@ -46,7 +46,8 @@ export async function action({ request, params }: Route.ActionArgs) {
     if (request.method === "DELETE") {
         console.log('delete')
         await prisma.message.deleteMany({ where: { roomId: params.roomId as string } });
-        return redirect(href("/members/spirit/live/chat/:roomId", { roomId: params.roomId }));
+        // return redirect(href("/members/spirit/live/chat/:roomId", { roomId: params.roomId }));
+        return { success: true };
     }
     const text = formData.get("text") as string;
     const roomId = params.roomId as string;
@@ -63,13 +64,18 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room } = loaderData;
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
-    const [messages, setMessages] = useState(initialMessages);
+    const [liveMessages, setLiveMessages] = useState<Message[]>([]); // Only for SSE updates
     const [isReconnecting, setIsReconnecting] = useState(false);
     const fetcher = useFetcher()
     const revalidator = useRevalidator();
     const lastMessage = useEventSource(`/chat/subscribe?roomId=${params.roomId}`, {
         event: "new-message",
     });
+    // Combine initial and live messages
+    const allMessages = [...initialMessages, ...liveMessages].filter((mdg, index, self) =>
+        index === self.findIndex(m => m.id === mdg.id)).sort((a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
     const formRef = useCallback((node: HTMLFormElement | null) => {
         if (node && fetcher.data?.success) {
             node.reset();
@@ -85,17 +91,28 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     useEffect(() => {
         if (lastMessage) {
             const newMessage = JSON.parse(lastMessage) as Message;
-
-            setMessages((prev: any) => {
-                if (!prev.some((msg: any) => msg.id === newMessage.id)) {
-                    return [...prev, newMessage]
+            setLiveMessages((prev) => {
+                if (!prev.some((m) => m.id === newMessage.id) && !initialMessages.some((m) => m.id === newMessage.id)) {
+                    return [...prev, newMessage];
                 }
                 return prev;
             });
+        };
+        // Handle visibility change (phone lock)
+        // const handleVisibilityChange = () => {
+        //     if (document.visibilityState === "visible" && revalidator.state === "idle") {
+        //         revalidator.revalidate(); // Sync messages after unlock
+        //         setLiveMessages([]); // Reset live messages to avoid duplicates after revalidation
+        //     }
+        // };
 
-        }
+        // document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    }, [lastMessage, initialMessages]);
+        // return () => {
+        //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+        // };
+    }, [lastMessage, revalidator, initialMessages]); // Include initialMessages to react to loader updates
+
 
 
     // Handle visibility change (phone lock)
@@ -111,6 +128,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 
                 reconnectTimeout = setTimeout(() => {
                     revalidator.revalidate();
+                    setLiveMessages([]); // Reset live messages to avoid duplicates
                     console.log('route revalidated');
                     setIsReconnecting(false);
                 }, 1500);
@@ -167,9 +185,9 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             <Form method="DELETE" className="mb-4">
                 <button className="btn btn-error btn-outline" type="submit">Clear chat</button>
             </Form>
-            {messages.length > 0 ?
+            {allMessages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
-                    {messages.map((message) => (
+                    {allMessages.map((message) => (
                         <Message
                             key={message.id}
                             message={message as Message}
