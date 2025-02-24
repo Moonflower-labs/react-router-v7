@@ -27,7 +27,7 @@ export function Header() {
     }
   }, []);
 
-  const truncateUsername = (username: string, limit: number = 10) => {
+  const truncateUsername = (username: string, limit: number = 12) => {
     if (!username) return "";
     if (username.length <= limit) return username;
     return `${username.slice(0, limit)}...`;
@@ -39,10 +39,10 @@ export function Header() {
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
-            <div tabIndex={0} role="button" className={"hover:bg-base-200 cursor-pointer opacity-90 hover:opacity-100 p-2 rounded-full transition-all"}>
+            <div tabIndex={0} role="button" className={"btn shadow"}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-100/90"}>
+            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-200/90"}>
               {user ? (
                 <>
                   <li onClick={handleDropdown}>
@@ -80,35 +80,13 @@ export function Header() {
               )}
             </ul>
           </div>
-        </div>
-        <div className="navbar-center md:flex-row gap-2 text-primary">
-          {!isHomePage ?
-            <>
-              <Link to={"/"} onClick={handleDropdown} className="flex hover:bg-base-200 rounded px-2.5 py-1 text-2xl" viewTransition>
-                <span className="hidden md:block me-2">La Flor Blanca</span>
-                <div className="avatar">
-                  <div className="w-10 rounded">
-                    <img src={logo} alt="logo" className="transform scale-150" />
-                  </div>
-                </div>
-              </Link>
-              <div className="text-2xl flex">
-                <span data-testid="username">{truncateUsername(user?.username)}</span>
-              </div>
-              <ShoppingCartIcon count={optimisticCount} />
-            </>
-            : <span className="font-bold text-xl">
-              Bienvenid@ {user?.username ? truncateUsername(user.username) : ""}
-            </span>}
-        </div>
-        <div className="navbar-end">
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn m-1">
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn m-1 shadow">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-1 w-32 p-2 shadow-2xl">
+              <ul tabIndex={0} className="dropdown-content bg-base-200 rounded-box mt-2 z-1 w-32 p-2 shadow-2xl">
                 {themes.map((themeOption) => (
                   <li>
                     <input
@@ -125,6 +103,28 @@ export function Header() {
               </ul>
             </Form>
           </div>
+        </div>
+        <div className="navbar-center md:flex-row gap-1.5 text-primary">
+          {!isHomePage ?
+            <>
+              <Link to={"/"} onClick={handleDropdown} className="flex hover:bg-base-200 rounded px-2.5 py-1 text-2xl" viewTransition>
+                <span className="hidden md:block me-2">La Flor Blanca</span>
+                <div className="avatar">
+                  <div className="w-10 rounded">
+                    <img src={logo} alt="logo" className="transform scale-150" />
+                  </div>
+                </div>
+              </Link>
+              <div className="text-xl flex">
+                <span data-testid="username">{truncateUsername(user?.username)}</span>
+              </div>
+              <ShoppingCartIcon count={optimisticCount} />
+            </>
+            : <span className="font-bold text-xl">
+              Bienvenid@ {user?.username ? truncateUsername(user.username) : ""}
+            </span>}
+        </div>
+        <div className="navbar-end">
           <Navbar />
         </div>
       </div>
