@@ -12,7 +12,7 @@ const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
 
   return (
     <main id="reviews" className="mx-3">
-      <h1 className="font-semibold text-center text-3xl mb-4">Opiniones</h1>
+      <h2 className="font-semibold text-center text-3xl mb-6">Opiniones</h2>
       <Suspense fallback={<ReviewsSkeleton />}>
         <ReviewsCarousel reviewsPromise={reviews} />
       </Suspense>
@@ -81,7 +81,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
   };
 
   return (
-    <section className="flex flex-col justify-center mb-6">
+    <section className="flex flex-col justify-center mb-14">
       <div
         className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-base-200 border border-base-300 overflow-x-hidden overflow-y-auto"
         onTouchStart={handleTouchStart} // Set up touch start event
@@ -145,7 +145,7 @@ function ReviewForm() {
 
   return (
     <>
-      <div className="font-semibold text-3xl text-center mb-6">Deja tu opinión</div>
+      <h2 className="font-semibold text-3xl text-center mb-6">Deja tu opinión</h2>
       <fetcher.Form method="post" ref={formRef} className="text-center bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-full lg:w-96 mx-auto mb-6">
         <div className="rating mx-auto mb-6">
           <input type="radio" name="score" defaultValue={1} className="mask mask-star-2 bg-warning" />
