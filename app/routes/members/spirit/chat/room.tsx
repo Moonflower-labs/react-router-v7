@@ -140,7 +140,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 function Message({ message }: { message: Message }) {
     const ref = useCallback((node: HTMLDivElement | null) => {
         if (node) {
-            node.scrollIntoView({ behavior: "smooth", block: "end" });
+            node.scrollIntoView({ behavior: "smooth", block: "center", });
         }
     }, []);
 
