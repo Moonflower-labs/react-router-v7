@@ -239,7 +239,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
               <input
                 type="text"
                 placeholder="Especifica aquí..."
-                className="input input-bordered w-full max-w-xs disabled:bg-primary/10"
+                className="input input-lg input-bordered w-full max-w-xs disabled:bg-primary/10"
                 name={"another"}
                 disabled
               />
