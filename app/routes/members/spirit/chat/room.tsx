@@ -119,11 +119,11 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 
             {isSessionActive && (
                 <fetcher.Form method="post" ref={formRef} className="fixed bottom-0 left-0 right-0 px-4 pb-4 mx-auto z-50 flex justify-center items-center gap-2 mb-4">
-                    <label className="floating-label">
+                    <label className="floating-label w-full">
                         <span>Mensaje</span>
-                        <input type="text" name="text" className="input input-md input-primary" placeholder="Mensaje" required />
+                        <input type="text" name="text" className="input input-lg w-full input-primary" placeholder="Mensaje" required />
                     </label>
-                    <button type="submit" className="btn btn-primary btn-sm">
+                    <button type="submit" className="btn btn-primary btn-lg">
                         <IoMdSend size={24} />
                     </button>
                     {fetcher.data?.error &&

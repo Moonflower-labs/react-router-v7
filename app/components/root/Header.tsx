@@ -27,7 +27,7 @@ export function Header() {
     }
   }, []);
 
-  const truncateUsername = (username: string, limit: number = 12) => {
+  const truncateUsername = (username: string, limit: number = 10) => {
     if (!username) return "";
     if (username.length <= limit) return username;
     return `${username.slice(0, limit)}...`;
