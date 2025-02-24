@@ -97,7 +97,7 @@ export function Header() {
               </div>
               <ShoppingCartIcon count={optimisticCount} />
             </>
-            : <span className="font-bold text-2xl">
+            : <span className="font-bold text-xl">
               Bienvenid@ {user?.username ? truncateUsername(user.username) : ""}
             </span>}
         </div>
