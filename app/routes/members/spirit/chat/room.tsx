@@ -9,7 +9,6 @@ import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import type { User } from "~/models/user.server";
-import { i } from "node_modules/@react-router/dev/dist/routes-DHIOx0R9";
 
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
