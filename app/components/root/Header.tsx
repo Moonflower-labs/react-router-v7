@@ -88,9 +88,9 @@ export function Header() {
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
               <ul tabIndex={0} className="dropdown-content bg-base-200 rounded-box mt-2 z-1 w-32 p-2 shadow-2xl">
                 {themes.map((themeOption) => (
-                  <li>
+                  <li key={themeOption.value}>
                     <input
-                      key={themeOption.value}
+
                       type="radio"
                       name="theme-buttons"
                       defaultChecked={theme === themeOption.value}
