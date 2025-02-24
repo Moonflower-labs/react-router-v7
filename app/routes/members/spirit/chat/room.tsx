@@ -10,6 +10,12 @@ import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import type { User } from "~/models/user.server";
 
+export function headers(_: Route.HeadersArgs) {
+    return {
+        "Cache-Control": "no-store",
+        "Content-Type": "text/html",
+    };
+}
 
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
