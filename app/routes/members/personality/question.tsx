@@ -140,7 +140,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
         de
         <span className="text-warning"> 3</span>
       </div>
-      <fetcher.Form ref={formRef} method="post" id="question" className="p-2 rounded-3xl md:w-2/3 mx-auto shadow-lg border">
+      <fetcher.Form ref={formRef} method="post" id="question" className="p-2 rounded-xl md:w-2/3 mx-auto shadow-lg border border-base-300">
         <input type="hidden" name="questionCount" value={questionCount} />
         <div className="p-8 flex flex-col justify-center items-center">
           <label className="label floating-label mb-3">

@@ -99,19 +99,18 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
           Preguntas disponibles: <span className="text-warning"> {1 - Number(questionCount)} </span> de
           <span className="h4 text-warning"> 1</span>
         </div>
-        <fetcher.Form ref={formRef} method="post" className="p-2 rounded-lg md:w-2/3 mx-auto shadow-lg">
+        <fetcher.Form ref={formRef} method="post" className="p-2 rounded-lg md:w-2/3 mx-auto shadow-lg border border-base-300">
           <input type="hidden" name="questionCount" value={questionCount} />
           <input type="hidden" name="type" value={"live"} />
           <div className="p-6">
-            <label className="form-control mb-6">
-              <div className="label">
-                <span className="label-text font-bold">1. ¿Qué necesitas aclarar, entender?</span>
-              </div>
+            <label className="flex flex-col gap-3 mb-4">
+              <span className="font-bold"> 1. ¿Qué necesitas aclarar, entender?</span>
               <textarea className="textarea textarea-bordered h-24" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
               {errors?.text && (
                 <span className="text-error mt-2">{errors?.text}</span>
               )}
             </label>
+
             <div className="mb-3 text-center">
               <button type="reset" className="btn btn-sm btn-outline btn-accent mx-1 rounded-1">
                 Cancelar

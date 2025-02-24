@@ -98,23 +98,21 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
         de
         <span className="text-warning"> 1</span>
       </div>
-      <fetcher.Form ref={formRef} method="post" className="p-2 rounded-lg md:w-2/3 shadow-lg mb-6">
+      <fetcher.Form ref={formRef} method="post" className="p-2 rounded-lg md:w-2/3 shadow-lg mb-6 border border-base-300">
         <input type="hidden" name="questionCount" value={questionCount} />
         <input type="hidden" name="type" value={"tarot"} />
         <div className="p-6">
-          <label className="form-control mb-6 label">
-            <span className="label-text  mb-3 font-bold">1. ¿Qué duda tienes o qué te interesa saber?</span>
-            <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
+          <label className="flex flex-col gap-3 mb-4">
+            <span className="font-bold">1. ¿Qué duda tienes o qué te interesa saber?</span>
+            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
             {errors?.text && (
               <span className="text-error mt-2">{errors?.text}</span>
             )}
           </label>
 
-          <label className="form-control mb-6 label">
-            <div className="label-text mb-3 font-bold">
-              2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.
-            </div>
-            <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="info"></textarea>
+          <label className="flex flex-col gap-3 mb-4">
+            <span className="font-bold"> 2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.</span>
+            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="info"></textarea>
           </label>
 
           <div className="flex gap-3 mb-3 justify-center">
