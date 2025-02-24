@@ -11,7 +11,7 @@ const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
   const user = useRouteLoaderData("root")?.user as User;
 
   return (
-    <main id="reviews">
+    <main id="reviews" className="mx-3">
       <h1 className="font-semibold text-center text-3xl mb-4">Opiniones</h1>
       <Suspense fallback={<ReviewsSkeleton />}>
         <ReviewsCarousel reviewsPromise={reviews} />
@@ -146,7 +146,7 @@ function ReviewForm() {
   return (
     <>
       <div className="font-semibold text-3xl text-center mb-6">Deja tu opinión</div>
-      <fetcher.Form method="post" ref={formRef} className="text-center bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-96 mx-auto mb-6">
+      <fetcher.Form method="post" ref={formRef} className="text-center bg-base-200 border border-base-300 p-6 rounded-lg shadow-lg w-full lg:w-96 mx-auto mb-6">
         <div className="rating mx-auto mb-6">
           <input type="radio" name="score" defaultValue={1} className="mask mask-star-2 bg-warning" />
           <input type="radio" name="score" defaultValue={2} className="mask mask-star-2 bg-warning" />
