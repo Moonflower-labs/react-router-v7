@@ -80,7 +80,7 @@ export function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
         <input type="hidden" name={fieldName} value={objectId} />
         <input type="hidden" name="action" value={action} />
         <textarea
-          className="w-full textarea textarea-primary mb-4"
+          className="w-full textarea textarea-primary textarea-lg mb-4"
           placeholder={action === "reply" ? "Escribe tu respuesta al comentario" : "Escribe un comentario..."}
           name="text"
           rows={5}></textarea>
