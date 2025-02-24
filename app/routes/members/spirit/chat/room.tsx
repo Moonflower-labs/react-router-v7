@@ -1,7 +1,7 @@
 // app/routes/chat.$roomId.tsx
 import { useEventSource } from "remix-utils/sse/react";
 import { useCallback, useEffect, useState } from "react";
-import { data, redirect, useFetcher } from "react-router";
+import { data, redirect, useFetcher, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom } from "~/utils/chat.server";
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
@@ -54,6 +54,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room } = loaderData;
+    const { user } = useRouteLoaderData("root");
+    const currentUserId = user?.id;
     const [messages, setMessages] = useState(initialMessages);
     const fetcher = useFetcher()
 
@@ -110,7 +112,11 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             {messages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                     {messages.map((message) => (
-                        <Message key={message.id} message={message as Message} />
+                        <Message
+                            key={message.id}
+                            message={message as Message}
+                            currentUserId={currentUserId}
+                        />
                     ))}
                 </div>
                 :
@@ -136,29 +142,38 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 }
 
 
-
-function Message({ message }: { message: Message }) {
+function Message({ message, currentUserId }: { message: Message, currentUserId: string }) {
     const ref = useCallback((node: HTMLDivElement | null) => {
         if (node) {
-            node.scrollIntoView({ behavior: "smooth", block: "center", });
+            node.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }, []);
 
+    // Check if this message is from the current user
+    const isCurrentUser = message.user.id === currentUserId;
+
+
     return (
-        <div className="w-full p-3 chat even:chat-start odd:chat-end" ref={ref}>
+        <div
+            className={`w-full p-3 chat ${isCurrentUser ? 'chat-end' : 'chat-start'}`}
+            ref={ref}
+        >
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img
                         alt="Tailwind CSS chat bubble component"
-                        src={message.user?.profile?.avatar || "/avatars/girl.jpg"} />
+                        src={message.user?.profile?.avatar || "/avatars/girl.jpg"}
+                    />
                 </div>
             </div>
             <div className="chat-header">
                 {message.user.username}
-                <time className="text-xs opacity-50">{new Date(message.createdAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })}</time>
+                <time className="text-xs opacity-50">
+                    {new Date(message.createdAt).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}
+                </time>
             </div>
             <div className="chat-bubble chat-bubble-primary">{message.text}</div>
         </div>
