@@ -31,15 +31,6 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: false, error: "Ya has usado el máximo número de preguntas este mes" };
   }
 
-  const errors: any = {};
-
-  // validate the fields
-  if (!text) {
-    errors.text = "Escribe una pregunta";
-  }
-  if (Object.keys(errors).length) {
-    return errors;
-  }
   try {
     await createPremiumQuestion({ userId, data: { text, info }, section: "tarot" });
     //  Increment count
@@ -52,8 +43,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Component({ loaderData, actionData }: Route.ComponentProps) {
-  const errors = actionData
+export default function Component({ loaderData }: Route.ComponentProps) {
   const questionCount = loaderData;
   const fetcher = useFetcher();
 
@@ -104,15 +94,12 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
         <div className="p-6">
           <label className="flex flex-col gap-3 mb-4">
             <span className="font-bold">1. ¿Qué duda tienes o qué te interesa saber?</span>
-            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
-            {errors?.text && (
-              <span className="text-error mt-2">{errors?.text}</span>
-            )}
+            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text" required></textarea>
           </label>
 
           <label className="flex flex-col gap-3 mb-4">
             <span className="font-bold"> 2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.</span>
-            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="info"></textarea>
+            <textarea className="textarea h-24 w-full" placeholder="Escribe aqui..." name="info"></textarea>
           </label>
 
           <div className="flex gap-3 mb-3 justify-center">

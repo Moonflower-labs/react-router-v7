@@ -32,17 +32,7 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: false, error: "Ya has usado el máximo número de preguntas este mes" };
   }
 
-  const errors: any = {};
 
-  // validate the fields
-  if (!text) {
-    errors.text = "Escribe una pregunta";
-  }
-  // return data if we have errors
-  if (Object.keys(errors).length) {
-    return errors;
-  }
-  // todo: validate input data + provide feedback
   try {
     await createPremiumQuestion({ userId, data: { text }, section: "live" });
     //  Increment count
@@ -55,18 +45,16 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Component({ loaderData, actionData }: Route.ComponentProps) {
-  const errors = actionData;
+export default function Component({ loaderData }: Route.ComponentProps) {
   const questionCount = loaderData;
   const fetcher = useFetcher();
-
   const formRef = useCallback((node: HTMLFormElement | null) => {
     if (node && fetcher.state === "idle" && fetcher.data?.message) {
       node.reset();
     }
   }, [fetcher.state, fetcher.data?.message]);
 
-
+  console.log(fetcher.data)
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data?.success && fetcher.data?.message) {
@@ -105,10 +93,7 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
           <div className="p-6">
             <label className="flex flex-col gap-3 mb-4">
               <span className="font-bold"> 1. ¿Qué necesitas aclarar, entender?</span>
-              <textarea className="textarea textarea-bordered h-24" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
-              {errors?.text && (
-                <span className="text-error mt-2">{errors?.text}</span>
-              )}
+              <textarea className="textarea textarea-bordered h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text" required></textarea>
             </label>
 
             <div className="mb-3 text-center">
