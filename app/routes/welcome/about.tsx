@@ -88,14 +88,25 @@ export default function About({ loaderData }: Route.ComponentProps) {
       </section>
       <section className="grid md:grid-cols-2 gap-4 mb-4 px-2 pb-10">
         <FadeInComponent>
-          <YoutubeVideo videoId="v726U5jRots" />
+          <div className="flex flex-col m-10">
+            <p className="text-primary text-2xl font-bold text-center mb-3">Gracias por llegar Aquí: Miembros</p>
+            <YoutubeVideo videoId="v726U5jRots" />
+          </div>
         </FadeInComponent>
+
         <FadeInComponent>
-          <YoutubeVideo videoId="Lj5Q6_o_yyw" />
+          <div className="flex flex-col m-10">
+            <p className="text-primary text-2xl font-bold text-center mb-3">Su Historia "Nuestra Historia"</p>
+            <YoutubeVideo videoId="Lj5Q6_o_yyw" />
+          </div>
         </FadeInComponent>
         <div className="col-span-full">
           <FadeInComponent>
-            <YoutubeVideo videoId="4GIIhZK1vaY" className="md:w-1/2 mx-auto" />
+            <div className="flex flex-col m-10">
+              <p className="text-primary text-2xl font-bold text-center mb-3">Su Historia "Nuestra Historia"</p>
+              <YoutubeVideo videoId="4GIIhZK1vaY" className="md:w-1/2 mx-auto" />
+            </div>
+
           </FadeInComponent>
         </div>
       </section>

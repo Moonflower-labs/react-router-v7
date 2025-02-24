@@ -83,7 +83,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
   return (
     <section className="flex flex-col justify-center mb-6">
       <div
-        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-base-100 border border-base-300 overflow-x-hidden overflow-y-auto"
+        className="h-60 relative w-full lg:w-[70%] rounded-lg shadow-xl mx-auto align-middle bg-base-200 border border-base-300 overflow-x-hidden overflow-y-auto"
         onTouchStart={handleTouchStart} // Set up touch start event
         onTouchEnd={handleTouchEnd} // Set up touch end event
       >
@@ -155,7 +155,7 @@ function ReviewForm() {
           <input type="radio" name="score" defaultValue={5} defaultChecked className="mask mask-star-2 bg-warning" />
         </div>
         <label>
-          <textarea name="text" className="textarea textarea-bordered h-24 mb-3" placeholder="Review"></textarea>
+          <textarea name="text" className="textarea textarea-lg h-24 mb-3" placeholder="Review"></textarea>
         </label>
         {fetcher?.data?.error && <div className="text-error mb-4">{fetcher?.data?.error}</div>}
         <button className="btn btn-sm btn-primary">Confirmar</button>
