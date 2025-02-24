@@ -106,10 +106,9 @@ export default function About({ loaderData }: Route.ComponentProps) {
         <div className="col-span-full">
           <FadeInComponent>
             <div className="flex flex-col m-10">
-              <p className="text-primary text-2xl font-bold text-center mb-3">Su Historia "Nuestra Historia"</p>
+              <p className="text-primary text-2xl font-bold text-center mb-3">Conversacione Anónimas</p>
               <YoutubeVideo videoId="4GIIhZK1vaY" className="md:w-1/2 mx-auto" />
             </div>
-
           </FadeInComponent>
         </div>
       </section>
