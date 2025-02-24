@@ -27,6 +27,12 @@ export function Header() {
     }
   }, []);
 
+  const truncateUsername = (username: string, limit: number = 15) => {
+    if (!username) return "";
+    if (username.length <= limit) return username;
+    return `${username.slice(0, limit)}...`;
+  };
+
   return (
     <header className="sticky top-0 z-[200] w-screen bg-base-200/90 backdrop-blur">
       <div className={`navbar shadow-md z-50 h-full`}>
@@ -87,11 +93,13 @@ export function Header() {
                 </div>
               </Link>
               <div className="text-2xl flex">
-                <span data-testid="username">{user?.username}</span>
+                <span data-testid="username">{truncateUsername(user?.username)}</span>
               </div>
               <ShoppingCartIcon count={optimisticCount} />
             </>
-            : <span className="font-bold text-2xl">Bienvenid@ {user?.username ? user.username : ""}</span>}
+            : <span className="font-bold text-2xl">
+              Bienvenid@ {user?.username ? truncateUsername(user.username) : ""}
+            </span>}
         </div>
         <div className="navbar-end">
           <div className="dropdown dropdown-end">
@@ -100,7 +108,7 @@ export function Header() {
               <span className="hidden md:block">Theme</span>
             </div>
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-1 w-28 p-2 shadow-2xl">
+              <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-1 w-32 p-2 shadow-2xl">
                 {themes.map((themeOption) => (
                   <li>
                     <input

@@ -24,7 +24,7 @@ export function Navbar() {
             exit={{ opacity: 0, x: 300 }}
             className="fixed top-0 right-0 w-screen h-full z-100"
             onClick={handleNav}>
-            <div className="w-full md:w-[40%] h-screen fixed right-0 backdrop-blur-sm flex flex-col gap-3.5 items-center justify-center">
+            <div className="w-full md:w-[40%] h-screen fixed right-0 bg-base-200/50 flex flex-col gap-3.5 items-center justify-center">
               {LINKS.map((link) => (
                 <Link key={link.href} to={link.href} className="btn btn-primary w-[80%] scale-hover group overflow-hidden transition-all" viewTransition>
                   {link.label}
