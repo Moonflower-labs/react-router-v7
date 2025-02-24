@@ -20,14 +20,14 @@ export default function MembersLayout({ }: Route.ComponentProps) {
         role="navigation"
         data-testid="members-layout"
         className="flex flex-col gap-1 justify-center sticky top-[72px] z-40 md:w-fit rounded-lg mx-auto pb-5">
-        <div className="grid grid-cols-3 gap-1 w-full max-w-3xl px-2">
+        <div className="join mx-auto w-screen px-1">
           {LINKS.map((link: any) =>
             <NavLink
               key={link.to}
               to={link.to}
               role="tab"
               className={({ isActive }) =>
-                `flex flex-col justify-center items-center gap-1 border border-base-200 rounded-lg p-2 shadow-sm ${isActive ? "bg-primary text-primary-content" : "bg-base-100"} transition-all ease-out duration-200`
+                `btn join-item w-1/3 justify-center items-center border-base-300 shadow-sm ${isActive ? "btn-primary" : ""} transition-all ease-out duration-200`
               }
               // preventScrollReset={true}
               viewTransition
@@ -43,8 +43,8 @@ export default function MembersLayout({ }: Route.ComponentProps) {
             </NavLink>
           )}
         </div>
-        <ScrollToHash />
       </div>
+      <ScrollToHash />
       <div className="mx-2">
         <Outlet />
       </div>
