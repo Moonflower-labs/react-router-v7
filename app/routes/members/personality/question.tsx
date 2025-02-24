@@ -144,13 +144,13 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
         <input type="hidden" name="questionCount" value={questionCount} />
         <div className="p-8 flex flex-col justify-center items-center">
           <label className="label floating-label mb-3">
-            <span className="label-text me-3 md:me-0">Nombre</span>
-            <input type="text" name="name" placeholder="Nombre" className="input input-bordered w-full max-w-xs" />
+            <span>Nombre</span>
+            <input type="text" name="name" placeholder="Nombre" className="input input-lg w-full" />
           </label>
           {errors?.name && <ActionError actionData={{ error: errors.name }} />}
 
           <div className="mb-4">
-            <div className="font-bold mb-3"> 1. ¿Tu pregunta es sobre Limpiezas, Emociones y Sentimientos Discordantes, Ataques Psíquicos o Habilidades Psíquicas?</div>
+            <div className="font-bold text-xl mb-3"> 1. ¿Tu pregunta es sobre Limpiezas, Emociones y Sentimientos Discordantes, Ataques Psíquicos o Habilidades Psíquicas?</div>
             <div className="flex flex-col gap-3 justify-center md:w-fit items-end mx-auto">
               <label className="label">
                 <span>Limpiezas</span>
@@ -180,13 +180,13 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           </div>
 
           <fieldset className="mb-4">
-            <legend className="fieldset-legend mb-3">2. ¿Qué duda tienes o te interesa saber sobre este tema?</legend>
-            <textarea className="textarea h-24 mb-2" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
+            <legend className="fieldset-legend text-xl mb-3">2. ¿Qué duda tienes o te interesa saber sobre este tema?</legend>
+            <textarea className="textarea textarea-lg h-24 mb-2" placeholder="Escribe tu pregunta aqui..." name="text"></textarea>
             {errors?.text && <ActionError actionData={{ error: errors.text }} />}
           </fieldset>
 
           <div className="mb-6">
-            <div className="font-bold mb-3">3. ¿Dónde has oído hablar de nosotros?</div>
+            <div className="font-bold text-xl mb-3">3. ¿Dónde has oído hablar de nosotros?</div>
             <div className="flex flex-col gap-3 items-end w-fit mx-auto">
               <label className="label">
                 <span>Telegram</span>
@@ -247,7 +247,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           </div>
 
           <div className="mb-4">
-            <div className="font-bold mb-3">4. ¿Cúal es tu grupo de edad?</div>
+            <div className="font-bold text-xl mb-3">4. ¿Cúal es tu grupo de edad?</div>
             <div className="flex flex-col gap-3 items-end w-fit mx-auto">
               <label className="label">
                 <span>De 16 a 25 años </span>
@@ -286,7 +286,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
             </div>
             {errors?.ageGroup && <ActionError actionData={{ error: errors.ageGroup }} />}
           </div>
-          <label className="select mb-3">
+          <label className="select select-lg mb-3">
             <span className="label">5. Género</span>
             <select name="gender" required>
               <option value="mujer">Mujer</option>
@@ -294,12 +294,12 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
             </select>
           </label>
 
-          <label className="input mb-3">
+          <label className="input input-lg mb-3">
             <span className="label">6. País</span>
             <input type="text" name="country" placeholder="País" required />
           </label>
 
-          <label className="input mb-3">
+          <label className="input input-lg mb-3">
             <span className="label">7. Ciudad</span>
             <input type="text" name="city" placeholder="Ciudad" required />
           </label>

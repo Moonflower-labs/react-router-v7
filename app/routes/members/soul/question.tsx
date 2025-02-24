@@ -93,13 +93,13 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <input type="hidden" name="type" value={"tarot"} />
         <div className="p-6">
           <label className="flex flex-col gap-3 mb-4">
-            <span className="font-bold">1. ¿Qué duda tienes o qué te interesa saber?</span>
-            <textarea className="textarea h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text" required></textarea>
+            <span className="font-bold text-xl">1. ¿Qué duda tienes o qué te interesa saber?</span>
+            <textarea className="textarea textarea-lg h-24 w-full" placeholder="Escribe tu pregunta aqui..." name="text" required></textarea>
           </label>
 
           <label className="flex flex-col gap-3 mb-4">
-            <span className="font-bold"> 2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.</span>
-            <textarea className="textarea h-24 w-full" placeholder="Escribe aqui..." name="info"></textarea>
+            <span className="font-bold text-xl"> 2. Cuéntanos algo que nos ayude a prepararnos para tu consulta dándonos el contexto de la pregunta si crees que es necesario.</span>
+            <textarea className="textarea textarea-lg h-24 w-full" placeholder="Escribe aqui..." name="info"></textarea>
           </label>
 
           <div className="flex gap-3 mb-3 justify-center">
