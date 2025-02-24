@@ -45,9 +45,6 @@ export function Header() {
             <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-200/90"}>
               {user ? (
                 <>
-                  <li onClick={handleDropdown}>
-                    <LogoutBtn />
-                  </li>
                   <li>
                     <Link to={href("/profile")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
                       Perfil
@@ -62,6 +59,9 @@ export function Header() {
                     <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold"} viewTransition>
                       Admin
                     </Link>
+                  </li>
+                  <li onClick={handleDropdown}>
+                    <LogoutBtn />
                   </li>
                 </>
               ) : (

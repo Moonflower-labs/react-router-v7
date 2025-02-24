@@ -6,8 +6,8 @@ export const LogoutBtn = React.memo(() => {
   const isLoggingOut = fetcher.formData != null;
 
   return (
-    <fetcher.Form method="post" action={href("/logout")} className="flex justify-center w-full">
-      <button className="btn btn-sm btn-outline btn-secondary w-full" type="submit" disabled={isLoggingOut}>
+    <fetcher.Form method="post" action={href("/logout")} className="flex justify-center px-0">
+      <button className="btn btn-xs btn-primary w-full" type="submit" disabled={isLoggingOut}>
         {isLoggingOut ? (
           <>
             Logging out
