@@ -1,7 +1,7 @@
 // app/routes/chat.$roomId.tsx
 import { useEventSource } from "remix-utils/sse/react";
 import { useCallback, useEffect, useState } from "react";
-import { data, redirect, useFetcher, useRouteLoaderData } from "react-router";
+import { data, redirect, useFetcher, useRevalidator, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom } from "~/utils/chat.server";
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
@@ -9,6 +9,7 @@ import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import type { User } from "~/models/user.server";
+import { i } from "node_modules/@react-router/dev/dist/routes-DHIOx0R9";
 
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
@@ -58,6 +59,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const currentUserId = user?.id;
     const [messages, setMessages] = useState(initialMessages);
     const fetcher = useFetcher()
+    const revalidator = useRevalidator();
 
     const lastMessage = useEventSource(`/chat/subscribe?roomId=${params.roomId}`, {
         event: "new-message",
@@ -78,6 +80,9 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         if (lastMessage) {
             const newMessage = JSON.parse(lastMessage) as Message;
             setMessages((prev: any) => [...prev, newMessage]);
+        } else if (lastMessage === null && revalidator.state === "idle") {
+            console.log('revalidating...')
+            revalidator.revalidate();
         }
     }, [lastMessage]);
 
