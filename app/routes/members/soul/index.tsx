@@ -44,7 +44,7 @@ export default function Soul({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="text-center pt-2 px-1">
-      <h1 className="text-primary text-4xl mb-8 font-semibold">Alma</h1>
+      <h1 className="text-primary text-4xl mb-3 font-semibold">Alma</h1>
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
         <p className="text-3xl mb-3">¡Bienvenidos Almas!</p>
         <YoutubeVideo videoId="gVKPExy_MbI" />

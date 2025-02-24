@@ -94,28 +94,27 @@ export function Header() {
             : <span className="font-bold text-2xl">Bienvenid@ {user?.username ? user.username : ""}</span>}
         </div>
         <div className="navbar-end">
-          <div className="dropdown dropdown-end dropdown-bottom">
-            <div tabIndex={0} className="btn btn-ghost">
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn m-1">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
-
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <div tabIndex={0} className="menu dropdown-content z-[1] p-0 m-0 justify-end rounded-full">
-                <div className="flex flex-col gap-1 bg-neutral/10 p-1 rounded-md">
-                  {themes.map((themeOption) => (
+              <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-1 w-28 p-2 shadow-2xl">
+                {themes.map((themeOption) => (
+                  <li>
                     <input
                       key={themeOption.value}
                       type="radio"
                       name="theme-buttons"
                       defaultChecked={theme === themeOption.value}
-                      className="btn btn-sm theme-controller"
+                      className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
                       aria-label={themeOption.label}
                       value={themeOption.value}
                     />
-                  ))}
-                </div>
-              </div>
+                  </li>
+                ))}
+              </ul>
             </Form>
           </div>
           <Navbar />

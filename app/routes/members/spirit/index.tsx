@@ -26,7 +26,7 @@ export default function Spirit({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="text-center pt-2 px-1">
-      <h1 className="text-primary text-4xl mb-4 font-bold">Espíritu</h1>
+      <h1 className="text-primary text-4xl mb-3 font-bold">Espíritu</h1>
       <div className="grid grid-cols-1 md:w-1/2 mx-auto mb-4">
         <p className="text-3xl mb-3">¡Bienvenidos Espíritus!</p>
         <YoutubeVideo videoId="be5-o9k9zdg" />
