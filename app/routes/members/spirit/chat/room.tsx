@@ -1,6 +1,6 @@
 // app/routes/chat.$roomId.tsx
 import { useEventSource } from "remix-utils/sse/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { data, redirect, useFetcher, useRevalidator, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom } from "~/utils/chat.server";
 import { Form } from "react-router";
@@ -59,7 +59,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const [messages, setMessages] = useState(initialMessages);
     const fetcher = useFetcher()
     const revalidator = useRevalidator();
-
+    const hasConnectedRef = useRef(false);
     const lastMessage = useEventSource(`/chat/subscribe?roomId=${params.roomId}`, {
         event: "new-message",
     });
@@ -79,7 +79,8 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         if (lastMessage) {
             const newMessage = JSON.parse(lastMessage) as Message;
             setMessages((prev: any) => [...prev, newMessage]);
-        } else if (lastMessage === null && revalidator.state === "idle") {
+            hasConnectedRef.current = true;
+        } else if (hasConnectedRef.current && lastMessage === null && revalidator.state === "idle") {
             console.log('revalidating...')
             revalidator.revalidate();
         }
