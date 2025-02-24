@@ -1,7 +1,7 @@
 // app/routes/chat.$roomId.tsx
 import { useEventSource } from "remix-utils/sse/react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { data, redirect, useFetcher, useRevalidator, useRouteLoaderData } from "react-router";
+import { useCallback, useEffect, useState } from "react";
+import { data, href, redirect, useFetcher, useRevalidator, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom } from "~/utils/chat.server";
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
@@ -9,6 +9,7 @@ import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import type { User } from "~/models/user.server";
+
 
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
@@ -39,7 +40,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     if (request.method === "DELETE") {
         console.log('delete')
         await prisma.message.deleteMany({ where: { roomId: params.roomId as string } });
-        return redirect("/");
+        return redirect(href("/members/spirit/live/chat/:roomId", { roomId: params.roomId }));
     }
     const text = formData.get("text") as string;
     const roomId = params.roomId as string;
@@ -57,9 +58,9 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
     const [messages, setMessages] = useState(initialMessages);
+    const [isReconnecting, setIsReconnecting] = useState(false);
     const fetcher = useFetcher()
     const revalidator = useRevalidator();
-    const hasConnectedRef = useRef(false);
     const lastMessage = useEventSource(`/chat/subscribe?roomId=${params.roomId}`, {
         event: "new-message",
     });
@@ -78,17 +79,63 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     useEffect(() => {
         if (lastMessage) {
             const newMessage = JSON.parse(lastMessage) as Message;
-            setMessages((prev: any) => [...prev, newMessage]);
-            hasConnectedRef.current = true;
-        } else if (hasConnectedRef.current && lastMessage === null && revalidator.state === "idle") {
-            console.log('revalidating...')
-            revalidator.revalidate();
+
+            setMessages((prev: any) => {
+                if (!prev.some((msg: any) => msg.id === newMessage.id)) {
+                    return [...prev, newMessage]
+                }
+                return prev;
+            });
+
         }
+
     }, [lastMessage]);
+
+
+    // Handle visibility change (phone lock)
+    useEffect(() => {
+        let reconnectTimeout: NodeJS.Timeout;
+
+        const handleReconnect = () => {
+            if (document.visibilityState === "visible" && revalidator.state === "idle") {
+                setIsReconnecting(true);
+                console.log('attempting to reconnect...');
+
+                if (reconnectTimeout) clearTimeout(reconnectTimeout);
+
+                reconnectTimeout = setTimeout(() => {
+                    revalidator.revalidate();
+                    console.log('route revalidated');
+                    setIsReconnecting(false);
+                }, 1500);
+            }
+        };
+
+        window.addEventListener('online', handleReconnect);
+        document.addEventListener('visibilitychange', handleReconnect);
+
+        return () => {
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+            window.removeEventListener('online', handleReconnect);
+            document.removeEventListener('visibilitychange', handleReconnect);
+        };
+    }, [revalidator]);
 
     return (
 
         <main className="p-4 text-center">
+            {isReconnecting && (
+                <div className="fixed top-4 left-0 right-0 p-2 px-6 z-[1000] mx-auto">
+                    <div role="alert" className="alert alert-warning md:w-fit mx-auto">
+                        <div className="inline-grid *:[grid-area:1/1]">
+                            <div className="status status-accent animate-ping"></div>
+                            <div className="status status-accent"></div>
+                        </div>
+                        <span>Reconectando...</span>
+                    </div>
+
+                </div>
+            )}
             <h1 className="text-3xl text-center mb-3">Chat en directo: {room?.name}</h1>
             <div className="mb-4">
                 <p className={`text-lg ${isSessionActive ? 'text-success' : 'text-error'}`}>
@@ -156,7 +203,6 @@ function Message({ message, currentUserId }: { message: Message, currentUserId: 
 
     // Check if this message is from the current user
     const isCurrentUser = message.user.id === currentUserId;
-
 
     return (
         <div
