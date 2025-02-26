@@ -1,11 +1,10 @@
 import { href, Link } from "react-router";
 import type { Route } from "./+types/live";
-import { getRooms, getSessions } from "~/utils/chat.server";
+import { getSessions } from "~/utils/chat.server";
 import { BsTelegram } from "react-icons/bs";
 import { IoChatboxEllipses } from "react-icons/io5";
 
 export async function loader({ }: Route.LoaderArgs) {
-  console.log(await getRooms())
   return { sessions: await getSessions() };
 
 }

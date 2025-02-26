@@ -1,14 +1,13 @@
 // app/routes/chat.$roomId.tsx
-import { useEventSource } from "remix-utils/sse/react";
-import { useCallback, useEffect, useState } from "react";
-import { data, href, redirect, useFetcher, useRevalidator, useRouteLoaderData } from "react-router";
-import { getMessages, addMessage, getRoom } from "~/utils/chat.server";
+import { useCallback } from "react";
+import { data, useFetcher, useRouteLoaderData } from "react-router";
+import { getMessages, addMessage, getRoom, type ChatMessage } from "~/utils/chat.server";
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
 import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
-import type { User } from "~/models/user.server";
+import { useChatSubscription } from "./useChatStream";
 
 export function headers(_: Route.HeadersArgs) {
     return {
@@ -31,13 +30,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 };
 
-type Message = {
-    id: string;
-    text: string;
-    createdAt: Date;
-    roomId: string;
-    user: User;
-};
 
 export async function action({ request, params }: Route.ActionArgs) {
 
@@ -64,13 +56,9 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room } = loaderData;
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
-    const [liveMessages, setLiveMessages] = useState<Message[]>([]); // Only for SSE updates
-    const [isReconnecting, setIsReconnecting] = useState(false);
+    const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages);
     const fetcher = useFetcher()
-    const revalidator = useRevalidator();
-    const lastMessage = useEventSource(`/chat/subscribe?roomId=${params.roomId}`, {
-        event: "new-message",
-    });
+
     // Combine initial and live messages
     const allMessages = [...initialMessages, ...liveMessages].filter((mdg, index, self) =>
         index === self.findIndex(m => m.id === mdg.id)).sort((a, b) =>
@@ -81,6 +69,8 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             node.reset();
         }
     }, [fetcher.data]);
+
+
     const now = new Date().getTime();
     if (!room) return <div>Room not found</div>
     const startTime = new Date(room.session.startDate).getTime();
@@ -88,76 +78,19 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 
     const isSessionActive = Boolean(now >= startTime && now <= endTime);
 
-    useEffect(() => {
-        if (lastMessage) {
-            const newMessage = JSON.parse(lastMessage) as Message;
-            setLiveMessages((prev) => {
-                if (!prev.some((m) => m.id === newMessage.id) && !initialMessages.some((m) => m.id === newMessage.id)) {
-                    return [...prev, newMessage];
-                }
-                return prev;
-            });
-        };
-        // Handle visibility change (phone lock)
-        // const handleVisibilityChange = () => {
-        //     if (document.visibilityState === "visible" && revalidator.state === "idle") {
-        //         revalidator.revalidate(); // Sync messages after unlock
-        //         setLiveMessages([]); // Reset live messages to avoid duplicates after revalidation
-        //     }
-        // };
-
-        // document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        // return () => {
-        //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-        // };
-    }, [lastMessage, revalidator, initialMessages]); // Include initialMessages to react to loader updates
-
-
-
-    // Handle visibility change (phone lock)
-    useEffect(() => {
-        let reconnectTimeout: NodeJS.Timeout;
-
-        const handleReconnect = () => {
-            if (document.visibilityState === "visible" && revalidator.state === "idle") {
-                setIsReconnecting(true);
-                console.log('attempting to reconnect...');
-
-                if (reconnectTimeout) clearTimeout(reconnectTimeout);
-
-                reconnectTimeout = setTimeout(() => {
-                    revalidator.revalidate();
-                    setLiveMessages([]); // Reset live messages to avoid duplicates
-                    console.log('route revalidated');
-                    setIsReconnecting(false);
-                }, 1500);
-            }
-        };
-
-        window.addEventListener('online', handleReconnect);
-        document.addEventListener('visibilitychange', handleReconnect);
-
-        return () => {
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            window.removeEventListener('online', handleReconnect);
-            document.removeEventListener('visibilitychange', handleReconnect);
-        };
-    }, [revalidator]);
 
     return (
 
         <main className="p-4 text-center">
-            {isReconnecting && (
+            {isFetching && (
                 <div className="fixed top-4 left-0 right-0 p-2 px-6 z-[1000] mx-auto">
-                    <div role="alert" className="alert alert-warning md:w-fit mx-auto">
+                    <div role="alert" className="alert alert-info md:w-fit mx-auto">
                         <div className="inline-grid *:[grid-area:1/1]">
                             <div className="status status-accent animate-ping"></div>
                             <div className="status status-accent"></div>
                         </div>
-                        <span>Reconectando...</span>
+                        <span>Descargando mensajes...</span>
                     </div>
-
                 </div>
             )}
             <h1 className="text-3xl text-center mb-3">Chat en directo: {room?.name}</h1>
@@ -185,12 +118,13 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             <Form method="DELETE" className="mb-4">
                 <button className="btn btn-error btn-outline" type="submit">Clear chat</button>
             </Form>
+            <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>
             {allMessages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                     {allMessages.map((message) => (
                         <Message
                             key={message.id}
-                            message={message as Message}
+                            message={message as ChatMessage}
                             currentUserId={currentUserId}
                         />
                     ))}
@@ -218,7 +152,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 }
 
 
-function Message({ message, currentUserId }: { message: Message, currentUserId: string }) {
+function Message({ message, currentUserId }: { message: ChatMessage, currentUserId: string }) {
     const ref = useCallback((node: HTMLDivElement | null) => {
         if (node) {
             node.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -226,7 +160,7 @@ function Message({ message, currentUserId }: { message: Message, currentUserId: 
     }, []);
 
     // Check if this message is from the current user
-    const isCurrentUser = message.user.id === currentUserId;
+    const isCurrentUser = message?.user?.id === currentUserId;
 
     return (
         <div
@@ -242,7 +176,7 @@ function Message({ message, currentUserId }: { message: Message, currentUserId: 
                 </div>
             </div>
             <div className="chat-header">
-                {message.user.username}
+                {message?.user?.username}
                 <time className="text-xs opacity-50">
                     {new Date(message.createdAt).toLocaleTimeString('en-US', {
                         hour: '2-digit',

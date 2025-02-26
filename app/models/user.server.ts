@@ -5,7 +5,7 @@ import { prisma } from "~/db.server";
 import { createCustomer } from "~/integrations/stripe";
 
 export interface User extends PrismaUser {
-  profile: Profile;
+  profile: Profile | null;
 }
 
 export async function getUserById(id: User["id"]) {
@@ -20,7 +20,11 @@ export async function getUserByCustomerId(customerId: User["customerId"]) {
   return prisma.user.findFirst({ where: { customerId } });
 }
 
-export async function createUser(email: User["email"], password: string, username: User["username"]) {
+export async function createUser(
+  email: User["email"],
+  password: string,
+  username: User["username"]
+) {
   const hashedPassword = await bcrypt.hash(password, 10);
   // create a Stripe customer
   await createCustomer(email, username);
@@ -42,7 +46,10 @@ export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
 }
 
-export async function verifyLogin(email: User["email"], password: Password["hash"]) {
+export async function verifyLogin(
+  email: User["email"],
+  password: Password["hash"]
+) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
     include: {
@@ -54,7 +61,10 @@ export async function verifyLogin(email: User["email"], password: Password["hash
     return null;
   }
 
-  const isValid = await bcrypt.compare(password, userWithPassword.password.hash);
+  const isValid = await bcrypt.compare(
+    password,
+    userWithPassword.password.hash
+  );
 
   if (!isValid) {
     return null;

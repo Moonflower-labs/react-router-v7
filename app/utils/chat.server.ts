@@ -3,8 +3,17 @@ import {
   redisPublisher,
   redisSubscriber
 } from "~/integrations/redis/service.server";
+import type { User } from "~/models/user.server";
 
 const DEMO_USER_ID = "demo-user-id";
+
+export type ChatMessage = {
+  id: string;
+  text: string;
+  createdAt: Date;
+  roomId: string;
+  user: User;
+};
 
 export async function getRooms() {
   return await prisma.room.findMany({ include: { session: true } });
@@ -23,6 +32,18 @@ export async function createRoom(name: string, sessionId: string) {
 export async function getMessages(roomId: string) {
   return prisma.message.findMany({
     where: { roomId },
+    orderBy: { createdAt: "asc" },
+    include: { user: { include: { profile: true } } }
+  });
+}
+
+export async function getMissedMessages(roomId: string, since: string) {
+  const sinceDate = new Date(since);
+  if (isNaN(sinceDate.getTime())) {
+    throw new Error("Invalid 'since' timestamp");
+  }
+  return prisma.message.findMany({
+    where: { roomId, createdAt: { gt: sinceDate } },
     orderBy: { createdAt: "asc" },
     include: { user: { include: { profile: true } } }
   });
@@ -47,7 +68,7 @@ export async function addMessage(
   return message;
 }
 
-export function subscribeToMessages(
+export function subscribeToMessages1(
   roomId: string,
   callback: (message: any) => void
 ) {
@@ -61,6 +82,85 @@ export function subscribeToMessages(
 
   redisSubscriber.subscribe(channel, handleMessage);
   return () => redisSubscriber.unsubscribe(channel, handleMessage);
+}
+
+export function subscribeToMessages(
+  roomId: string,
+  callback: (message: any) => void
+) {
+  const channel = `chat:${roomId}`;
+  const participantKey = `room:${roomId}:participants`;
+  const clientId = crypto.randomUUID();
+
+  const handleMessage = (message: string, ch: string) => {
+    if (ch === channel) {
+      callback(JSON.parse(message));
+    }
+  };
+
+  redisPublisher.sAdd(participantKey, clientId).then(async () => {
+    const count = await redisPublisher.sCard(participantKey);
+    redisPublisher.publish(
+      channel,
+      JSON.stringify({ event: "participants", data: count })
+    );
+  });
+
+  redisSubscriber.subscribe(channel, handleMessage);
+
+  return () => {
+    redisSubscriber.unsubscribe(channel, handleMessage);
+    redisPublisher.sRem(participantKey, clientId).then(async () => {
+      const count = await redisPublisher.sCard(participantKey);
+      redisPublisher.publish(
+        channel,
+        JSON.stringify({ event: "participants", data: count })
+      );
+    });
+  };
+}
+export function subscribeToMessagesgood(
+  roomId: string,
+  callback: (message: any) => void
+) {
+  const channel = `chat:${roomId}`;
+  const participantKey = `room:${roomId}:participants`;
+  const clientId = crypto.randomUUID(); // Unique identifier for this client
+
+  const handleMessage = (message: string, ch: string) => {
+    if (ch === channel) {
+      callback(JSON.parse(message));
+    }
+  };
+
+  // Add client to participants set with a 30-second expiration
+  const updateParticipants = async () => {
+    await redisPublisher.sAdd(participantKey, clientId);
+    await redisPublisher.expire(participantKey, 30); // Set expiration to clean up stale entries
+    const count = await redisPublisher.sCard(participantKey);
+    await redisPublisher.publish(
+      channel,
+      JSON.stringify({ event: "participants", data: count })
+    );
+  };
+
+  // Initial subscription and participant update
+  redisSubscriber.subscribe(channel, handleMessage);
+  updateParticipants();
+
+  // Heartbeat to keep participant active
+  const heartbeatInterval = setInterval(updateParticipants, 20000); // Refresh every 20s
+  return () => {
+    clearInterval(heartbeatInterval);
+    redisSubscriber.unsubscribe(channel, handleMessage);
+    redisPublisher.sRem(participantKey, clientId).then(async () => {
+      const count = await redisPublisher.sCard(participantKey);
+      redisPublisher.publish(
+        channel,
+        JSON.stringify({ event: "participants", data: count })
+      );
+    });
+  };
 }
 
 export async function ensureDemoUser() {
@@ -126,7 +226,10 @@ export async function getSession(id: string) {
 }
 
 export async function getSessions() {
-  return await prisma.session.findMany({ include: { room: true } });
+  return await prisma.session.findMany({
+    include: { room: true },
+    orderBy: { startDate: "desc" }
+  });
 }
 
 export async function getActiveSessions() {

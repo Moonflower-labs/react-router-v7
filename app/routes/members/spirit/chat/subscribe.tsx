@@ -11,9 +11,22 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     return eventStream(request.signal, (send) => {
         const unsubscribe = subscribeToMessages(roomId, (message) => {
-            send({ event: "new-message", data: JSON.stringify(message) });
+            // Differentiate event types
+            if (message.event === "participants") {
+                send({ event: "participants", data: JSON.stringify({ count: message.data }) });
+            } else {
+                send({ event: "new-message", data: JSON.stringify(message) });
+            }
         });
 
-        return unsubscribe;
+        const heartbeatInterval = setInterval(() => {
+            const payload = JSON.stringify({ time: Date.now(), message: "ping" });
+            send({ event: "heartbeat", data: payload });
+        }, 5000);
+
+        return () => {
+            unsubscribe();
+            clearInterval(heartbeatInterval);
+        };
     });
 };
