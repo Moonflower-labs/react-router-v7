@@ -24,6 +24,12 @@ export async function loader({ request }: Route.LoaderArgs) {
             send({ event: "heartbeat", data: payload });
         }, 5000);
 
+        const handleAbort = () => {
+            console.log("Client disconnected via abort signal");
+            unsubscribe()
+        }
+        request.signal.addEventListener("abort", handleAbort, { once: true })
+
         return () => {
             unsubscribe();
             clearInterval(heartbeatInterval);
