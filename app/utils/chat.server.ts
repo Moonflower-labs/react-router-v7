@@ -68,22 +68,6 @@ export async function addMessage(
   return message;
 }
 
-export function subscribeToMessages1(
-  roomId: string,
-  callback: (message: any) => void
-) {
-  const channel = `chat:${roomId}`;
-
-  const handleMessage = (message: string, ch: string) => {
-    if (ch === channel) {
-      callback(JSON.parse(message));
-    }
-  };
-
-  redisSubscriber.subscribe(channel, handleMessage);
-  return () => redisSubscriber.unsubscribe(channel, handleMessage);
-}
-
 export function subscribeToMessages(
   roomId: string,
   callback: (message: any) => void
@@ -98,27 +82,45 @@ export function subscribeToMessages(
     }
   };
 
-  redisPublisher.sAdd(participantKey, clientId).then(async () => {
-    const count = await redisPublisher.sCard(participantKey);
-    redisPublisher.publish(
-      channel,
-      JSON.stringify({ event: "participants", data: count })
-    );
-  });
-
-  redisSubscriber.subscribe(channel, handleMessage);
-
-  return () => {
-    redisSubscriber.unsubscribe(channel, handleMessage);
-    redisPublisher.sRem(participantKey, clientId).then(async () => {
+  // Add participant and publish updated count
+  const join = async () => {
+    try {
+      await redisPublisher.sAdd(participantKey, clientId);
       const count = await redisPublisher.sCard(participantKey);
-      redisPublisher.publish(
+      await redisPublisher.publish(
         channel,
         JSON.stringify({ event: "participants", data: count })
       );
-    });
+    } catch (error) {
+      console.error("Error adding participant:", error);
+    }
+  };
+
+  // Remove participant and publish updated count
+  const leave = async () => {
+    try {
+      await redisPublisher.sRem(participantKey, clientId);
+      const count = await redisPublisher.sCard(participantKey);
+      await redisPublisher.publish(
+        channel,
+        JSON.stringify({ event: "participants", data: count })
+      );
+    } catch (error) {
+      console.error("Error removing participant:", error);
+    }
+  };
+
+  // Subscribe and perform join
+  redisSubscriber.subscribe(channel, handleMessage);
+  join();
+
+  // Return cleanup function
+  return () => {
+    redisSubscriber.unsubscribe(channel, handleMessage);
+    leave();
   };
 }
+
 export function subscribeToMessagesgood(
   roomId: string,
   callback: (message: any) => void
