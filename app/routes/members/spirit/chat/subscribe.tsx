@@ -25,8 +25,10 @@ export async function loader({ request }: Route.LoaderArgs) {
         }, 5000);
 
         const handleAbort = () => {
-            console.log("Client disconnected via abort signal");
-            unsubscribe()
+            if (request.signal.aborted) {
+                console.log("Client disconnected via abort signal");
+                unsubscribe()
+            }
         }
         request.signal.addEventListener("abort", handleAbort, { once: true })
 

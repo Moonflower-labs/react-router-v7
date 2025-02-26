@@ -84,12 +84,12 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         <main className="p-4 text-center">
             {isFetching && (
                 <div className="fixed top-4 left-0 right-0 p-2 px-6 z-[1000] mx-auto">
-                    <div role="alert" className="alert alert-info md:w-fit mx-auto">
+                    <div role="alert" className="badge badge-primary opacity-90 shadow p-4 md:w-fit mx-auto">
                         <div className="inline-grid *:[grid-area:1/1]">
                             <div className="status status-accent animate-ping"></div>
                             <div className="status status-accent"></div>
                         </div>
-                        <span>Descargando mensajes...</span>
+                        <span>Buscando mensajes</span>
                     </div>
                 </div>
             )}

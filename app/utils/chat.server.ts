@@ -86,11 +86,13 @@ export function subscribeToMessages(
   const join = async () => {
     try {
       await redisPublisher.sAdd(participantKey, clientId);
+      await redisPublisher.expire(participantKey, 18000); //30 minutes
       const count = await redisPublisher.sCard(participantKey);
       await redisPublisher.publish(
         channel,
         JSON.stringify({ event: "participants", data: count })
       );
+      console.log("Client added: ", clientId);
     } catch (error) {
       console.error("Error adding participant:", error);
     }
@@ -105,6 +107,7 @@ export function subscribeToMessages(
         channel,
         JSON.stringify({ event: "participants", data: count })
       );
+      console.log("Client removed: ", clientId);
     } catch (error) {
       console.error("Error removing participant:", error);
     }
