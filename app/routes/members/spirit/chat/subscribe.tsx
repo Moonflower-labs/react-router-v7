@@ -46,7 +46,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         let lastActivity = Date.now();
         const heartbeatInterval = setInterval(async () => {
             const timeSinceLastActivity = Date.now() - lastActivity;
-            if (timeSinceLastActivity > 30000) {
+            if (timeSinceLastActivity > 10000) { // 10s timeout instead of 30s
                 console.log(`[${new Date().toISOString()}] Timeout for ${userId}`);
                 unsubscribe();
                 await leave();
