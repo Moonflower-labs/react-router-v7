@@ -71,6 +71,7 @@ export async function loader({ request }: Route.LoaderArgs) {
             request.signal.addEventListener("abort", () => {
                 console.warn(`[${new Date().toISOString()}] Abort for ${userId}`);
                 unsubscribe();
+                leave();
                 clearInterval(heartbeatInterval);
             }, { once: true });
         }
@@ -79,7 +80,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
             console.log(`[${new Date().toISOString()}] Cleanup for ${userId}`);
             unsubscribe();
-            leave().catch((err) => console.error(`Cleanup failed for ${userId}:`, err));
+            // leave().catch((err) => console.error(`Cleanup failed for ${userId}:`, err));
             clearInterval(heartbeatInterval);
         };
     });
