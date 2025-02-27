@@ -17,9 +17,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
     const participantKey = `room:${roomId}:participants`;
     const channel = `chat:${roomId}`;
-    const streamKey = `room:${roomId}:stream:${userId}`; // Simplified streamKey
+    const streamKey = `room:${roomId}:stream:${userId}`;
 
-    const existingStreams = await redisPublisher.keys(streamKey); // Exact match only
+    const existingStreams = await redisPublisher.keys(streamKey);
     if (existingStreams.length > 0) {
         console.log(`[${new Date().toISOString()}] Existing stream detected for ${userId}, terminating`);
         await redisPublisher.del(streamKey);
@@ -35,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         }
         console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
     };
-    await join(); // Run join synchronously before eventStream
+    await join();
 
     return eventStream(request.signal, (send) => {
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
@@ -74,19 +74,14 @@ export async function loader({ request }: Route.LoaderArgs) {
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
             heartbeatInterval = setInterval(() => {
-                const elapsed = Date.now() - lastActivity;
-                if (elapsed < 5000) return; // Skip checks for first 5s
                 redisPublisher.get(streamKey).then(streamActive => {
                     if (!streamActive) {
                         console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
                         unsubscribe();
                         leave();
                         clearInterval(heartbeatInterval);
-                    } else if (elapsed > 2000) {
+                    } else {
                         send({ event: "heartbeat", data: String(Date.now()) });
-                        redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
-                            console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
-                        );
                     }
                 }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
             }, 2000);
