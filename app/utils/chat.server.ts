@@ -263,7 +263,8 @@ export async function getRoomStatus(roomId: string) {
     where: { id: roomId },
     include: { session: true }
   });
-  if (!room?.session) return { status: "open", message: "Room is always open" };
+  if (!room?.session)
+    return { status: "closed", message: "No hay sesión asociada" };
 
   const now = new Date();
   const startDate = new Date(room.session.startDate);
@@ -272,14 +273,17 @@ export async function getRoomStatus(roomId: string) {
   if (now < startDate) {
     return {
       status: "pending",
-      message: `Room opens at ${startDate.toLocaleString()}`
+      message: `Sesión comienza el ${startDate.toLocaleString()}`
     };
   } else if (now > endDate) {
     return {
       status: "closed",
-      message: `Room closed at ${endDate.toLocaleString()}`
+      message: `Sesión finalizó el ${endDate.toLocaleString()}`
     };
   } else {
-    return { status: "active", message: "Room is open" };
+    return {
+      status: "active",
+      message: `Sesión finaliza ${endDate.toLocaleString()}`
+    };
   }
 }

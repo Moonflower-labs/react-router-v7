@@ -1,13 +1,14 @@
 // app/routes/chat.$roomId.tsx
 import { useCallback } from "react";
 import { data, useFetcher, useRouteLoaderData } from "react-router";
-import { getMessages, addMessage, getRoom, type ChatMessage } from "~/utils/chat.server";
+import { getMessages, addMessage, getRoom, type ChatMessage, getRoomStatus } from "~/utils/chat.server";
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
 import { IoMdSend } from "react-icons/io";
 import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import { useChatSubscription } from "./useChatStream";
+// import { redisPublisher } from "~/integrations/redis/service.server";
 
 export function headers(_: Route.HeadersArgs) {
     return {
@@ -19,14 +20,18 @@ export function headers(_: Route.HeadersArgs) {
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
     if (!roomId) throw data({ message: "Room ID missing" }, { status: 400 });
-
+    // !   Clear count
+    // const participantKey = `room:${roomId}:participants`;
+    // const del = await redisPublisher.del(participantKey)
+    // console.log(del)
     // const canAccess = await canAccessRoom(roomId);
     // if (!canAccess) {
     //     const { message } = await getRoomStatus(roomId);
     //     throw new Response(message, { status: 403 });
     // }
-    const [messages, room] = await Promise.all([getMessages(roomId), getRoom(roomId)]);
-    return { messages, room };
+    const [messages, room, { message: statusMsg, status }] = await Promise.all([
+        getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
+    return { messages, room, status, statusMsg };
 
 };
 
@@ -53,7 +58,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 };
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
-    const { messages: initialMessages, room } = loaderData;
+    const { messages: initialMessages, room, status, statusMsg } = loaderData;
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
     const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages);
@@ -70,13 +75,10 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         }
     }, [fetcher.data]);
 
-
-    const now = new Date().getTime();
     if (!room) return <div>Room not found</div>
-    const startTime = new Date(room.session.startDate).getTime();
-    const endTime = new Date(room.session.endDate).getTime();
 
-    const isSessionActive = Boolean(now >= startTime && now <= endTime);
+
+    const isSessionActive = Boolean(status === "active");
 
 
     return (
@@ -95,24 +97,11 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             )}
             <h1 className="text-3xl text-center mb-3">Chat en directo: {room?.name}</h1>
             <div className="mb-4">
-                <p className={`text-lg ${isSessionActive ? 'text-success' : 'text-error'}`}>
-                    {isSessionActive ? 'Sesión Activa' : 'Sesión Inactiva'}
+                <p className={`text-lg ${status === "active" ? 'text-success' : status === "closed" ? 'text-error' : "text-warning"}`}>
+                    {status === "active" ? "Sesión Activa" : status === "closed" ? "Sesión Finalizada" : "Pendiente"}
                 </p>
                 <p>
-                    Comienza:
-                    {new Date(room.session.startDate).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    })}
-                </p>
-                <p>
-                    Finaliza:
-                    {new Date(room.session.endDate).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    })}
+                    {statusMsg}
                 </p>
             </div>
             <Form method="DELETE" className="mb-4">
