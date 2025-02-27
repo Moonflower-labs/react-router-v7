@@ -27,10 +27,12 @@ export async function loader({ request }: Route.LoaderArgs) {
         };
 
         const leave = async () => {
-            await redisPublisher.sRem(participantKey, userId);
-            const count = await redisPublisher.sCard(participantKey);
-            await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-            console.log(`[${new Date().toISOString()}] Left ${userId}. Count: ${count}`);
+            const removed = await redisPublisher.sRem(participantKey, userId);
+            if (removed > 0) { // Only publish if user was actually removed
+                const count = await redisPublisher.sCard(participantKey);
+                await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
+                console.log(`[${new Date().toISOString()}] Left ${userId}. Count: ${count}`);
+            }
         };
 
         const unsubscribe = subscribeToMessages(roomId, (message) => {
@@ -80,7 +82,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
             console.log(`[${new Date().toISOString()}] Cleanup for ${userId}`);
             unsubscribe();
-            // leave().catch((err) => console.error(`Cleanup failed for ${userId}:`, err));
+            leave().catch((err) => console.error(`Cleanup failed for ${userId}:`, err));
             clearInterval(heartbeatInterval);
         };
     });

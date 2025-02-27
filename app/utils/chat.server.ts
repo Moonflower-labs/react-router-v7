@@ -76,7 +76,14 @@ export function subscribeToMessages(
 
   const handleMessage = (message: string, ch: string) => {
     if (ch === channel) {
-      callback(JSON.parse(message));
+      try {
+        callback(JSON.parse(message));
+      } catch (error) {
+        console.error(
+          `[${new Date().toISOString()}] Failed to parse message on ${channel}:`,
+          error
+        );
+      }
     }
   };
 
@@ -86,6 +93,7 @@ export function subscribeToMessages(
   // Return cleanup function
   return () => {
     redisSubscriber.unsubscribe(channel, handleMessage);
+    console.log(`[${new Date().toISOString()}] Unsubscribed from ${channel}`);
   };
 }
 
