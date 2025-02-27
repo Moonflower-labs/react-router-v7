@@ -21,26 +21,26 @@ export async function loader({ request }: Route.LoaderArgs) {
     const streamKey = `room:${roomId}:stream:${userId}:${streamId}`;
     const streamPrefix = `room:${roomId}:stream:${userId}:`;
 
-    // Deduplicate synchronously before eventStream
+    const join = async () => {
+        await redisPublisher.sAdd(participantKey, userId);
+        const count = await redisPublisher.sCard(participantKey);
+        await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
+        console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
+        await redisPublisher.set(streamKey, "active", { PX: 15000 });
+        if ((await redisPublisher.get(streamKey)) !== "active") {
+            console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
+        }
+    };
+
     const existingStreams = await redisPublisher.keys(`${streamPrefix}*`);
     if (existingStreams.length > 0) {
         console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${existingStreams.length} old streams`);
         await Promise.all(existingStreams.map(key => redisPublisher.del(key)));
     }
+    await join(); // Run join synchronously before eventStream
 
     return eventStream(request.signal, (send) => {
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
-
-        const join = async () => {
-            await redisPublisher.sAdd(participantKey, userId);
-            const count = await redisPublisher.sCard(participantKey);
-            await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-            console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
-            await redisPublisher.set(streamKey, "active", { PX: 15000 });
-            if ((await redisPublisher.get(streamKey)) !== "active") {
-                console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
-            }
-        };
 
         const leave = async () => {
             const removed = await redisPublisher.sRem(participantKey, userId);
@@ -75,13 +75,10 @@ export async function loader({ request }: Route.LoaderArgs) {
             leave();
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
-            join();
-            let hasStarted = false;
+            let heartbeatCount = 0;
             heartbeatInterval = setInterval(() => {
-                if (!hasStarted) {
-                    hasStarted = true;
-                    return; // Skip first check at ~2s
-                }
+                heartbeatCount++;
+                if (heartbeatCount < 3) return; // Skip first 2 checks (~4s)
                 redisPublisher.get(streamKey).then(streamActive => {
                     if (!streamActive) {
                         console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
