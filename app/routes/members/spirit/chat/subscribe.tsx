@@ -4,7 +4,6 @@ import type { Route } from "./+types/subscribe";
 import { redisPublisher } from "~/integrations/redis/service.server";
 import { requireUserId } from "~/utils/session.server";
 
-
 export async function loader({ request }: Route.LoaderArgs) {
     const url = new URL(request.url);
     const roomId = url.searchParams.get("roomId");
@@ -23,9 +22,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     const streamPrefix = `room:${roomId}:stream:${userId}:`;
 
     const existingStreams = await redisPublisher.keys(`${streamPrefix}*`);
+    const currentStreamKey = streamKey;
     if (existingStreams.length > 0) {
-        console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${existingStreams.length} old streams`);
-        await Promise.all(existingStreams.map(key => redisPublisher.del(key)));
+        const oldStreams = existingStreams.filter(key => key !== currentStreamKey);
+        if (oldStreams.length > 0) {
+            console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${oldStreams.length} old streams`);
+            await Promise.all(oldStreams.map(key => redisPublisher.del(key)));
+        }
     }
 
     return eventStream(request.signal, (send) => {
@@ -61,22 +64,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         });
 
         let lastActivity = Date.now();
-        let heartbeatInterval:NodeJS.Timeout;
-
-        const startHeartbeat = () => {
-            heartbeatInterval = setInterval(async () => {
-                const streamActive = await redisPublisher.get(streamKey);
-                if (!streamActive) {
-                    console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
-                    unsubscribe();
-                    await leave();
-                    clearInterval(heartbeatInterval);
-                } else if (Date.now() - lastActivity > 2000) {
-                    send({ event: "heartbeat", data: String(Date.now()) });
-                    await redisPublisher.set(streamKey, "active", { PX: 15000 });
-                }
-            }, 2000);
-        };
+        let heartbeatInterval:NodeJS.Timeout| undefined;;
 
         const originalSend = send;
         send = (event) => {
@@ -88,15 +76,33 @@ export async function loader({ request }: Route.LoaderArgs) {
             console.log(`[${new Date().toISOString()}] Immediate abort for ${userId}`);
             unsubscribe();
             leave();
-           clearInterval(heartbeatInterval!);
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
-            join(); // Run async, no await
-            setTimeout(startHeartbeat, 1000); // Delay heartbeat start by 1s
+            join();
+            heartbeatInterval = setInterval(() => {
+                setTimeout(async () => {
+                    const streamActive = await redisPublisher.get(streamKey);
+                    if (!streamActive) {
+                        console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
+                        unsubscribe();
+                        await leave();
+                        clearInterval(heartbeatInterval);
+                    } else if (Date.now() - lastActivity > 2000) {
+                        send({ event: "heartbeat", data: String(Date.now()) });
+                        await redisPublisher.set(streamKey, "active", { PX: 15000 });
+                    }
+                }, 1000);
+            }, 2000);
+
+            let abortTimeout:NodeJS.Timeout|undefined;
             request.signal.addEventListener("abort", () => {
-                console.log(`[${new Date().toISOString()}] Abort for ${userId}`);
-                unsubscribe();
-                leave();
-                if (heartbeatInterval) clearInterval(heartbeatInterval);
+                clearTimeout(abortTimeout);
+                abortTimeout = setTimeout(() => {
+                    console.log(`[${new Date().toISOString()}] Abort for ${userId}`);
+                    unsubscribe();
+                    leave();
+                    if (heartbeatInterval) clearInterval(heartbeatInterval);
+                }, 3000);
             }, { once: true });
         }
 
