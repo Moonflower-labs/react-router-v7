@@ -101,7 +101,7 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
             clearTimeout(heartbeatTimeoutRef.current);
         }
         heartbeatTimeoutRef.current = setTimeout(() => {
-            console.error("Heartbeat timeout - possible disconnect!");
+            console.log("Heartbeat timeout - possible disconnect!");
             fetchMissedMessages(); // Fetch if disconnected
         }, 10000); // 10s > 5s heartbeat interval
         return () => {

@@ -31,6 +31,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         const join = async () => {
             await redisPublisher.sAdd(participantKey, userId);
             const count = await redisPublisher.sCard(participantKey);
+            await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
             await redisPublisher.set(streamKey, "active", { PX: 15000 });
             if ((await redisPublisher.get(streamKey)) !== "active") {
                 console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
@@ -43,6 +44,7 @@ export async function loader({ request }: Route.LoaderArgs) {
             const removed = await redisPublisher.sRem(participantKey, userId);
             if (removed > 0) {
                 const count = await redisPublisher.sCard(participantKey);
+                await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
                 console.log(`[${new Date().toISOString()}] Left ${userId}. Count: ${count}`);
                 send({ event: "participants", data: JSON.stringify({ count }) });
             }
@@ -81,8 +83,8 @@ export async function loader({ request }: Route.LoaderArgs) {
                         leave();
                         clearInterval(heartbeatInterval);
                     } else {
-                        send({ event: "heartbeat", data: String(Date.now()) });
                         redisPublisher.sCard(participantKey).then(count => {
+                            send({ event: "heartbeat", data: String(Date.now()) });
                             send({ event: "participants", data: JSON.stringify({ count }) });
                         });
                     }
