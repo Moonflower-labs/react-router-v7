@@ -24,6 +24,12 @@ export async function loader({ request }: Route.LoaderArgs) {
             send({ event: "heartbeat", data: payload });
         }, 5000);
 
+        // attempting to catch a page reload
+        if (request.signal.aborted) {
+            console.log("Signal aborted");
+            unsubscribe();
+        }
+
         const handleAbort = () => {
             if (request.signal.aborted) {
                 console.log("Client disconnected via abort signal");
