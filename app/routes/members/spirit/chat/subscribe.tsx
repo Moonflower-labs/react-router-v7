@@ -31,13 +31,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     return eventStream(request.signal, (send) => {
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
 
-        // const join = async () => {
-        //     await redisPublisher.sAdd(participantKey, userId);
-        //     const count = await redisPublisher.sCard(participantKey);
-        //     await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-        //     console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
-        //     await redisPublisher.set(streamKey, "active", { PX: 15000 });
-        // };
         const join = async () => {
             await redisPublisher.sAdd(participantKey, userId);
             const count = await redisPublisher.sCard(participantKey);
@@ -47,7 +40,7 @@ export async function loader({ request }: Route.LoaderArgs) {
             for (let i = 0; i < 3 && !setSuccess; i++) {
                 await redisPublisher.set(streamKey, "active", { PX: 15000 });
                 setSuccess = (await redisPublisher.get(streamKey)) === "active";
-                if (!setSuccess) await new Promise(resolve => setTimeout(resolve, 100)); // Retry delay
+                if (!setSuccess) await new Promise(resolve => setTimeout(resolve, 100));
             }
             if (!setSuccess) console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
         };
@@ -71,7 +64,13 @@ export async function loader({ request }: Route.LoaderArgs) {
         });
 
         let lastActivity = Date.now();
-        const heartbeatInterval = setTimeout(async function heartbeat() {
+        let initialCheck = true;
+        const heartbeatInterval = setInterval(async () => {
+            if (initialCheck && Date.now() - lastActivity < 5000) {
+                initialCheck = false;
+                return; // Skip first check if < 5s
+            }
+            initialCheck = false;
             const streamActive = await redisPublisher.get(streamKey);
             if (!streamActive) {
                 console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
@@ -82,8 +81,7 @@ export async function loader({ request }: Route.LoaderArgs) {
                 send({ event: "heartbeat", data: String(Date.now()) });
                 await redisPublisher.set(streamKey, "active", { PX: 15000 });
             }
-            setInterval(heartbeat, 2000);
-        }, 5000); // Initial 5s delay
+        }, 2000);
 
         const originalSend = send;
         send = (event) => {
