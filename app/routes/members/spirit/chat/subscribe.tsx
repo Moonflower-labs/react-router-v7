@@ -18,11 +18,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
     const participantKey = `room:${roomId}:participants`;
     const channel = `chat:${roomId}`;
-    const streamKey = `room:${roomId}:stream:${userId}`;
+    const streamId = crypto.randomUUID();
+    const streamKey = `room:${roomId}:stream:${userId}:${streamId}`;
 
-    const existingStream = await redisPublisher.get(streamKey);
+    const existingStream = await redisPublisher.get(streamKey.split(':').slice(0, -1).join(':') + ':*');
     if (existingStream) {
-        console.log(`[${new Date().toISOString()}] Existing stream detected for ${userId}`);
+        console.log(`[${new Date().toISOString()}] Existing stream detected for ${userId}, terminating old stream`);
+        await redisPublisher.del(streamKey.split(':').slice(0, -1).join(':') + ':*'); // Force expiration of old stream
     }
 
     return eventStream(request.signal, (send) => {
