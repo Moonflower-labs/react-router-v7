@@ -32,9 +32,11 @@ export async function loader({ request }: Route.LoaderArgs) {
             await redisPublisher.sAdd(participantKey, userId);
             const count = await redisPublisher.sCard(participantKey);
             await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-            await redisPublisher.set(streamKey, "active", { PX: 15000 });
+            await redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
+                console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}:`, err)
+            );
             if ((await redisPublisher.get(streamKey)) !== "active") {
-                console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
+                console.error(`[${new Date().toISOString()}] Failed to verify ${streamKey} after set`);
             }
             console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
             send({ event: "participants", data: JSON.stringify({ count }) });
@@ -86,6 +88,9 @@ export async function loader({ request }: Route.LoaderArgs) {
                         redisPublisher.sCard(participantKey).then(count => {
                             send({ event: "heartbeat", data: String(Date.now()) });
                             send({ event: "participants", data: JSON.stringify({ count }) });
+                            redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
+                                console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
+                            );
                         });
                     }
                 }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
