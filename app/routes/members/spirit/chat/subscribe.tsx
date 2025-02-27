@@ -77,24 +77,23 @@ export async function loader({ request }: Route.LoaderArgs) {
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
             join();
-            heartbeatInterval = setInterval(() => {
-                redisPublisher.get(streamKey).then(streamActive => {
-                    if (!streamActive) {
-                        console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
-                        unsubscribe();
-                        leave();
-                        clearInterval(heartbeatInterval);
-                    } else {
-                        redisPublisher.sCard(participantKey).then(count => {
+            setTimeout(() => {
+                heartbeatInterval = setInterval(() => {
+                    redisPublisher.get(streamKey).then(streamActive => {
+                        if (!streamActive) {
+                            console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
+                            unsubscribe();
+                            leave();
+                            clearInterval(heartbeatInterval);
+                        } else {
                             send({ event: "heartbeat", data: String(Date.now()) });
-                            send({ event: "participants", data: JSON.stringify({ count }) });
                             redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
                                 console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
                             );
-                        });
-                    }
-                }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
-            }, 2000);
+                        }
+                    }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
+                }, 2000);
+            }, 5000);
 
             let abortTimeout: NodeJS.Timeout | undefined;
             request.signal.addEventListener("abort", () => {
@@ -111,7 +110,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         return () => {
             console.log(`[${new Date().toISOString()}] Cleanup for ${userId}`);
             unsubscribe();
-            leave().catch(err => console.error(`Cleanup failed for ${userId}:`, err));
+            leave();
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         };
     });
