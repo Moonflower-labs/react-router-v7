@@ -100,12 +100,12 @@ export default function Login({ actionData }: Route.ComponentProps) {
             <input type="hidden" name="redirectTo" value={from} />
             <label htmlFor="email" className="floating-label mb-3">
               <span>Email</span>
-              <input ref={emailRef} type="email" placeholder="email" className="input input-md input-primary" name="email" id="email" required />
+              <input ref={emailRef} type="email" placeholder="email" className="input input-lg input-primary" name="email" id="email" required />
             </label>
             {actionErrors?.errors?.email && <span className="text-error mb-2">{actionErrors.errors.email}</span>}
             <label htmlFor="password" className="floating-label mb-3">
               <span>Contraseña</span>
-              <input ref={passwordRef} type="password" placeholder="Contraseña" className="input input-md" name="password" id="password" />
+              <input ref={passwordRef} type="password" placeholder="Contraseña" className="input input-lg" name="password" id="password" />
             </label>
             {actionErrors?.errors?.password && <div className="text-error mb-2">{actionErrors.errors.password}</div>}
             <Link to={"/forgot-password"} className="link link-primary link-hover">

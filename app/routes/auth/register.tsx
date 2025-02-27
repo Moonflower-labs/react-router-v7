@@ -102,18 +102,18 @@ export default function ResgisterPage({ actionData }: Route.ComponentProps) {
             </label>
             {actionErrors?.errors?.username && <div className="text-error mb-3">{actionErrors.errors.username}</div>}
             <label className="floating-label mb-3" htmlFor="email">
-              <input type="email" placeholder="Email" className="input input-md input-primary" name="email" id="email" />{" "}
+              <input type="email" placeholder="Email" className="input input-lg input-primary" name="email" id="email" />{" "}
               <span>Email</span>
             </label>
             {actionErrors?.errors?.email && <div className="text-error mb-3">{actionErrors.errors.email}</div>}
 
             <label className="floating-label mb-3" htmlFor="password">
-              <input type="password" placeholder="Contraseña" className="input input-md input-primary" name="password" id="password" />
+              <input type="password" placeholder="Contraseña" className="input input-lg input-primary" name="password" id="password" />
               <span>Contraseña</span>
             </label>
             {actionErrors?.errors?.password && <div className="text-error mb-3">{actionErrors.errors.password}</div>}
             <label className="floating-label mb-3" htmlFor="confirmation">
-              <input type="password" placeholder="Contraseña" className="input input-md input-primary" name="confirmation" id="confirmation" />
+              <input type="password" placeholder="Contraseña" className="input input-lg input-primary" name="confirmation" id="confirmation" />
               <span>Confirma la contraseña</span>
             </label>
             <div className="form-control mt-6">
