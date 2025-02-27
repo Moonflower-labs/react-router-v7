@@ -44,8 +44,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
         const leave = async () => {
             const removed = await redisPublisher.sRem(participantKey, userId);
+            const count = await redisPublisher.sCard(participantKey);
+
             if (removed > 0) {
-                const count = await redisPublisher.sCard(participantKey);
                 await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
                 console.log(`[${new Date().toISOString()}] Left ${userId}. Count: ${count}`);
                 send({ event: "participants", data: JSON.stringify({ count }) });
@@ -78,8 +79,9 @@ export async function loader({ request }: Route.LoaderArgs) {
         } else {
             join();
             setTimeout(() => {
-                heartbeatInterval = setInterval(() => {
-                    redisPublisher.get(streamKey).then(streamActive => {
+                heartbeatInterval = setInterval(async() => {
+                    try {
+                        const streamActive = await redisPublisher.get(streamKey)
                         if (!streamActive) {
                             console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
                             unsubscribe();
@@ -91,19 +93,22 @@ export async function loader({ request }: Route.LoaderArgs) {
                                 console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
                             );
                         }
-                    }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
+                    } catch (e) {
+                        console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, e)
+                    }
+                   
                 }, 2000);
             }, 5000);
 
-            let abortTimeout: NodeJS.Timeout | undefined;
-            request.signal.addEventListener("abort", () => {
-                clearTimeout(abortTimeout);
-                abortTimeout = setTimeout(() => {
+            // let abortTimeout: NodeJS.Timeout | undefined;
+            request.signal.addEventListener("abort", async() => {
+                // clearTimeout(abortTimeout);
+                // abortTimeout = setTimeout(() => {
                     console.log(`[${new Date().toISOString()}] Abort for ${userId}`);
                     unsubscribe();
-                    leave();
+                    await leave();
                     if (heartbeatInterval) clearInterval(heartbeatInterval);
-                }, 3000);
+                // }, 3000);
             }, { once: true });
         }
 
