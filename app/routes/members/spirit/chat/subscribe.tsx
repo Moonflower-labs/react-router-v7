@@ -17,29 +17,28 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
     const participantKey = `room:${roomId}:participants`;
     const channel = `chat:${roomId}`;
-    const streamId = crypto.randomUUID();
-    const streamKey = `room:${roomId}:stream:${userId}:${streamId}`;
-    const streamPrefix = `room:${roomId}:stream:${userId}:`;
+    const streamKey = `room:${roomId}:stream:${userId}`; // Simplified streamKey
 
-    const existingStreams = await redisPublisher.keys(`${streamPrefix}*`);
+    const existingStreams = await redisPublisher.keys(streamKey); // Exact match only
     if (existingStreams.length > 0) {
-        console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${existingStreams.length} old streams`);
-        await Promise.all(existingStreams.map(key => redisPublisher.del(key)));
+        console.log(`[${new Date().toISOString()}] Existing stream detected for ${userId}, terminating`);
+        await redisPublisher.del(streamKey);
     }
+
+    const join = async () => {
+        await redisPublisher.sAdd(participantKey, userId);
+        const count = await redisPublisher.sCard(participantKey);
+        await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
+        await redisPublisher.set(streamKey, "active", { PX: 15000 });
+        if ((await redisPublisher.get(streamKey)) !== "active") {
+            console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
+        }
+        console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
+    };
+    await join(); // Run join synchronously before eventStream
 
     return eventStream(request.signal, (send) => {
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
-
-        const join = async () => {
-            await redisPublisher.sAdd(participantKey, userId);
-            const count = await redisPublisher.sCard(participantKey);
-            await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-            await redisPublisher.set(streamKey, "active", { PX: 15000 });
-            if ((await redisPublisher.get(streamKey)) !== "active") {
-                console.error(`[${new Date().toISOString()}] Failed to set ${streamKey}`);
-            }
-            console.log(`[${new Date().toISOString()}] Joined ${userId}. Count: ${count}`);
-        };
 
         const leave = async () => {
             const removed = await redisPublisher.sRem(participantKey, userId);
@@ -74,24 +73,23 @@ export async function loader({ request }: Route.LoaderArgs) {
             leave();
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
-            join();
-            setTimeout(() => {
-                heartbeatInterval = setInterval(() => {
-                    redisPublisher.get(streamKey).then(streamActive => {
-                        if (!streamActive) {
-                            console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
-                            unsubscribe();
-                            leave();
-                            clearInterval(heartbeatInterval);
-                        } else if (Date.now() - lastActivity > 2000) {
-                            send({ event: "heartbeat", data: String(Date.now()) });
-                            redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
-                                console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
-                            );
-                        }
-                    }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
-                }, 2000);
-            }, 5000); // 5s delay to ensure join completes
+            heartbeatInterval = setInterval(() => {
+                const elapsed = Date.now() - lastActivity;
+                if (elapsed < 5000) return; // Skip checks for first 5s
+                redisPublisher.get(streamKey).then(streamActive => {
+                    if (!streamActive) {
+                        console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
+                        unsubscribe();
+                        leave();
+                        clearInterval(heartbeatInterval);
+                    } else if (elapsed > 2000) {
+                        send({ event: "heartbeat", data: String(Date.now()) });
+                        redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
+                            console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
+                        );
+                    }
+                }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
+            }, 2000);
 
             let abortTimeout: NodeJS.Timeout | undefined;
             request.signal.addEventListener("abort", () => {
