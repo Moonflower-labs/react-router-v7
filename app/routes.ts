@@ -76,6 +76,7 @@ export default [
   // API Routes
   ...prefix("api", [
     route("/comments", "routes/api/comments.tsx"),
+    route("chat/leave", "routes/members/spirit/chat/leave.tsx"),
     route("chat/missed", "routes/members/spirit/chat/missed.tsx"),
     route("/webhook", "routes/api/webhooks.tsx")
   ]),

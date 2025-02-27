@@ -1,5 +1,5 @@
 // app/routes/chat.$roomId.tsx
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { data, useFetcher, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom, type ChatMessage, getRoomStatus } from "~/utils/chat.server";
 import { Form } from "react-router";
@@ -57,13 +57,14 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { success: true, message };
 };
 
+
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room, status, statusMsg } = loaderData;
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
     const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages, user.id);
     const fetcher = useFetcher()
-
+    const isSessionActive = Boolean(status === "active");
     // Combine initial and live messages
     const allMessages = [...initialMessages, ...liveMessages].filter((mdg, index, self) =>
         index === self.findIndex(m => m.id === mdg.id)).sort((a, b) =>
@@ -75,10 +76,36 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         }
     }, [fetcher.data]);
 
+
+    const handleLeave = async () => {
+        try {
+            const response = await fetch("/api/chat/leave", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ roomId: params.roomId, userId: user.id }),
+            });
+            if (!response.ok) throw new Error("Failed to leave chat");
+            const data = await response.json();
+            console.log(`Left chat successfully. New count: ${data.count}`);
+            return data.count;
+        } catch (error) {
+            console.error("Error leaving chat:", error);
+            throw error
+        }
+    };
+
+    useEffect(() => {
+        const leaveChat = async () => {
+            await handleLeave();
+        };
+        return () => {
+            leaveChat();
+        };
+    }, []); // Empty dependency array—runs once on mount, cleanup on unmount
+
     if (!room) return <div>Room not found</div>
 
 
-    const isSessionActive = Boolean(status === "active");
 
 
     return (
