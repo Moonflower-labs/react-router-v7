@@ -16,7 +16,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     const channel = `chat:${roomId}`;
 
     return eventStream(request.signal, (send) => {
-        // const clientId = crypto.randomUUID();
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
 
         const join = async () => {
