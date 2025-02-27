@@ -3,7 +3,7 @@ import { useEventSource } from "remix-utils/sse/react";
 import type { ChatMessage } from "~/utils/chat.server";
 
 // Custom hook for SSE subscription, visibility, and participants
-export function useChatSubscription(roomId: string, initialMessages: ChatMessage[]) {
+export function useChatSubscription(roomId: string, initialMessages: ChatMessage[], userId: string) {
     const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
     const [participantCount, setParticipantCount] = useState<number>(1);
     const [isFetching, setIsFetching] = useState(false)
@@ -18,7 +18,7 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
     const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastHeartbeatRef = useRef<number>(0); // Tracks last heartbeat for disconnection and visibility checks
 
-    const path = `/chat/subscribe?roomId=${roomId}`
+    const path = `/chat/subscribe?roomId=${roomId}&userId=${encodeURIComponent(userId)}`;
 
     const newMessage = useEventSource(path, { event: "new-message" });
     const heartbeat = useEventSource(path, { event: "heartbeat" });
