@@ -21,18 +21,12 @@ export async function loader({ request }: Route.LoaderArgs) {
     const streamKey = `room:${roomId}:stream:${userId}:${streamId}`;
     const streamPrefix = `room:${roomId}:stream:${userId}:`;
 
-    // Deduplicate before eventStream (async OK here)
-    redisPublisher.keys(`${streamPrefix}*`).then(existingStreams => {
-        if (existingStreams.length > 0) {
-            const oldStreams = existingStreams.filter(key => key !== streamKey);
-            if (oldStreams.length > 0) {
-                console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${oldStreams.length} old streams`);
-                Promise.all(oldStreams.map(key => redisPublisher.del(key))).catch(err => 
-                    console.error(`[${new Date().toISOString()}] Failed to delete old streams:`, err)
-                );
-            }
-        }
-    }).catch(err => console.error(`[${new Date().toISOString()}] Failed to check existing streams:`, err));
+    // Deduplicate synchronously before eventStream
+    const existingStreams = await redisPublisher.keys(`${streamPrefix}*`);
+    if (existingStreams.length > 0) {
+        console.log(`[${new Date().toISOString()}] Existing streams detected for ${userId}, terminating ${existingStreams.length} old streams`);
+        await Promise.all(existingStreams.map(key => redisPublisher.del(key)));
+    }
 
     return eventStream(request.signal, (send) => {
         console.log(`[${new Date().toISOString()}] Stream started for ${userId}`);
@@ -81,24 +75,27 @@ export async function loader({ request }: Route.LoaderArgs) {
             leave();
             if (heartbeatInterval) clearInterval(heartbeatInterval);
         } else {
-            join(); 
-            setTimeout(() => {
-                heartbeatInterval = setInterval(() => {
-                    redisPublisher.get(streamKey).then(streamActive => {
-                        if (!streamActive) {
-                            console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
-                            unsubscribe();
-                            leave();
-                            clearInterval(heartbeatInterval);
-                        } else if (Date.now() - lastActivity > 2000) {
-                            send({ event: "heartbeat", data: String(Date.now()) });
-                            redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
-                                console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
-                            );
-                        }
-                    }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
-                }, 2000);
-            }, 2000); // 2s delay to ensure join completes
+            join();
+            let hasStarted = false;
+            heartbeatInterval = setInterval(() => {
+                if (!hasStarted) {
+                    hasStarted = true;
+                    return; // Skip first check at ~2s
+                }
+                redisPublisher.get(streamKey).then(streamActive => {
+                    if (!streamActive) {
+                        console.log(`[${new Date().toISOString()}] Stream expired for ${userId}`);
+                        unsubscribe();
+                        leave();
+                        clearInterval(heartbeatInterval);
+                    } else if (Date.now() - lastActivity > 2000) {
+                        send({ event: "heartbeat", data: String(Date.now()) });
+                        redisPublisher.set(streamKey, "active", { PX: 15000 }).catch(err => 
+                            console.error(`[${new Date().toISOString()}] Failed to refresh ${streamKey}:`, err)
+                        );
+                    }
+                }).catch(err => console.error(`[${new Date().toISOString()}] Failed to get ${streamKey}:`, err));
+            }, 2000);
 
             let abortTimeout: NodeJS.Timeout | undefined;
             request.signal.addEventListener("abort", () => {
