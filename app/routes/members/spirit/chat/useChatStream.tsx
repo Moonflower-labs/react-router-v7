@@ -85,9 +85,9 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
     useEffect(() => {
         if (!participants) return;
         try {
-            const count = JSON.parse(participants);
-            console.log("participants", count)
-            setParticipantCount(parseInt(count, 10));
+            const data = JSON.parse(participants);
+            console.log("participants", data)
+            setParticipantCount(parseInt(data.count, 10));
 
         } catch (error) {
             console.error("Error processing message:", error);
