@@ -5,7 +5,7 @@ import type { ChatMessage } from "~/utils/chat.server";
 // Custom hook for SSE subscription, visibility, and participants
 export function useChatSubscription(roomId: string, initialMessages: ChatMessage[]) {
     const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
-    const [participantCount, setParticipantCount] = useState<number>(0);
+    const [participantCount, setParticipantCount] = useState<number>(1);
     const [isFetching, setIsFetching] = useState(false)
     const [, startTransition] = useTransition();
 
@@ -85,9 +85,9 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
     useEffect(() => {
         if (!participants) return;
         try {
-            const data = JSON.parse(participants);
-            console.log("participants", data)
-            setParticipantCount(parseInt(data.count, 10));
+            const count = JSON.parse(participants);
+            console.log("participants", count)
+            setParticipantCount(parseInt(count, 10));
 
         } catch (error) {
             console.error("Error processing message:", error);

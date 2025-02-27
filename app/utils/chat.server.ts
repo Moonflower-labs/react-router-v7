@@ -73,8 +73,8 @@ export function subscribeToMessages(
   callback: (message: any) => void
 ) {
   const channel = `chat:${roomId}`;
-  const participantKey = `room:${roomId}:participants`;
-  const clientId = crypto.randomUUID();
+  // const participantKey = `room:${roomId}:participants`;
+  // const clientId = crypto.randomUUID();
 
   const handleMessage = (message: string, ch: string) => {
     if (ch === channel) {
@@ -82,45 +82,45 @@ export function subscribeToMessages(
     }
   };
 
-  // Add participant and publish updated count
-  const join = async () => {
-    try {
-      await redisPublisher.sAdd(participantKey, clientId);
-      await redisPublisher.expire(participantKey, 18000); //30 minutes
-      const count = await redisPublisher.sCard(participantKey);
-      await redisPublisher.publish(
-        channel,
-        JSON.stringify({ event: "participants", data: count })
-      );
-      console.log("Client added: ", clientId);
-    } catch (error) {
-      console.error("Error adding participant:", error);
-    }
-  };
+  // // Add participant and publish updated count
+  // const join = async () => {
+  //   try {
+  //     await redisPublisher.sAdd(participantKey, clientId);
+  //     await redisPublisher.expire(participantKey, 18000); //30 minutes
+  //     const count = await redisPublisher.sCard(participantKey);
+  //     await redisPublisher.publish(
+  //       channel,
+  //       JSON.stringify({ event: "participants", data: count })
+  //     );
+  //     console.log("Client added: ", clientId);
+  //   } catch (error) {
+  //     console.error("Error adding participant:", error);
+  //   }
+  // };
 
-  // Remove participant and publish updated count
-  const leave = async () => {
-    try {
-      await redisPublisher.sRem(participantKey, clientId);
-      const count = await redisPublisher.sCard(participantKey);
-      await redisPublisher.publish(
-        channel,
-        JSON.stringify({ event: "participants", data: count })
-      );
-      console.log("Client removed: ", clientId);
-    } catch (error) {
-      console.error("Error removing participant:", error);
-    }
-  };
+  // // Remove participant and publish updated count
+  // const leave = async () => {
+  //   try {
+  //     await redisPublisher.sRem(participantKey, clientId);
+  //     const count = await redisPublisher.sCard(participantKey);
+  //     await redisPublisher.publish(
+  //       channel,
+  //       JSON.stringify({ event: "participants", data: count })
+  //     );
+  //     console.log("Client removed: ", clientId);
+  //   } catch (error) {
+  //     console.error("Error removing participant:", error);
+  //   }
+  // };
 
   // Subscribe and perform join
   redisSubscriber.subscribe(channel, handleMessage);
-  join();
+  // join();
 
   // Return cleanup function
   return () => {
     redisSubscriber.unsubscribe(channel, handleMessage);
-    leave();
+    // leave();
   };
 }
 
