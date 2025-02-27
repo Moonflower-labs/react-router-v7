@@ -68,7 +68,6 @@ export default [
       route("video/:id", "routes/members/spirit/detail.tsx"),
       route("question", "routes/members/spirit/question.tsx"),
       route("live", "routes/members/spirit/live.tsx"),
-      route("live/chat", "routes/members/spirit/chat/index.tsx"),
       route("live/chat/:roomId", "routes/members/spirit/chat/room.tsx")
     ])
   ]),
