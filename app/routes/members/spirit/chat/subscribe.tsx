@@ -34,7 +34,12 @@ export async function loader({ request }: Route.LoaderArgs) {
         };
 
         const unsubscribe = subscribeToMessages(roomId, (message) => {
-            send({ event: "new-message", data: JSON.stringify(message) });
+            // Differentiate event types
+            if (message.event === "participants") {
+                send({ event: "participants", data: JSON.stringify({ count: message.data }) });
+            } else {
+                send({ event: "new-message", data: JSON.stringify(message) });
+            }
         });
 
         let lastActivity = Date.now();
