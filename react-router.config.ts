@@ -13,6 +13,7 @@ export default {
   //   return staticPaths.concat(posts.posts.map(post => post.id));
   // }
   future: {
-    unstable_optimizeDeps: true
+    unstable_optimizeDeps: true,
+    unstable_splitRouteModules: true
   }
 } satisfies Config;
