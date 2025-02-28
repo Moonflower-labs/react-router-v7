@@ -96,7 +96,6 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
           <button
             onClick={() => {
               toast.dismiss();
-              console.log("Submitting form:", event.target);
               submit({ orderId, status }, { method: "POST" });
             }}
             className="btn btn-sm btn-primary">
