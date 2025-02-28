@@ -28,7 +28,7 @@ export default function UserOrders({ loaderData }: Route.ComponentProps) {
     return (
         <div>
             <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h1>
-            <p className="mb-3">Pedidos completados <span className="badge badge-primary">{orderCount}</span></p>
+            <p className="mb-3 text-center">Pedidos completados <span className="badge badge-primary">{orderCount}</span></p>
             {orders?.length ? (
                 orders.map((order, index) => (
                     <div

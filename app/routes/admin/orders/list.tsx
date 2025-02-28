@@ -17,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 
   const [orders, pendingOrderCount] = await Promise.all([
-    fetchOrders(), getOrderCount()
+    fetchOrders(), getOrderCount("Pending")
   ])
 
   return { orders, q: title, pendingOrderCount };
@@ -118,7 +118,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
   return (
     <div>
       <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h1>
-      <p className="mb-3">Pedidos pendientes <span className="badge badge-primary">{loaderData?.pendingOrderCount}</span></p>
+      <p className="mb-3 text-center">Pedidos pendientes <span className="badge badge-primary">{loaderData?.pendingOrderCount}</span></p>
       {orders?.length ? (
         orders.map((order, index) => (
           <div
