@@ -14,7 +14,7 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
     // console.log(order)
 
     return (
-        <div className="mb-6 lg:w-2/3 mx-auto">
+        <div className="mb-6 lg:w-2/3 mx-auto px-3">
             <h2 className="text-xl text-primary text-center mx-auto my-5">
                 Detalles del pedido: <span className="font-bold">{order?.id}</span>
             </h2>

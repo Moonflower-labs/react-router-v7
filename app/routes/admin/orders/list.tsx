@@ -140,7 +140,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
                 <FaEye size={24} />
               </Link>
               <Form method="put">
-                <input type="hidden" name="status" value={order.status} />
+                <input type="hidden" name="status" value={order.status === "Paid" ? "Pending" : "Paid"} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-accent">
                   <FaCheck />
                 </button>

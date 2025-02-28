@@ -14,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 
     const [orders, orderCount] = await Promise.all([
-        fetchUserOrders(userId), await getUserOrderCount("Paid")
+        fetchUserOrders(userId), getUserOrderCount(userId, "Paid")
     ])
 
     return { orders, q: title, orderCount };
