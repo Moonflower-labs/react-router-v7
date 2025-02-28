@@ -47,7 +47,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <div className="flex-grow flex flex-col items-center">
               <div className="avatar mx-auto mb-4">
                 <div className="w-24 rounded-full">
-                  <img src={avatar} />
+                  <img src={avatar} className="object-top" />
                 </div>
               </div>
             </div>
@@ -61,6 +61,11 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               defaultValue={avatar}>
               <option value="/avatars/teenage-girl.jpg">Tenage Girl</option>
               <option value="/avatars/girl.jpg">Girl</option>
+              <option value="/avatars/dark-valentine.jpg">Dark Valentine</option>
+              <option value="/avatars/wizard.jpg">Wizard</option>
+              <option value="/avatars/crystal.jpg">Crystal</option>
+              <option value="/avatars/geisha.jpg">Geisha</option>
+              <option value="/avatars/fox.jpg">Fox</option>
             </select>
           </div>
 

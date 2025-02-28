@@ -1,4 +1,4 @@
-import { AiOutlineUser } from "react-icons/ai";
+import { AiFillSetting, AiOutlineUser } from "react-icons/ai";
 import { Form, href, Link, useFetcher, useLocation, useRouteLoaderData, useSubmit } from "react-router";
 import { IoColorPalette } from "react-icons/io5";
 import { useCallback } from "react";
@@ -8,6 +8,7 @@ import type { User } from "~/models/user.server";
 import { LogoutBtn } from "./LogoutBtn";
 import { Navbar } from "./Navbar";
 import logo from "./logo.svg"
+import { RiAdminFill } from "react-icons/ri";
 
 export function Header() {
   const { pathname } = useLocation()
@@ -45,19 +46,27 @@ export function Header() {
             <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-200/90"}>
               {user ? (
                 <>
+
                   <li>
-                    <Link to={href("/profile")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
-                      Perfil
+                    <Link to={href("/profile")} onClick={handleDropdown} className="flex-grow flex flex-col justify-center items-center w-full mx-auto" viewTransition>
+                      <div className="avatar">
+                        <div className="w-10 rounded-full">
+                          <img src={user?.profile?.avatar as string} className="object-top" />
+                        </div>
+                      </div>
+                      {truncateUsername(user.username)}
                     </Link>
                   </li>
                   <li>
-                    <Link to={href("/profile/settings")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/profile/settings")} onClick={handleDropdown} className={"min-w-40 flex justify-between items-center"} viewTransition>
                       Ajustes
+                      <AiFillSetting size={18} />
                     </Link>
                   </li>
                   <li>
-                    <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold"} viewTransition>
+                    <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold flex justify-between items-center"} viewTransition>
                       Admin
+                      <RiAdminFill size={18} />
                     </Link>
                   </li>
                   <li onClick={handleDropdown}>
@@ -67,12 +76,17 @@ export function Header() {
               ) : (
                 <>
                   <li>
-                    <Link to={href("/login")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/login")} onClick={handleDropdown} className="flex-grow flex flex-col justify-center items-center w-full mx-auto" viewTransition>
+                      <div className="avatar">
+                        <div className="w-10 rounded-lg">
+                          <img src={logo} className="object-top" />
+                        </div>
+                      </div>
                       Iniciar sesión
                     </Link>
                   </li>
                   <li>
-                    <Link to={href("/register")} onClick={handleDropdown} className={"min-w-40"} viewTransition>
+                    <Link to={href("/register")} onClick={handleDropdown} className={"min-w-40 flex justify-center text-center"} viewTransition>
                       Registro
                     </Link>
                   </li>
@@ -115,9 +129,6 @@ export function Header() {
                   </div>
                 </div>
               </Link>
-              <div className="text-xl flex">
-                <span data-testid="username">{truncateUsername(user?.username)}</span>
-              </div>
               <ShoppingCartIcon count={optimisticCount} />
             </>
             : <span className="font-bold text-xl">

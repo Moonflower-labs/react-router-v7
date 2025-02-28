@@ -119,7 +119,7 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
       <div className="flex gap-5 items-center mb-4">
         <div className="avatar float-start">
           <div className="w-10 rounded-full">
-            <img alt="user avatar" src={`${avatar || "/avatars/teenage-girl.jpg"}`} />
+            <img alt="user avatar" src={`${avatar || "/avatars/dark-valentine.jpg"}`} />
           </div>
         </div>
         <div className="badge badge-outline">
