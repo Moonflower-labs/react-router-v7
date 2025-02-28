@@ -22,18 +22,23 @@ model CartItem {
   priceId   String
 }
 
+
 model Order {
-  id      String  @id @default(cuid())
-  guest   Boolean
-  guestId String?
+  id         String  @id @default(cuid())
+  guest      Boolean
+  guestId    String?
 
   user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId     String?
   orderItems OrderItem[]
+  status     OrderStatus @default(Pending)
 
-  status String @default("Pending")
+  createdAt  DateTime @default(now())
+}
 
-  createdAt DateTime @default(now())
+enum OrderStatus {
+  Pending
+  Paid
 }
 
 model OrderItem {
@@ -43,7 +48,7 @@ model OrderItem {
   price     Price   @relation(fields: [priceId], references: [id])
   priceId   String
 
-  quantity Int
+  quantity  Int
 
   createdAt DateTime @default(now())
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -57,22 +62,22 @@ model Product {
   prices      Price[]
   thumbnail   String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  cartItems CartItem[]
-  OrderItem OrderItem[]
+  cartItems   CartItem[]
+  OrderItem   OrderItem[]
 }
 
 model Price {
-  id        String  @id @default(cuid())
-  amount    Int
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
+  id         String  @id @default(cuid())
+  amount     Int
+  product    Product @relation(fields: [productId], references: [id])
+  productId  String
 
-  info      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  info       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   orderItems OrderItem[]
   cartItem   CartItem[]
