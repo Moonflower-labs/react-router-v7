@@ -52,7 +52,7 @@ export async function getOrderCount(status?: string) {
   return prisma.order.count({ where: { status } });
 }
 export async function getUserOrderCount(userId: string, status?: string) {
-  return prisma.order.count({ where: { id: userId, status } });
+  return prisma.order.count({ where: { userId, status } });
 }
 
 export async function fetchOrder(id: string) {
