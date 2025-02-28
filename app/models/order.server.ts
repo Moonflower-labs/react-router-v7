@@ -1,6 +1,10 @@
 import { prisma } from "~/db.server";
 import { type CartItem } from "./cart.server";
-import type { OrderStatus } from "@prisma/client";
+import type { OrderItem, OrderStatus, Price } from "@prisma/client";
+
+export interface ExtendedOrderItem extends OrderItem {
+  price: Price;
+}
 
 export async function createOrder(userId: string, cartItems: CartItem[]) {
   const data: any = {
@@ -65,6 +69,15 @@ export async function getUserOrderCount(
   status: OrderStatus = "Paid"
 ) {
   return prisma.order.count({ where: { userId, status } });
+}
+export function calculateOrderAmount(items: ExtendedOrderItem[]): number {
+  if (!items || items?.length === 0) {
+    return 0;
+  }
+
+  return items.reduce((total, item) => {
+    return total + item.quantity * item.price.amount;
+  }, 0);
 }
 
 export async function fetchOrder(id: string) {

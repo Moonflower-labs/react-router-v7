@@ -2,6 +2,7 @@ import { fetchUserOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
 import { formatDate } from "~/utils/format";
 import { requireUserId } from "~/utils/session.server";
+import { href } from "react-router";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
     const userId = await requireUserId(request)
@@ -9,7 +10,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     return { order };
 }
 
-export default function OrderDetail({ loaderData }: Route.ComponentProps) {
+export default function OrderDetail({ loaderData, params }: Route.ComponentProps) {
     const { order } = loaderData;
     const total = order?.orderItems.reduce((total, cartItem) => {
         return total + cartItem.quantity * cartItem.price.amount / 100;
@@ -55,6 +56,9 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
                         </div>
                     </div>
                 ))}
+            </div>
+            <div className="py-4 w-full text-center">
+                <a href={href("/api/order/:orderId/pdf", { orderId: params.orderId })} className="btn btn-warning">Descargar factura en PDF</a>
             </div>
         </div>
     );

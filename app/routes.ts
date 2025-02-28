@@ -79,6 +79,8 @@ export default [
     route("/comments", "routes/api/comments.tsx"),
     route("chat/leave", "routes/members/spirit/chat/leave.tsx"),
     route("chat/missed", "routes/members/spirit/chat/missed.tsx"),
+    route("order/:orderId/pdf", "routes/api/download-order.tsx"),
+    // app/routes/api.order.$id.pdf.tsx
     route("/webhook", "routes/api/webhooks.tsx")
   ]),
 
