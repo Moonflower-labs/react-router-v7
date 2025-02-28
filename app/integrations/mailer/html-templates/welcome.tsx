@@ -102,10 +102,8 @@ const WelcomeUserEmail = ({ username }: WelcomeUserEmailProps) => {
 
 export default WelcomeUserEmail;
 
-interface renderEmailProps {
-  username: string | undefined
-}
 
-export function renderWelcomeEmail({ username }: renderEmailProps) {
+
+export function renderWelcomeEmail({ username }: WelcomeUserEmailProps) {
   return render(<WelcomeUserEmail username={username} />)
 }

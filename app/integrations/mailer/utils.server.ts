@@ -1,5 +1,7 @@
 import { transporter } from "./mailer.server";
 import { renderWelcomeEmail } from "./html-templates/welcome";
+import { renderNewOrderEmail } from "./html-templates/new-order";
+import type { ExtendedOrder } from "~/models/order.server";
 
 export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
@@ -21,13 +23,17 @@ export async function sendSubscriptionEmail(email: string, username: string) {
   });
 }
 
-export async function sendOrderEmail(email: string, username: string) {
+export async function sendOrderEmail(
+  email: string,
+  username: string,
+  order: ExtendedOrder
+) {
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,
     subject: "Tu pedido con La Flor Blanca",
     text: `Tu pedido con La Flor Blanca`,
-    html: await renderWelcomeEmail({ username })
+    html: await renderNewOrderEmail({ order, username })
   });
 }
 

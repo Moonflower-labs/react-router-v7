@@ -36,9 +36,10 @@ export async function loader({ params }: Route.LoaderArgs) {
     doc.fontSize(12).text(`Cliente: ${order.user?.username || "Unknown"}`);
     doc.text(`Date: ${order.createdAt.toLocaleDateString()}`);
     doc.moveDown();
-    doc.text("Items:");
+    doc.text("Artículos:");
+    doc.moveDown();
     order.orderItems.forEach((item, index) => {
-        doc.text(`${index + 1}. ${item.product.name} - ${item.quantity} x $${item.price.amount}`);
+        doc.text(`${index + 1}. ${item.product.name} - ${item.quantity} x £${item.price.amount / 100}`);
     });
     doc.moveDown();
     doc.fontSize(20).text(`TOTAL £${total}`, { align: "center" });

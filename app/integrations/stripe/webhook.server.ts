@@ -11,6 +11,7 @@ import {
   getUserByEmail,
   updateUserCustomerId
 } from "~/models/user.server";
+import { sendOrderEmail } from "../mailer/utils.server";
 
 export async function getStripeEvent(request: Request) {
   invariant(
@@ -309,7 +310,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
         status: paymentIntent.status === "succeeded" ? "Paid" : "Pending"
       },
       where: { id: orderId },
-      include: { orderItems: true }
+      include: { orderItems: { include: { price: true, product: true } } }
     });
     console.info(`Order ${orderId} status updated to succeeded`);
     console.info("usedBalance META:", usedBalance);
@@ -323,7 +324,9 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
         `Deducted ${usedBalance} from customer ${paymentIntent.customer}`
       );
     }
+    const user = await getUserByCustomerId(String(paymentIntent.customer));
     // TODO: send email with invoice details
+    await sendOrderEmail(String(user?.email), String(user?.username), order);
   } catch (e) {
     console.log(e);
     return;
