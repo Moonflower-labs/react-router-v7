@@ -10,9 +10,11 @@ import {
     Text,
     Tailwind,
     render,
+    Link,
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
 import type { ExtendedOrder } from "~/models/order.server";
+import { href } from "react-router";
 
 
 interface NewOrderEmailProps {
@@ -53,12 +55,12 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
 
                         </Section>
                         <Section className="text-center mt-[32px] mb-[32px]">
-                            <Button
+                            <Link
                                 className="bg-[#9d67e9] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-                                href={`${baseUrl}/profile/orders/${order.id}`}
+                                href={`${baseUrl}/${href("/profile/orders/:orderId", { orderId: order.id })}`}
                             >
                                 Ver pedido
-                            </Button>
+                            </Link>
                         </Section>
                         <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
                         <Text className="text-[#666666] text-[12px] leading-[24px]">
