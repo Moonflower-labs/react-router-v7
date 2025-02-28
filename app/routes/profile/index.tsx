@@ -7,13 +7,17 @@ import { IoOptionsOutline } from "react-icons/io5";
 import { useState } from "react";
 import { getSubscriptionData } from "~/integrations/stripe";
 import { GoArrowRight } from "react-icons/go";
+import { getUserOrderCount } from "~/models/order.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
   try {
-    const userProfile = await getUserProfile(String(userId));
+    const [userProfile, orderCount] = await Promise.all([
+      getUserProfile(String(userId)), getUserOrderCount(String(userId))
+    ])
+
     const planName = userProfile?.subscription?.plan?.name
-    return { userProfile, planData: planName ? getSubscriptionData(planName) : null };
+    return { userProfile, orderCount, planData: planName ? getSubscriptionData(planName) : null };
   } catch (error) {
     console.error(error);
     return null;
@@ -32,6 +36,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   const profile = loaderData?.userProfile?.profile;
   const subscription = loaderData?.userProfile?.subscription;
   const favorites = loaderData?.userProfile?.favorites;
+  const orderCount = loaderData?.orderCount
   const favPosts = favorites?.filter((favorite) => favorite.postId !== null);
   const favVids = favorites?.filter((favorite) => favorite.videoId !== null);
   const [avatar, setAvatar] = useState(profile?.avatar || "/avatars/girl.jpg");
@@ -54,7 +59,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <select
               name="avatar"
               id="avatar"
-              className="select select-xs"
+              className="select select-sm w-full"
               onChange={e => {
                 setAvatar(e.currentTarget.value), submit({ avatar: e.currentTarget.value }, { method: "POST", navigate: false });
               }}
@@ -106,34 +111,44 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 Mis favoritos
               </Link>
             </h2>
-            <div className="flex justify-between">
-              <span>Post favoritos </span>
-              <span className="badge badge-primary badge-outline">{favPosts?.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Videos favoritos </span>
-              <span className="badge badge-primary badge-outline">{favVids?.length}</span>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <span>Post favoritos </span>
+                <span className="badge badge-primary badge-outline">{favPosts?.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Videos favoritos </span>
+                <span className="badge badge-primary badge-outline">{favVids?.length}</span>
+              </div>
             </div>
           </div>
 
           <div className="rounded-lg border shadow-lg p-4">
             <h2 className="text-xl text-center text-primary font-semibold py-3">Preguntas Realizadas</h2>
-            <div className="flex justify-between">
-              <span>Personalidad</span> <span className="badge badge-primary badge-outline">{profile?.basicQuestionCount}</span>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <span>Personalidad</span> <span className="badge badge-primary badge-outline">{profile?.basicQuestionCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Live</span> <span className="badge badge-primary badge-outline">{profile?.liveQuestionCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tarot</span> <span className="badge badge-primary badge-outline">{profile?.tarotQuestionCount}</span>
+              </div>
+              <Link to={"questions"} className="text-primary flex justify-end" viewTransition>
+                <GoArrowRight size={24} />
+              </Link>
             </div>
-            <div className="flex justify-between">
-              <span>Live</span> <span className="badge badge-primary badge-outline">{profile?.liveQuestionCount}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Tarot</span> <span className="badge badge-primary badge-outline">{profile?.tarotQuestionCount}</span>
-            </div>
-            <Link to={"questions"} className="text-primary flex justify-end" viewTransition>
-              <GoArrowRight size={24} />
-            </Link>
           </div>
 
           <div className="rounded-lg border shadow-lg p-4">
             <h2 className="text-xl text-center text-primary font-semibold py-3">Mis Pedidos</h2>
+            <div className="mb-4">
+              {orderCount && orderCount > 1 ?
+                `Pedidos realizados ${orderCount}`
+                : "Todavía no has hecho ningún pedido."
+              }
+            </div>
             <div className="flex justify-between">
               <span>Aquí podrás ver tus pedidos</span>
               <Link to={"orders"} viewTransition><GoArrowRight size={24} /></Link>

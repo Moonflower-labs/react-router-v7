@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router";
+import { href, Link, Outlet, redirect } from "react-router";
 import type { Route } from "./+types/index";
 import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
@@ -15,6 +15,9 @@ import { GrUpdate } from "react-icons/gr";
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
   const subscription = await getUserSubscription(userId)
+  if (!subscription) {
+    throw redirect(href("/profile"))
+  }
   const planData = getSubscriptionData(subscription?.plan?.name as string);
   const stripeSubscription = await stripe.subscriptions.retrieve(subscription?.id as string, { expand: ["default_payment_method"] }) as Stripe.Subscription;
   const paymentMethod = stripeSubscription?.default_payment_method as Stripe.PaymentMethod ?? null;

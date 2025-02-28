@@ -51,7 +51,7 @@ export function Header() {
                     <Link to={href("/profile")} onClick={handleDropdown} className="flex-grow flex flex-col justify-center items-center w-full mx-auto" viewTransition>
                       <div className="avatar">
                         <div className="w-10 rounded-full">
-                          <img src={user?.profile?.avatar as string} className="object-top" />
+                          <img src={user?.profile?.avatar || logo} className="object-top" />
                         </div>
                       </div>
                       {truncateUsername(user.username)}
