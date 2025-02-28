@@ -1,5 +1,6 @@
 import { prisma } from "~/db.server";
 import { type CartItem } from "./cart.server";
+import type { OrderStatus } from "@prisma/client";
 
 export async function createOrder(userId: string, cartItems: CartItem[]) {
   const data: any = {
@@ -41,17 +42,28 @@ export async function updateOrderItem(orderItemId: string, quantity: number) {
   return orderItem.id;
 }
 
-export async function fetchOrders(status?: string) {
+export async function fetchOrders(status?: OrderStatus) {
   return prisma.order.findMany({
     where: { status },
     orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
 
-export async function getOrderCount(status?: string) {
+export async function fetchUserOrders(userId: string, status?: OrderStatus) {
+  return prisma.order.findMany({
+    where: { userId, status },
+    orderBy: [{ status: "desc" }, { createdAt: "desc" }]
+  });
+}
+
+export async function getOrderCount(status?: OrderStatus) {
   return prisma.order.count({ where: { status } });
 }
-export async function getUserOrderCount(userId: string, status?: string) {
+
+export async function getUserOrderCount(
+  userId: string,
+  status: OrderStatus = "Paid"
+) {
   return prisma.order.count({ where: { userId, status } });
 }
 
@@ -64,11 +76,20 @@ export async function fetchOrder(id: string) {
     }
   });
 }
+export async function fetchUserOrder(id: string, userId: string) {
+  return prisma.order.findUnique({
+    where: { id, userId },
+    include: {
+      orderItems: { include: { price: true, product: true } },
+      user: { select: { username: true, email: true } }
+    }
+  });
+}
 
 export async function deleteOrder(id: string) {
   return prisma.order.delete({ where: { id } });
 }
 
-export async function updateOrderStatus(id: string, status: string) {
+export async function updateOrderStatus(id: string, status: OrderStatus) {
   return prisma.order.update({ where: { id }, data: { status } });
 }

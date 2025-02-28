@@ -34,7 +34,8 @@ export default [
     index("routes/profile/index.tsx"),
     route("favorites", "routes/profile/favorites.tsx"),
     route("invoices", "routes/profile/invoices.tsx"),
-    route("orders", "routes/profile/orders.tsx"),
+    route("orders", "routes/profile/orders/list.tsx"),
+    route("orders/:orderId", "routes/profile/orders/detail.tsx"),
     route("subscription", "routes/profile/subscription/index.tsx", [
       route("update", "routes/profile/subscription/update.tsx"),
       route("delete", "routes/profile/subscription/delete.tsx")

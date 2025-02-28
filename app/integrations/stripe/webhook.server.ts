@@ -305,7 +305,9 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
   try {
     // Update the order status
     const order = await prisma.order.update({
-      data: { status: paymentIntent.status },
+      data: {
+        status: paymentIntent.status === "succeeded" ? "Paid" : "Pending"
+      },
       where: { id: orderId },
       include: { orderItems: true }
     });
@@ -360,7 +362,9 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
     if (orderId) {
       // Upadate the order status
       await prisma.order.update({
-        data: { status: setupIntent.status },
+        data: {
+          status: setupIntent.status === "succeeded" ? "Paid" : "Pending"
+        },
         where: { id: orderId },
         include: { orderItems: true }
       });

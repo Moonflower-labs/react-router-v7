@@ -8,11 +8,11 @@ import { CopyToClipBoard } from "~/components/shared/CopyToClipBoard";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const order = await fetchOrder(params.id);
-  return order;
+  return { order };
 }
 
 export default function OrderDetail({ loaderData }: Route.ComponentProps) {
-  const order = loaderData as any;
+  const { order } = loaderData;
   // console.log(order)
 
   return (
@@ -30,12 +30,12 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
 
       <div className="flex flex-row gap-4 items-center mb-4">
         <div>
-          {order?.status === "succeeded" ? <div className="badge badge-primary">Pagada</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
+          {order?.status === "Paid" ? <div className="badge badge-success">Pagada</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
         </div>
         <Form method="put" action="/admin/orders" navigate={false}>
-          <input type="hidden" name="status" value={order?.status === "succeeded" ? "incomplete" : "succeeded"} />
+          <input type="hidden" name="status" value={order?.status === "Paid" ? "Pending" : "Paid"} />
           <button type="submit" name="orderId" value={order?.id} className="btn btn-sm btn-outline btn-info">
-            {order?.status === "succeeded" ? <FaCheck /> : <MdOutlinePendingActions size={20} />}
+            {order?.status === "Paid" ? <FaCheck /> : <MdOutlinePendingActions size={20} />}
           </button>
         </Form>
       </div>

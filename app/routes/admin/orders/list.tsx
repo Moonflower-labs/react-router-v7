@@ -7,6 +7,7 @@ import { toast, type Id } from "react-toastify";
 import { deleteOrder, fetchOrders, getOrderCount, updateOrderStatus } from "~/models/order.server";
 import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import type { OrderStatus } from "@prisma/client";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -16,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 
   const [orders, pendingOrderCount] = await Promise.all([
-    fetchOrders(), await getOrderCount("Pending")
+    fetchOrders(), getOrderCount()
   ])
 
   return { orders, q: title, pendingOrderCount };
@@ -25,7 +26,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const orderId = formData.get("orderId");
-  const status = formData.get("status");
+  const status = formData.get("status") as OrderStatus;
   const date = formData.get("date");
   const orderDate = new Date(date as string);
   orderDate.setHours(0, 0, 0, 0);
@@ -35,7 +36,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (!orderId) {
     throw data({ message: "No order ID provided" }, { status: 400 });
   }
-  if (!status) {
+  if (!status || (status !== "Pending" && status !== "Paid")) {
     throw data({ message: "No status found!" }, { status: 400 });
   }
   let deleted = false;
@@ -51,7 +52,7 @@ export async function action({ request }: Route.ActionArgs) {
       break;
     }
     case "PUT": {
-      await updateOrderStatus(String(orderId), String(status));
+      await updateOrderStatus(String(orderId), status);
       break;
     }
     default:
@@ -62,7 +63,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ListOrders({ loaderData, actionData }: Route.ComponentProps) {
-  const orders = loaderData?.orders;
+  const { orders } = loaderData;
   const submit = useSubmit();
   const [toastId, setToastId] = useState<Id | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -130,16 +131,16 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               <span className="me-5">{formatDate(order.createdAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
-              {order?.status?.toLowerCase() === "succeeded" ? (
-                <div className="badge badge-primary">Pagada</div>
+              {order?.status === "Paid" ? (
+                <div className="badge badge-success">Pagada</div>
               ) : (
-                <div className="badge badge-error">Incompleta</div>
+                <div className="badge badge-error">Pendiente</div>
               )}
               <Link to={`${order.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
                 <FaEye size={24} />
               </Link>
               <Form method="put">
-                <input type="hidden" name="status" value={order.status === "succeeded" ? "Pending" : "succeeded"} />
+                <input type="hidden" name="status" value={order.status} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-accent">
                   <FaCheck />
                 </button>
