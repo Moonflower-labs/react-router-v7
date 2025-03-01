@@ -43,7 +43,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   switch (request.method) {
     case "DELETE": {
-      if (!status || !isProcessed || String(status) !== "Paid" && orderDate.getTime() >= today.getTime()) {
+      console.log(status, isProcessed, orderDate.getTime(), today.getTime())
+      if (!status || isProcessed === "false" || String(status) !== "Paid" && orderDate.getTime() >= today.getTime()) {
         throw data({ message: "Estas intentando borrar un pedido sin procesar de hoy!" }, { status: 400 });
       }
       try {
@@ -87,6 +88,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
     const form = event.currentTarget;
     const orderId = form.orderId.value;
     const status = form.status.value;
+    const isProcessed = form.isProcessed.value;
     setOrderId(orderId);
     if (toastId) {
       toast.dismiss(toastId);
@@ -100,7 +102,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
           <button
             onClick={() => {
               toast.dismiss();
-              submit({ orderId, status }, { method: "DELETE" });
+              submit({ orderId, status, isProcessed }, { method: "DELETE" });
             }}
             className="btn btn-sm btn-primary">
             Si
@@ -166,6 +168,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
 
               <Form method="DELETE" onSubmit={handleSbubmit}>
                 <input type="hidden" name="status" value={order.status} />
+                <input type="hidden" name="isProcessed" value={order.isProcessed ? "true" : "false"} />
                 <input type="hidden" name="date" value={order.createdAt.toISOString()} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-error">
                   <ImBin size={24} />
