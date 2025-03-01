@@ -1,5 +1,5 @@
 import { Elements } from "@stripe/react-stripe-js";
-import { Outlet, redirect, useOutletContext } from "react-router";
+import { href, Outlet, redirect, useOutletContext } from "react-router";
 import type { Appearance, PaymentIntent, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { createPaymentIntent } from "~/integrations/stripe/payment.server";
 import { createOrder } from "~/models/order.server";
 import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrations/stripe/setup.server";
+import { fetchStripeShippinRate } from "~/integrations/stripe/shipping-rate";
 
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
 const stripePromise = loadStripe("pk_test_51LIRtEAEZk4zaxmw2ngsEkzDCYygcLkU5uL4m2ba01aQ6zXkWFXboTVdNH71GBZzvHNmiRU13qtQyjjCvTzVizlX00yXeplNgV");
@@ -29,10 +30,22 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (mode === "payment") {
     // Setup a payment intent flow
     const cart = await getShoppingCart(userId as string);
+    // get the selected shipping rate
+    const shippingRateId = url.searchParams.get("shipping")
+    if (!shippingRateId) {
+      throw redirect(href("/cart"))
+    }
+    const shippingRate = await fetchStripeShippinRate(shippingRateId)
+    const shippingRateAmount = shippingRate.fixed_amount?.amount
+    console.log("rate", shippingRate)
+    if (isNaN(Number(shippingRateAmount))) {
+      console.log("amount", shippingRateAmount)
+      throw redirect("/cart");
+    }
     if (!cart) {
       throw redirect("/cart");
     }
-    const amount = calculateTotalAmount(cart.cartItems);
+    const amount = calculateTotalAmount(cart.cartItems, shippingRateAmount);
     let finalAmount = amount
     if (customerId) {
       customerBalance = await getCustomerBalance(customerId);
@@ -56,12 +69,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
     // Create a PaymentIntent
     const paymentIntent = await createPaymentIntent({ customerId, amount: finalAmount, orderId, usedBalance }) as PaymentIntent;
-    return { clientSecret: paymentIntent.client_secret, customerSessionSecret, amount, customerBalance, mode, cartId: cart.id };
+    return { clientSecret: paymentIntent.client_secret, customerSessionSecret, amount, shippingRateAmount, customerBalance, mode, cartId: cart.id };
   }
   else if (mode === "subscription" && planName) {
     // Subscription payment flow will have a plan name
     const { amount, priceId, img } = getSubscriptionData(planName);
     if (!customerId) {
+      console.log("no customer id found")
       return;
     }
     if (amount <= 0) {
@@ -85,8 +99,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 
-
-export type ContextType = { amount: number | undefined; planName?: string; priceId?: string; customerBalance: number, cartId: string | undefined, mode: string | undefined, img?: string, type?: string };
 
 export default function StripeLayout({ loaderData }: Route.ComponentProps) {
   const customerSessionClientSecret = loaderData?.customerSessionSecret;
@@ -118,26 +130,9 @@ export default function StripeLayout({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen">
       {stripe && loaderData?.clientSecret && (
         <Elements stripe={stripe} options={options}>
-          <Outlet
-            context={
-              {
-                amount: loaderData?.amount,
-                planName: loaderData?.planName,
-                priceId: loaderData?.priceId,
-                cartId: loaderData?.cartId,
-                customerBalance: loaderData?.customerBalance ?? 0,
-                mode: loaderData?.mode,
-                img: loaderData?.img,
-                type: loaderData?.type
-              } satisfies ContextType
-            }
-          />
+          <Outlet />
         </Elements>
       )}
     </div>
   );
-}
-
-export function useAmount() {
-  return useOutletContext<ContextType>();
 }

@@ -19,7 +19,7 @@ export default [
   ]),
 
   // Payments
-  route("payments", "routes/payments/layout.tsx", [
+  route("payments", "routes/payments/layout.tsx", { id: "stripe" }, [
     route("subscribe", "routes/payments/subscribe.tsx"),
     route("setup", "routes/payments/setup.tsx"),
     route("checkout", "routes/payments/payment.tsx")
@@ -50,6 +50,7 @@ export default [
 
   // Members
   route("members", "routes/members/layout.tsx", [
+    index("routes/members/index.tsx"),
     // Personality plan
     route("personality", "routes/members/personality/layout.tsx", [
       index("routes/members/personality/index.tsx"),

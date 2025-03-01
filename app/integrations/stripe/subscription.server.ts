@@ -1,5 +1,5 @@
 import { prisma } from "~/db.server";
-import { stripe } from "~/integrations/stripe";
+import { stripe } from "./stripe.server";
 import personalitImg from "../../icons/plan-personality.svg";
 import soulImg from "../../icons/plan-soul.svg";
 import spiritImg from "../../icons/plan-spirit.svg";

@@ -11,7 +11,6 @@ import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
 import { HoneypotProvider } from "remix-utils/honeypot/react"
 import "./app.css";
-// import "cally";
 
 
 export const links: Route.LinksFunction = () => [
@@ -42,6 +41,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       }
     });
   }
+
   const userPrefs = await getUserPrefs(request);
   const theme = userPrefs?.theme ?? "florBlanca";
   const user = await getUserById(userId);

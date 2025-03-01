@@ -55,7 +55,7 @@ export const FilterComponent = React.memo(() => {
     <Form ref={formRef} onChange={e => debounceSearchSubmit(e.currentTarget)} onReset={handleReset}>
       <div className="flex flex-col md:flex-row justify-between gap-4 align-middle w-[90%] mx-auto pb-4">
         <div className="flex flex-row gap-4 align-middle w-full">
-          <label className="input input-bordered input-md w-full md:w-1/3 flex items-center align-middle gap-2">
+          <label className="input input-lg w-full md:w-1/3 flex items-center align-middle gap-2">
             <input type="text" className="w-full" placeholder="Buscar" name="search" id="search" defaultValue={q || ""} />
             <FaSearch size={24} className="text-primary" />
           </label>
@@ -77,13 +77,12 @@ export const FilterComponent = React.memo(() => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ opacity: { duration: 0.4 } }}
-                  className="absolute md:right-0 dropdown-content z-[1] menu p-2 shadow-sm bg-base-100 rounded-box w-72 border border-neutral-content">
-                  <div className="form-control">
-                    <label className="cursor-pointer label">
-                      <span className="label-text">Favoritos</span>
-                      <input type="checkbox" className="checkbox checkbox-primary" name="favorites" value={"true"} defaultChecked={isChecked} />
-                    </label>
-                  </div>
+                  className="absolute md:right-0 dropdown-content z-[1] menu p-2 shadow-sm bg-base-100 rounded-box w-72 border border-base-300">
+                  <label className="label py-2 mb-3 mx-auto">
+                    <span className="label-text">Favoritos</span>
+                    <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" name="favorites" value={"true"} defaultChecked={isChecked} />
+                  </label>
+
                   <MultiSelect
                     name={"categories"}
                     selectedOptions={selectedOptions}

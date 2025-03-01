@@ -1,8 +1,7 @@
-import { Form, redirect, useNavigate, useOutletContext } from "react-router";
+import { Form, redirect, useNavigate, useRouteLoaderData } from "react-router";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useCallback, useState } from "react";
-import type { ContextType } from "./layout";
 import type { Route } from "./+types/subscribe";
 import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
@@ -22,7 +21,7 @@ type ConfirmResponse = {
 };
 
 export default function Subscribe() {
-  const { planName, img } = useOutletContext() as ContextType;
+  const { amount, priceId, planName, img, type } = useRouteLoaderData("stripe");
 
   return (
     <main className="pb-3 text-center">
@@ -34,13 +33,19 @@ export default function Subscribe() {
           <img src={img} alt="logo" className="transform scale-110" />
         </div>
       </div>
-      <SubscriptionForm />
+      <SubscriptionForm amount={amount} priceId={priceId} planName={planName} type={type} />
     </main>
   );
 }
 
-function SubscriptionForm() {
-  const { amount, priceId, planName, type } = useOutletContext() as ContextType;
+interface SubscriptionFormProps {
+  amount: number,
+  priceId: string,
+  planName: string,
+  type: string
+}
+
+function SubscriptionForm({ amount, priceId, planName, type }: SubscriptionFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();

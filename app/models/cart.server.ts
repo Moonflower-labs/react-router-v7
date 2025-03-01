@@ -31,14 +31,21 @@ export async function getCartItemsCount(userId: string) {
   return cart.cartItems.reduce((acc, item) => acc + item.quantity, 0);
 }
 
-export function calculateTotalAmount(cartItems: CartItem[]): number {
+export function calculateTotalAmount(
+  cartItems: CartItem[],
+  shippingRate?: number
+): number {
   if (!cartItems || cartItems?.length === 0) {
     return 0;
   }
 
-  return cartItems.reduce((total, cartItem) => {
+  // Calculate subtotal from cart items
+  const subtotal = cartItems.reduce((total, cartItem) => {
     return total + cartItem.quantity * cartItem.price.amount;
   }, 0);
+
+  // Add shipping rate if provided, default to 0 if undefined
+  return subtotal + (shippingRate ?? 0);
 }
 
 export async function addShoppingCart(userId: string) {

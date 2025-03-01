@@ -38,7 +38,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
   return (
     <div className="flex flex-col gap-4 mb-3">
       <div
-        className={`flex flex-wrap border border-gray-300 rounded-lg p-2 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : ""}`}
+        className={`flex flex-wrap border rounded-lg p-2 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : "border-base-300"}`}
         onClick={toggleDropdown}
         tabIndex={0}>
         {selectedOptions.map(option => (
@@ -46,7 +46,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
             {option}
             <button
               type="button"
-              className="ml-2 text-primary"
+              className="ml-3 text-primary text-xl"
               onClick={e => {
                 e.stopPropagation();
                 handleRemoveOption(option);
@@ -61,7 +61,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
           placeholder={!selectedOptions.length ? "Selecciona opciones..." : ""}
           value={filterText}
           onChange={e => setFilterText(e.target.value)}
-          className="flex-grow border-none outline-none bg-base-100"
+          className="flex-grow border-none outline-none bg-base-100 text-lg"
         />
       </div>
 
@@ -72,7 +72,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ opacity: { duration: 0 }, height: { duration: 0.4 } }}
-            className="overflow-hidden mt-1 w-full rounded-lg border border-neutral-content bg-base-100 shadow-lg z-10">
+            className="overflow-hidden mt-1 w-full rounded-lg border border-base-300 bg-base-100 shadow-lg z-10">
             {filteredOptions.length > 0 ? (
               filteredOptions.map(option => (
                 <div

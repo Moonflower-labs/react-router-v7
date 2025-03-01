@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { PaymentElement, useStripe, useElements, AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
-import { Form, useNavigate, useOutletContext, useRouteLoaderData } from "react-router";
-import type { ContextType } from "./layout";
+import { Form, useNavigate, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/payment";
 import type { User } from "~/models/user.server";
 
@@ -26,7 +25,8 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const { amount = 0, customerBalance, cartId, type } = (useOutletContext() as ContextType);
+  const { amount = 0, customerBalance, shippingRateAmount, cartId, type } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
+  console.log(amount, customerBalance, shippingRateAmount, cartId, type)
   const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -62,45 +62,6 @@ function CheckoutForm() {
 
       // Redirect to success page with parameters
       return navigate(`/payments/success?${params}`);
-      // if (type === "setup") {
-      //   const { error, setupIntent } = await stripe.confirmSetup({
-      //     elements,
-      //     confirmParams: {
-      //       return_url: `${window.location.origin}/payments/success`,
-      //     },
-      //     redirect: "if_required"
-      //   });
-
-      //   if (error) {
-      //     return handleError(error)
-      //   }
-
-      //   const params = new URLSearchParams();
-      //   params.set("clientSecret", setupIntent.client_secret as string);
-      //   params.set("setupIntentId", setupIntent.id);
-      //   params.set("cartId", cartId!);
-      //   // Redirect to success page with params
-      //   return navigate(`/payments/success?${params}`);
-      // } else {
-      //   const { error, paymentIntent } = await stripe.confirmPayment({
-      //     elements,
-      //     confirmParams: {
-      //       return_url: `${window.location.origin}/payments/success`,
-      //     },
-      //     redirect: "if_required"
-      //   });
-
-      //   if (error) {
-      //     return handleError(error)
-      //   }
-
-      //   const params = new URLSearchParams();
-      //   params.set("clientSecret", paymentIntent.client_secret as string);
-      //   params.set("paymentIntentId", paymentIntent.id);
-      //   params.set("cartId", cartId!);
-      //   // Redirect to success page with params
-      //   return navigate(`/payments/success?${params}`);
-      // }
 
     } catch (error) {
       handleError(error as StripeError);
@@ -127,8 +88,13 @@ function CheckoutForm() {
       <LinkAuthenticationElement
         options={{ defaultValues: { email: user?.email || "" } }}
         className="my-3" />
-      <h3 className="text-primary text-lg font-semibold my-3">Dirección postal</h3>
-      <AddressElement options={{ mode: "shipping" }} />
+      {shippingRateAmount > 0 &&
+        <>
+          <h3 className="text-primary text-lg font-semibold my-3">Dirección postal</h3>
+          <AddressElement options={{ mode: "shipping" }} />
+        </>
+      }
+
       <h3 className="text-primary text-lg font-semibold my-3">Pago</h3>
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="amount" value={amount} />

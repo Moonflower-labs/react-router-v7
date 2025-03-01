@@ -1,6 +1,6 @@
 import Stripe from "stripe";
-import { stripe } from "~/integrations/stripe";
 import { getUserById } from "~/models/user.server";
+import { stripe } from "./stripe.server";
 
 export async function createCustomer(email: string, name: string) {
   const customer = await stripe.customers.create({ email, name });
