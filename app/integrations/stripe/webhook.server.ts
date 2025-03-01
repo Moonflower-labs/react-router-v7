@@ -12,6 +12,7 @@ import {
   updateUserCustomerId
 } from "~/models/user.server";
 import { sendOrderEmail } from "../mailer/utils.server";
+import type { ExtendedOrder } from "~/models/order.server";
 
 export async function getStripeEvent(request: Request) {
   invariant(
@@ -310,8 +311,12 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
         status: paymentIntent.status === "succeeded" ? "Paid" : "Pending"
       },
       where: { id: orderId },
-      include: { orderItems: { include: { price: true, product: true } } }
+      include: {
+        orderItems: { include: { price: true, product: true } },
+        shippingRate: true
+      }
     });
+
     console.info(`Order ${orderId} status updated to succeeded`);
     console.info("usedBalance META:", usedBalance);
     // Deduct customer balance if used
@@ -325,8 +330,12 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
       );
     }
     const user = await getUserByCustomerId(String(paymentIntent.customer));
-    // TODO: send email with invoice details
-    await sendOrderEmail(String(user?.email), String(user?.username), order);
+    // Send email with invoice details
+    await sendOrderEmail(
+      String(user?.email),
+      String(user?.username),
+      order as ExtendedOrder
+    );
   } catch (e) {
     console.log(e);
     return;
