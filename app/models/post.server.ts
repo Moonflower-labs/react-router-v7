@@ -1,6 +1,14 @@
 import { prisma, type Prisma } from "~/db.server";
 import type { User } from "~/models/user.server";
-import type { Post as PrismaPost, Comment as PrismaComment, Category, Like, Favorite, Rating, Reply as PrismaReply } from "@prisma/client";
+import type {
+  Post as PrismaPost,
+  Comment as PrismaComment,
+  Category,
+  Like,
+  Favorite,
+  Rating,
+  Reply as PrismaReply
+} from "@prisma/client";
 
 export interface Post extends PrismaPost {
   comments?: Comment[];
@@ -43,7 +51,8 @@ export async function fetchPosts({
   // Add filters
   if (title) {
     where.title = {
-      contains: title // Checks if title is contained in the video's title
+      contains: title, // Checks if title is contained in the video's title
+      mode: "insensitive"
     };
   }
 
@@ -90,7 +99,8 @@ export async function fetchPostsWithAverageRating({
   // Add filters
   if (title) {
     where.title = {
-      contains: title // Checks if title is contained in the video's title
+      contains: title, // Checks if title is contained in the video's title
+      mode: "insensitive"
     };
   }
 
@@ -129,10 +139,13 @@ export async function fetchPostsWithAverageRating({
   });
 
   // Create a mapping of average ratings by postId
-  const ratingMap = ratings.reduce((acc, rating) => {
-    acc[rating.postId!] = rating._avg.value || 0;
-    return acc;
-  }, {} as Record<string, number>);
+  const ratingMap = ratings.reduce(
+    (acc, rating) => {
+      acc[rating.postId!] = rating._avg.value || 0;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Attach average ratings to posts
   const postWithRatings = posts.map(post => ({
@@ -218,7 +231,13 @@ export async function addToFavoritePost(userId: string, postId: string) {
   });
 }
 
-export async function createPost(userId: string, title: string, description: string, categoryIds?: string[], published?: boolean) {
+export async function createPost(
+  userId: string,
+  title: string,
+  description: string,
+  categoryIds?: string[],
+  published?: boolean
+) {
   let categoriesToConnect = undefined;
 
   if (categoryIds && categoryIds.length > 0) {
@@ -229,13 +248,22 @@ export async function createPost(userId: string, title: string, description: str
       title,
       description,
       user: { connect: { id: userId } },
-      categories: categoriesToConnect ? { connect: categoriesToConnect } : undefined,
+      categories: categoriesToConnect
+        ? { connect: categoriesToConnect }
+        : undefined,
       published
     }
   });
 }
 
-export async function editPost(postId: string, userId: string, title: string, description: string, categoryIds?: string[], published?: boolean) {
+export async function editPost(
+  postId: string,
+  userId: string,
+  title: string,
+  description: string,
+  categoryIds?: string[],
+  published?: boolean
+) {
   let categoriesToConnect = undefined;
 
   if (categoryIds && categoryIds.length > 0) {

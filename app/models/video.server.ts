@@ -31,7 +31,8 @@ export async function fetchVideos({
   // Add filters
   if (title) {
     where.title = {
-      contains: title // Checks if title is contained in the video's title
+      contains: title, // Checks if title is contained in the video's title
+      mode: "insensitive"
     };
   }
 
