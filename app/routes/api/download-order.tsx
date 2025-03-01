@@ -10,13 +10,14 @@ export async function loader({ params }: Route.LoaderArgs) {
     // Fetch order data
     const order = await prisma.order.findUnique({
         where: { id: orderId },
-        include: { orderItems: { include: { product: true, price: true } }, user: true, }, // Include related data if needed
+        include: { orderItems: { include: { product: true, price: true, } }, user: true, shippingRate: true }, // Include related data if needed
     });
 
     if (!order) {
         throw new Response("Order not found", { status: 404 });
     }
     const total = calculateOrderAmount(order.orderItems)
+    const shippingCost = order?.shippingRate?.amount ? order?.shippingRate?.amount / 100 : 0
 
     // Create a PDF document
     const doc = new PDFDocument();
@@ -41,8 +42,12 @@ export async function loader({ params }: Route.LoaderArgs) {
     order.orderItems.forEach((item, index) => {
         doc.text(`${index + 1}. ${item.product.name} - ${item.quantity} x £${item.price.amount / 100}`);
     });
+    doc.moveDown(6);
+    doc.fontSize(14).text(`Subtotal £${total}`, { align: "center" });
     doc.moveDown();
-    doc.fontSize(20).text(`TOTAL £${total}`, { align: "center" });
+    doc.fontSize(14).text(`Gasto Postal £${shippingCost}`, { align: "center" });
+    doc.moveDown();
+    doc.fontSize(20).text(`TOTAL £${total + shippingCost}`, { align: "center" });
     doc.end();
 
     // Set response headers for PDF download

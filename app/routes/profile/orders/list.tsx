@@ -33,18 +33,33 @@ export default function UserOrders({ loaderData }: Route.ComponentProps) {
                 orders.map((order, index) => (
                     <div
                         key={order.id}
-                        className="flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border rounded-lg shadow-md md:w-2/3 mx-auto mb-6">
+                        className="flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border rounded-lg shadow-md lg:w-2/3 mx-auto mb-6">
                         <div className="flex justify-between items-center w-full">
                             <span>
                                 {index + 1}. {order.id}{" "}
                             </span>
                             <span className="me-5">{formatDate(order.createdAt)}</span>
                         </div>
-                        <div className="flex gap-3 items-center">
+                        <div className="flex gap-3 items-center lg:w-1/3">
                             {order?.status === "Paid" ? (
-                                <div className="badge badge-success">Pagada</div>
+                                <div className="badge badge-success">Pagado</div>
                             ) : (
                                 <div className="badge badge-error">Pendiente</div>
+                            )}
+                            {order?.isProcessed ? (
+                                <>
+                                    <div className="inline-grid *:[grid-area:1/1]">
+                                        <div className="status status-success"></div>
+                                    </div> Procesado
+                                </>
+                            ) : (
+                                <>
+                                    <div className="inline-grid *:[grid-area:1/1]">
+                                        <div className="status status-warning animate-ping"></div>
+                                        <div className="status status-warning"></div>
+                                    </div>
+                                    En proceso
+                                </>
                             )}
                             <Link to={`${order.id}`} className="btn btn-sm btn-outline btn-success" viewTransition>
                                 <FaEye size={24} />

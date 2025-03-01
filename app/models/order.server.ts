@@ -5,7 +5,8 @@ import type {
   OrderItem,
   OrderStatus,
   Price,
-  Product
+  Product,
+  ShippingRate
 } from "@prisma/client";
 
 export interface ExtendedOrderItem extends OrderItem {
@@ -15,9 +16,14 @@ export interface ExtendedOrderItem extends OrderItem {
 
 export interface ExtendedOrder extends Order {
   orderItems: ExtendedOrderItem[];
+  shippingRate: ShippingRate;
 }
 
-export async function createOrder(userId: string, cartItems: CartItem[]) {
+export async function createOrder(
+  userId: string,
+  cartItems: CartItem[],
+  shippingId?: string
+) {
   const data: any = {
     guest: userId.startsWith("guest-"),
     orderItems: {
@@ -33,6 +39,9 @@ export async function createOrder(userId: string, cartItems: CartItem[]) {
     data.guestId = userId;
   } else {
     data.user = { connect: { id: userId } };
+  }
+  if (shippingId) {
+    data.shippingRate = { connect: { id: shippingId } };
   }
 
   const order = await prisma.order.create({ data });
@@ -60,6 +69,7 @@ export async function updateOrderItem(orderItemId: string, quantity: number) {
 export async function fetchOrders(status?: OrderStatus) {
   return prisma.order.findMany({
     where: { status },
+    include: { shippingRate: true },
     orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
@@ -67,6 +77,7 @@ export async function fetchOrders(status?: OrderStatus) {
 export async function fetchUserOrders(userId: string, status?: OrderStatus) {
   return prisma.order.findMany({
     where: { userId, status },
+    include: { shippingRate: true },
     orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
@@ -96,7 +107,8 @@ export async function fetchOrder(id: string) {
     where: { id },
     include: {
       orderItems: { include: { price: true, product: true } },
-      user: { select: { username: true, email: true } }
+      user: { select: { username: true, email: true } },
+      shippingRate: true
     }
   });
 }
@@ -105,13 +117,21 @@ export async function fetchUserOrder(id: string, userId: string) {
     where: { id, userId },
     include: {
       orderItems: { include: { price: true, product: true } },
-      user: { select: { username: true, email: true } }
+      user: { select: { username: true, email: true } },
+      shippingRate: true
     }
   });
 }
 
 export async function deleteOrder(id: string) {
   return prisma.order.delete({ where: { id } });
+}
+
+export async function updateOrderProcessStatus(
+  id: string,
+  isProcessed: boolean
+) {
+  return prisma.order.update({ where: { id }, data: { isProcessed } });
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {

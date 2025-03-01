@@ -60,7 +60,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       }
     }
 
-    const orderId = await createOrder(String(userId), cart?.cartItems);
+    const orderId = await createOrder(String(userId), cart?.cartItems, shippingRateId);
     // Create payment intent only if amount is greater than 0
     if (finalAmount <= 0 && customerId) {
       const type = "setup"

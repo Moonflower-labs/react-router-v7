@@ -27,14 +27,29 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                 </div>}
 
             <div className="flex flex-row gap-4 items-center mb-5">
+                {order?.isProcessed ? (
+                    <>
+                        <div className="inline-grid *:[grid-area:1/1]">
+                            <div className="status status-success"></div>
+                        </div> Procesado
+                    </>
+                ) : (
+                    <>
+                        <div className="inline-grid *:[grid-area:1/1]">
+                            <div className="status status-warning animate-ping"></div>
+                            <div className="status status-warning"></div>
+                        </div>
+                        En proceso
+                    </>
+                )}
                 <div>
-                    {order?.status === "Paid" ? <div className="badge badge-success">Pagada</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
+                    {order?.status === "Paid" ? <div className="badge badge-success">Pagado</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
                 </div>
                 <div className="font-bold text-xl">Total £{total}</div>
             </div>
 
             <h3 className="font-bold text-xl mb-2.5">Artículos</h3>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 mb-4">
                 {order?.orderItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-4 bg-neutral-content/10 rounded-lg shadow-sm p-3">
                         <div className="avatar">
@@ -56,6 +71,12 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                         </div>
                     </div>
                 ))}
+            </div>
+            <div>
+                <h3 className="font-bold text-xl mb-4">Envío Postal</h3>
+                <span>£{order?.shippingRate?.amount ? order?.shippingRate?.amount / 100 : 0}</span>
+
+                <div>{order?.shippingRate?.displayName} </div>
             </div>
             <div className="py-4 w-full text-center">
                 <a href={href("/api/order/:orderId/pdf", { orderId: params.orderId })} className="btn btn-warning">Descargar factura en PDF</a>

@@ -24,14 +24,19 @@ model CartItem {
 
 
 model Order {
-  id         String  @id @default(cuid())
-  guest      Boolean
-  guestId    String?
+  id          String  @id @default(cuid())
+  guest       Boolean
+  guestId     String?
 
-  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  userId     String?
-  orderItems OrderItem[]
-  status     OrderStatus @default(Pending)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId      String?
+  orderItems  OrderItem[]
+  status      OrderStatus @default(Pending)
+  isProcessed Boolean     @default(false)
+
+  shippingRateId String?       
+  shippingRate   ShippingRate? @relation(fields: [shippingRateId], references: [id])
+
 
   createdAt  DateTime @default(now())
 }
@@ -40,6 +45,7 @@ enum OrderStatus {
   Pending
   Paid
 }
+
 
 model OrderItem {
   id        String  @id @default(cuid())
@@ -53,6 +59,18 @@ model OrderItem {
   createdAt DateTime @default(now())
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   orderId   String
+}
+
+
+
+model ShippingRate {
+  id          String  @id @default(cuid())
+  displayName String
+  amount      Int
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  Order Order[]
 }
 
 model Product {

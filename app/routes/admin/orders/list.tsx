@@ -4,10 +4,11 @@ import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect, useState } from "react";
 import { toast, type Id } from "react-toastify";
-import { deleteOrder, fetchOrders, getOrderCount, updateOrderStatus } from "~/models/order.server";
+import { deleteOrder, fetchOrders, getOrderCount, updateOrderProcessStatus } from "~/models/order.server";
 import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import type { OrderStatus } from "@prisma/client";
+import { GrRevert } from "react-icons/gr";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -27,6 +28,7 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const orderId = formData.get("orderId");
   const status = formData.get("status") as OrderStatus;
+  const isProcessed = formData.get("isProcessed");
   const date = formData.get("date");
   const orderDate = new Date(date as string);
   orderDate.setHours(0, 0, 0, 0);
@@ -36,23 +38,25 @@ export async function action({ request }: Route.ActionArgs) {
   if (!orderId) {
     throw data({ message: "No order ID provided" }, { status: 400 });
   }
-  if (!status || (status !== "Pending" && status !== "Paid")) {
-    throw data({ message: "No status found!" }, { status: 400 });
-  }
+
   let deleted = false;
 
   switch (request.method) {
-    case "POST": {
-      if (!status || String(status).toLowerCase() !== "complete" && orderDate.getTime() >= today.getTime()) {
-        throw data({ message: "Estas intentando borrar un pedido incompleto de hoy!" }, { status: 400 });
+    case "DELETE": {
+      if (!status || !isProcessed || String(status) !== "Paid" && orderDate.getTime() >= today.getTime()) {
+        throw data({ message: "Estas intentando borrar un pedido sin procesar de hoy!" }, { status: 400 });
       }
-      //  Delete the post
-      await deleteOrder(String(orderId));
-      deleted = true;
+      try {
+        //  Delete the post
+        await deleteOrder(String(orderId));
+        deleted = true;
+      } catch (error) {
+        console.error(error)
+      }
       break;
     }
     case "PUT": {
-      await updateOrderStatus(String(orderId), status);
+      await updateOrderProcessStatus(String(orderId), Boolean(isProcessed === "true"))
       break;
     }
     default:
@@ -96,7 +100,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
           <button
             onClick={() => {
               toast.dismiss();
-              submit({ orderId, status }, { method: "POST" });
+              submit({ orderId, status }, { method: "DELETE" });
             }}
             className="btn btn-sm btn-primary">
             Si
@@ -131,20 +135,36 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
             </div>
             <div className="flex gap-3 items-center">
               {order?.status === "Paid" ? (
-                <div className="badge badge-success">Pagada</div>
+                <div className="badge badge-success">Pagado</div>
               ) : (
                 <div className="badge badge-error">Pendiente</div>
+              )}
+              {order?.isProcessed ? (
+                <>
+                  <div className="inline-grid *:[grid-area:1/1]">
+                    <div className="status status-success"></div>
+                  </div> Procesado
+                </>
+              ) : (
+                <>
+                  <div className="inline-grid *:[grid-area:1/1]">
+                    <div className="status status-warning animate-ping"></div>
+                    <div className="status status-warning"></div>
+                  </div>
+                  En proceso
+                </>
               )}
               <Link to={`${order.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
                 <FaEye size={24} />
               </Link>
-              <Form method="put">
-                <input type="hidden" name="status" value={order.status === "Paid" ? "Pending" : "Paid"} />
-                <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-accent">
-                  <FaCheck />
+              <Form method="PUT">
+                <input type="hidden" name="isProcessed" value={order.isProcessed ? "false" : "true"} />
+                <button type="submit" name="orderId" value={order.id} className={`btn btn-sm btn-${order?.isProcessed ? "warning" : "success"}`}>
+                  {order?.isProcessed ? <GrRevert size={20} /> : <FaCheck size={20} />}
                 </button>
               </Form>
-              <Form method="post" onSubmit={handleSbubmit}>
+
+              <Form method="DELETE" onSubmit={handleSbubmit}>
                 <input type="hidden" name="status" value={order.status} />
                 <input type="hidden" name="date" value={order.createdAt.toISOString()} />
                 <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-error">

@@ -1,6 +1,5 @@
 import {
     Body,
-    Button,
     Container,
     Head,
     Heading,
@@ -53,6 +52,17 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
                                 </Text>
                             )}
 
+                        </Section>
+                        <Section>
+                            <Text className="text-black text-[14px] leading-[24px]">
+                                Gastos Postales
+                            </Text>
+                            <Text className="text-black text-[14px] leading-[24px]">
+                                £{order?.shippingRate?.amount}
+                            </Text>
+                            <Text className="text-black text-[14px] leading-[24px]">
+                                {order?.shippingRate?.displayName}
+                            </Text>
                         </Section>
                         <Section className="text-center mt-[32px] mb-[32px]">
                             <Link
