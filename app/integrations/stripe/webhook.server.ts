@@ -318,7 +318,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
     });
 
     console.info(`Order ${orderId} status updated to succeeded`);
-    console.info("usedBalance META:", usedBalance);
+
     // fetch the user
     const user = await getUserByCustomerId(String(paymentIntent.customer));
     const shipping = paymentIntent.shipping; // Stripe's shipping details
@@ -345,6 +345,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
           country: shipping?.address?.country as string
         }
       });
+      console.log(`Shipping address created for user: ${userId}`);
     } else {
       // Create a new shipping address if it doesn't exist
       await prisma.shippingAddress.create({
@@ -358,10 +359,9 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
           country: shipping?.address?.country as string
         }
       });
-      console.log(`Shipping address updated fo ${userId}`);
+      console.log(`Shipping address updated for user: ${userId}`);
     }
 
-    console.log("Shipping address updated or created");
     // Deduct customer balance if used
     if (usedBalance && Number(usedBalance) > 0) {
       await deductBalanceUsed(
