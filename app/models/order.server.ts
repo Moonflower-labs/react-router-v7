@@ -69,15 +69,16 @@ export async function updateOrderItem(orderItemId: string, quantity: number) {
 export async function fetchOrders(status?: OrderStatus) {
   return prisma.order.findMany({
     where: { status },
-    include: { shippingRate: true },
+    include: { shippingRate: true, shippingAddress: true },
     orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
 
-export async function fetchUserOrders(userId: string, status?: OrderStatus) {
+export async function fetchUserOrders(userId: string) {
+  // Only fetch Paid orders for users
   return prisma.order.findMany({
-    where: { userId, status },
-    include: { shippingRate: true },
+    where: { userId, status: "Paid" },
+    include: { shippingRate: true, shippingAddress: true },
     orderBy: [{ status: "desc" }, { createdAt: "desc" }]
   });
 }
@@ -108,7 +109,8 @@ export async function fetchOrder(id: string) {
     include: {
       orderItems: { include: { price: true, product: true } },
       user: { select: { username: true, email: true } },
-      shippingRate: true
+      shippingRate: true,
+      shippingAddress: true
     }
   });
 }
@@ -118,7 +120,8 @@ export async function fetchUserOrder(id: string, userId: string) {
     include: {
       orderItems: { include: { price: true, product: true } },
       user: { select: { username: true, email: true } },
-      shippingRate: true
+      shippingRate: true,
+      shippingAddress: true
     }
   });
 }

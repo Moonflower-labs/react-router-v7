@@ -4,7 +4,7 @@ export const formatDate = (date: Date | string | number | undefined) => {
 
   const dateObj = date instanceof Date ? date : new Date(date);
 
-  return dateObj.toLocaleDateString("en-GB");
+  return dateObj.toLocaleString("en-GB");
 };
 
 export const formatUnixDate = (

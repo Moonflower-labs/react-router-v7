@@ -9,7 +9,10 @@ export interface User extends PrismaUser {
 }
 
 export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id }, include: { profile: true } });
+  return prisma.user.findUnique({
+    where: { id },
+    include: { profile: true, shippingAddress: true }
+  });
 }
 
 export async function getUserByEmail(email: User["email"]) {

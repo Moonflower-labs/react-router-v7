@@ -78,10 +78,21 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
           </div>
         ))}
       </div>
-      <div>
-        <h3 className="font-bold text-xl mb-4">Envío Postal:</h3>
-        <div>{order?.shippingRate?.displayName} <span>£{order?.shippingRate?.amount ? order?.shippingRate?.amount / 100 : 0}</span></div>
-      </div>
+      <section className="p-4">
+        <div className="mb-4">
+          <h3 className="font-bold text-xl mb-3">Envío Postal:</h3>
+          <div>{order?.shippingRate?.displayName} <span>£{order?.shippingRate?.amount ? order?.shippingRate?.amount / 100 : 0}</span></div>
+        </div>
+        <div className="mb-4">
+          <h3 className="font-bold text-xl mb-3">Direción Postal:</h3>
+          <div>{order?.shippingAddress?.line1}</div>
+          <div>{order?.shippingAddress?.line2}</div>
+          <div>Estado: {order?.shippingAddress?.state}</div>
+          <div>Ciudad: {order?.shippingAddress?.city}</div>
+          <div>País: {order?.shippingAddress?.country}</div>
+          <div>Código Postal: {order?.shippingAddress?.postalCode}</div>
+        </div>
+      </section>
     </div>
   );
 }

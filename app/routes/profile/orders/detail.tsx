@@ -15,8 +15,9 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
     const total = order?.orderItems.reduce((total, cartItem) => {
         return total + cartItem.quantity * cartItem.price.amount / 100;
     }, 0);
+    const shippingCost = order?.shippingRate?.amount ? order.shippingRate.amount / 100 : 0
     return (
-        <div className="mb-6 lg:w-2/3 mx-auto px-3">
+        <div className="mb-6 lg:w-2/3 mx-auto px-4">
             <h2 className="text-xl text-primary text-center mx-auto my-5">
                 Pedido realizado el <span className="font-bold">{formatDate(order?.createdAt)}</span>
             </h2>
@@ -45,7 +46,10 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                 <div>
                     {order?.status === "Paid" ? <div className="badge badge-success">Pagado</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
                 </div>
-                <div className="font-bold text-xl">Total £{total}</div>
+                <div className="font-bold text-xl">Subtotal £{total}</div>
+                <div className="font-bold text-xl">&</div>
+                <div className="font-bold text-xl">Envío £{shippingCost}</div>
+                <div className="font-bold text-2xl">Total £{Number(total) + shippingCost}</div>
             </div>
 
             <h3 className="font-bold text-xl mb-2.5">Artículos</h3>
@@ -72,15 +76,29 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                     </div>
                 ))}
             </div>
-            <div>
-                <h3 className="font-bold text-xl mb-4">Envío Postal</h3>
-                <span>£{order?.shippingRate?.amount ? order?.shippingRate?.amount / 100 : 0}</span>
 
-                <div>{order?.shippingRate?.displayName} </div>
-            </div>
-            <div className="py-4 w-full text-center">
-                <a href={href("/api/order/:orderId/pdf", { orderId: params.orderId })} className="btn btn-warning">Descargar factura en PDF</a>
-            </div>
+
+            {/* todo ad shipping data */}
+            <section className="p-4">
+                <div className="mb-4">
+                    <h3 className="font-bold text-xl mb-3">Envío Postal</h3>
+                    <span>£{shippingCost}</span>
+
+                    <div>{order?.shippingRate?.displayName} </div>
+                </div>
+                <div className="mb-4">
+                    <h3 className="font-bold text-xl mb-3">Direción Postal:</h3>
+                    <div>{order?.shippingAddress?.line1}</div>
+                    <div>{order?.shippingAddress?.line2}</div>
+                    <div>Estado: {order?.shippingAddress?.state}</div>
+                    <div>Ciudad: {order?.shippingAddress?.city}</div>
+                    <div>País: {order?.shippingAddress?.country}</div>
+                    <div>Código Postal: {order?.shippingAddress?.postalCode}</div>
+                </div>
+                <div className="py-4 w-full text-center">
+                    <a href={href("/api/order/:orderId/pdf", { orderId: params.orderId })} className="btn btn-warning">Descargar factura en PDF</a>
+                </div>
+            </section>
         </div>
     );
 }

@@ -28,50 +28,52 @@ export default function UserOrders({ loaderData }: Route.ComponentProps) {
     return (
         <div>
             <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h1>
-            <p className="mb-3 text-center">Pedidos completados <span className="badge badge-primary">{orderCount}</span></p>
+            <p className="mb-3 text-center">Pedidos Realizados <span className="badge badge-ghost">{orderCount}</span></p>
             {orders?.length ? (
-                orders.map((order, index) => (
-                    <div
-                        key={order.id}
-                        className="flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border rounded-lg shadow-md lg:w-2/3 mx-auto mb-6">
-                        <div className="flex justify-between items-center w-full">
-                            <span>
-                                {index + 1}. {order.id}{" "}
-                            </span>
-                            <span className="me-5">{formatDate(order.createdAt)}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-3 mb-4">
+                    {orders.map((order, index) => (
+                        <div key={order.id} className="card bg-base-200/50 card-md shadow-sm">
+                            <div className="card-body">
+                                <h2 className="card-title">{index + 1}. Pedido: {order.id}</h2>
+                                <span className="me-5">{formatDate(order.createdAt)}</span>
+                                <div className="flex gap-3 items-center lg:w-1/3">
+                                    {order?.status === "Paid" ? (
+                                        <div className="badge badge-success">Pagado</div>
+                                    ) : (
+                                        <div className="badge badge-error">Pendiente</div>
+                                    )}
+                                    {order?.isProcessed ? (
+                                        <>
+                                            <div className="inline-grid *:[grid-area:1/1]">
+                                                <div className="status status-success"></div>
+                                            </div> Procesado
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="inline-grid *:[grid-area:1/1]">
+                                                <div className="status status-warning animate-ping"></div>
+                                                <div className="status status-warning"></div>
+                                            </div>
+                                            En proceso
+                                        </>
+                                    )}
+                                </div>
+                                <div className="justify-end card-actions">
+                                    <button className="">
+                                        <Link to={`${order.id}`} className="btn btn-sm btn-primary" viewTransition>
+                                            Ver <FaEye size={22} />
+                                        </Link>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex gap-3 items-center lg:w-1/3">
-                            {order?.status === "Paid" ? (
-                                <div className="badge badge-success">Pagado</div>
-                            ) : (
-                                <div className="badge badge-error">Pendiente</div>
-                            )}
-                            {order?.isProcessed ? (
-                                <>
-                                    <div className="inline-grid *:[grid-area:1/1]">
-                                        <div className="status status-success"></div>
-                                    </div> Procesado
-                                </>
-                            ) : (
-                                <>
-                                    <div className="inline-grid *:[grid-area:1/1]">
-                                        <div className="status status-warning animate-ping"></div>
-                                        <div className="status status-warning"></div>
-                                    </div>
-                                    En proceso
-                                </>
-                            )}
-                            <Link to={`${order.id}`} className="btn btn-sm btn-outline btn-success" viewTransition>
-                                <FaEye size={24} />
-                            </Link>
-                        </div>
+                    ))}
+                </div>)
+                : (
+                    <div className="flex gap-4 justify-center items-center">
+                        <span>No hay ningún pedido que mostrar.</span>
                     </div>
-                ))
-            ) : (
-                <div className="flex gap-4 justify-center items-center">
-                    <span>No hay ningún pedido que mostrar.</span>
-                </div>
-            )}
+                )}
             {/*
              <div className="text-center">
                 <Paginator pagination={loaderData?.pagination} />

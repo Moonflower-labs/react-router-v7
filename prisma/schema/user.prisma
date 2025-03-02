@@ -1,5 +1,3 @@
-
-
 model User {
   id       String @id @default(cuid())
   email    String @unique
@@ -24,12 +22,11 @@ model User {
   orders           Order[]
   replies          Reply[]
 
-
   ResetToken ResetToken[]
 
   Message Message[]
 
-  shippingAddress ShippingAddress?
+  shippingAddress ShippingAddress[]
 }
 
 model Password {
@@ -87,12 +84,12 @@ model Favorite {
 }
 
 model ResetToken {
-  id        String @id @default(cuid())
-  userId    String 
-  token     String @unique
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
   createdAt DateTime @default(now())
-  expiresAt DateTime 
-  user      User @relation(fields: [userId],references: [id])
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Review {
@@ -107,13 +104,15 @@ model Review {
 }
 
 model ShippingAddress {
-  id          String @id @default(uuid())
-  userId      String @unique
-  user        User   @relation(fields: [userId], references: [id],onDelete: Cascade)
-  line1       String
-  line2       String?
-  city        String?
-  state       String?
-  postalCode  String
-  country     String
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  line1      String
+  line2      String?
+  city       String?
+  state      String?
+  postalCode String
+  country    String
+  Order      Order[]
+  createdAt  DateTime @default(now())
 }
