@@ -28,6 +28,8 @@ model User {
   ResetToken ResetToken[]
 
   Message Message[]
+
+  shippingAddress ShippingAddress?
 }
 
 model Password {
@@ -102,4 +104,16 @@ model Review {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ShippingAddress {
+  id          String @id @default(uuid())
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id],onDelete: Cascade)
+  line1       String
+  line2       String?
+  city        String?
+  state       String?
+  postalCode  String
+  country     String
 }
