@@ -37,7 +37,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
     const shippingRate = await fetchStripeShippinRate(shippingRateId)
     const shippingRateAmount = shippingRate.fixed_amount?.amount
-    console.log("rate", shippingRate)
+
     if (isNaN(Number(shippingRateAmount))) {
       console.log("amount", shippingRateAmount)
       throw redirect("/cart");
