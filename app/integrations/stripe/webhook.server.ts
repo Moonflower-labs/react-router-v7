@@ -319,6 +319,49 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
 
     console.info(`Order ${orderId} status updated to succeeded`);
     console.info("usedBalance META:", usedBalance);
+    // fetch the user
+    const user = await getUserByCustomerId(String(paymentIntent.customer));
+    const shipping = paymentIntent.shipping; // Stripe's shipping details
+    if (!user) {
+      console.log("no user found");
+      throw new Error("no user found can't process payment intent");
+    }
+    const userId = user.id;
+    // Collect / Update user shipping address
+    // Check if the user already has a shipping address
+    const existingShippingAddress = await prisma.shippingAddress.findUnique({
+      where: { userId }
+    });
+    if (existingShippingAddress) {
+      // Update the existing address if it exists
+      await prisma.shippingAddress.update({
+        where: { userId },
+        data: {
+          line1: shipping?.address?.line1 as string,
+          line2: shipping?.address?.line2,
+          city: shipping?.address?.city,
+          state: shipping?.address?.state,
+          postalCode: shipping?.address?.postal_code as string,
+          country: shipping?.address?.country as string
+        }
+      });
+    } else {
+      // Create a new shipping address if it doesn't exist
+      await prisma.shippingAddress.create({
+        data: {
+          userId, // Link to the user
+          line1: shipping?.address?.line1 as string,
+          line2: shipping?.address?.line2,
+          city: shipping?.address?.city,
+          state: shipping?.address?.state,
+          postalCode: shipping?.address?.postal_code as string,
+          country: shipping?.address?.country as string
+        }
+      });
+      console.log(`Shipping address updated fo ${userId}`);
+    }
+
+    console.log("Shipping address updated or created");
     // Deduct customer balance if used
     if (usedBalance && Number(usedBalance) > 0) {
       await deductBalanceUsed(
@@ -329,7 +372,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
         `Deducted ${usedBalance} from customer ${paymentIntent.customer}`
       );
     }
-    const user = await getUserByCustomerId(String(paymentIntent.customer));
+
     // Send email with invoice details
     await sendOrderEmail(
       String(user?.email),

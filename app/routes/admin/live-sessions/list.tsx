@@ -91,9 +91,11 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
     return (
         <div>
             <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Sessiones en Directo</h1>
-            <Link to={href("/admin/live-sessions/create")} className="btn btn-sm btn-outline btn-success" viewTransition>
-                <IoMdAdd size={24} />
-            </Link>
+            <div className="flex justify-center md:w-1/2 mx-auto">
+                <Link to={href("/admin/live-sessions/create")} className="btn btn-md btn-success m-6 w-full" viewTransition>
+                    Crear Sesión  <IoMdAdd size={24} />
+                </Link>
+            </div>
             {liveSessions?.length ? (
                 liveSessions.map((session, index) => (
                     <div

@@ -26,7 +26,6 @@ function CheckoutForm() {
   const elements = useElements();
   const navigate = useNavigate();
   const { amount = 0, customerBalance, shippingRateAmount, cartId, type } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
-  console.log(amount, customerBalance, shippingRateAmount, cartId, type)
   const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
