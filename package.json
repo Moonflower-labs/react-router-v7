@@ -7,7 +7,8 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "setup": "prisma migrate dev && prisma db seed",
-    "typecheck": "react-router typegen && tsc --build --noEmit"
+    "typecheck": "react-router typegen && tsc --build --noEmit",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.21.0",
