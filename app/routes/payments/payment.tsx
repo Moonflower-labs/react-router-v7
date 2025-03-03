@@ -99,7 +99,7 @@ function CheckoutForm() {
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
       {deductions && <div className="font-semibold">Crédito utilizado £{(usedBalance / 100)}</div>}
-      {shippingRateAmount && <div className="mb-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
+      {shippingRateAmount > 0 && <div className="mb-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
       <button disabled={!stripe || !elements} id="submit" className="btn btn-lg btn-primary mx-auto my-3">
         <span>Pagar £{amount / 100}</span>
         {loading && <span className="loading loading-spinner loading-md"></span>}
