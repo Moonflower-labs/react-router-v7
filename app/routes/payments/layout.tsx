@@ -7,11 +7,13 @@ import { createCustomerSession, createSubscription, getCustomerBalance, getSubsc
 import { getUser, getUserId } from "~/utils/session.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
-import { createPaymentIntent } from "~/integrations/stripe/payment.server";
-import { createOrder } from "~/models/order.server";
+import { createPaymentIntent, updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
+import { createOrder, isOrderExist, updateOrderItems, updateOrderPaymentIntent } from "~/models/order.server";
 import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrations/stripe/setup.server";
 import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
+import { differenceInDays } from "date-fns"
+
 
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
 const stripePromise = loadStripe("pk_test_51LIRtEAEZk4zaxmw2ngsEkzDCYygcLkU5uL4m2ba01aQ6zXkWFXboTVdNH71GBZzvHNmiRU13qtQyjjCvTzVizlX00yXeplNgV");
@@ -31,7 +33,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     case "payment": {
       const cart = await getShoppingCart(userId as string);
       const shippingRateId = url.searchParams.get("shipping");
-
+      if (!cart || cart.cartItems.length === 0) {
+        throw data({ message: "No cart fount. Cartis required for payment" }, { status: 400 });
+      }
       if (!shippingRateId) {
         throw data({ message: "shippingRateId required" }, { status: 400 });
       }
@@ -43,36 +47,73 @@ export async function loader({ request }: Route.LoaderArgs) {
         throw data({ message: "shippingRateId required" }, { status: 400 });
       }
 
-      if (!cart) {
-        throw data({ message: "No cart fount. Cartis required for payment" }, { status: 400 });
-      }
-
-      let amount = calculateTotalAmount(cart.cartItems, shippingRateAmount);
-      let finalAmount = amount + 50; // Always add £0.50 
+      const baseAmount = calculateTotalAmount(cart.cartItems, shippingRateAmount);
+      let finalAmount = baseAmount;
 
       if (customerId) {
         customerBalance = await getCustomerBalance(customerId);
-      }
-
-      if (customerBalance > 0) {
-        if (customerBalance < amount) {
-          // Deduct balance, ensuring at least £0.50 remains
-          finalAmount = Math.max(amount - customerBalance + 50, 50);
-          usedBalance = customerBalance;
-        } else {
-          // Balance fully covers order, but we still add $0.50
-          finalAmount = 50;
-          usedBalance = amount;
+        if (customerBalance > 0) {
+          const amountAfterBalance = baseAmount - customerBalance;
+          finalAmount = Math.max(amountAfterBalance, 50);
+          usedBalance = baseAmount > customerBalance ? customerBalance : baseAmount;
         }
       }
-      // Create the order
-      const orderId = await createOrder(String(userId), cart?.cartItems, shippingRateId);
+      // Check for existing order
+      const existingOrder = await isOrderExist(String(userId), cart.id)
+      // Check if order is stale (e.g., no updates in the last 6 days)
+      const isOrderStale = existingOrder
+        ? differenceInDays(new Date(), new Date(existingOrder.updatedAt)) > 6
+        : false;
 
-      // Always create a PaymentIntent (SetupIntent is never needed)
-      const paymentIntent = await createPaymentIntent({ customerId, amount: finalAmount, orderId, usedBalance }) as PaymentIntent;
+      // Check if the cart items changed
+      const hasCartChanged = existingOrder
+        ? cart.cartItems.length !== existingOrder.orderItems.length ||
+        cart?.cartItems.some(item => {
+          const orderItem = existingOrder.orderItems.find(o => o.productId === item.product.id && o.priceId === item.price.id);
+          return !orderItem || orderItem.quantity !== item.quantity;
+        }) : false;
+
+      // Determine order and payment intent
+      let orderId = existingOrder?.id;
+      let paymentIntent;
+
+      if (!existingOrder) {
+        console.info("No existing order. Creating new order...");
+        orderId = await createOrder(String(userId), cart.id, cart.cartItems, shippingRateId);
+        paymentIntent = await createPaymentIntent({
+          customerId,
+          amount: finalAmount,
+          orderId,
+          usedBalance,
+        }) as PaymentIntent;
+      } else {
+        console.info("existing order found", existingOrder.id);
+        // Update order items if cart has changed
+        if (hasCartChanged) {
+          console.info("Cart has changed. Updating order items...");
+          await updateOrderItems(existingOrder.id, cart.cartItems);
+        }
+
+        // If order is stale or has no intent, create a new intent; otherwise, update existing
+        const needsNewIntent = isOrderStale || !existingOrder.paymentIntentId;
+        paymentIntent = await updateOrCreatePaymentIntent({
+          id: needsNewIntent ? undefined : existingOrder.paymentIntentId,
+          orderId: existingOrder.id,
+          customerId,
+          amount: finalAmount,
+          usedBalance,
+        });
+
+        // Update order with new intent if it’s new or missing
+        if (needsNewIntent || existingOrder.paymentIntentId !== paymentIntent?.id) {
+          console.info("Updating order with new payment intent...");
+          await updateOrderPaymentIntent(existingOrder.id, String(paymentIntent?.id));
+        }
+      }
 
       return {
-        clientSecret: paymentIntent.client_secret, customerSessionSecret, amount: finalAmount, shippingRateAmount, customerBalance, usedBalance, mode, cartId: cart.id,
+        clientSecret: paymentIntent?.client_secret, customerSessionSecret, amount: finalAmount,
+        shippingRateAmount, customerBalance, usedBalance, mode, cartId: cart.id,
       };
     }
     case "setup": {
@@ -90,6 +131,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       const isMissedPayment = missed?.toString() === "true";
 
       if (!planName) throw data({ message: "Plan name required" }, { status: 400 });
+      const { amount, priceId, img } = getSubscriptionData(planName);
 
       if (isMissedPayment) {
         // Collect a different payment method to complete the missed payment. 
@@ -102,16 +144,12 @@ export async function loader({ request }: Route.LoaderArgs) {
           throw redirect(href("/profile/subscription/update"))
         }
         return {
-          subscriptionId,
-          paymentIntentStatus: paymentIntent?.status,
-          clientSecret: paymentIntent?.client_secret,
-          isMissedPayment
+          subscriptionId, paymentIntentStatus: paymentIntent?.status, clientSecret: paymentIntent?.client_secret,
+          isMissedPayment, amount: paymentIntent?.amount, priceId, img
         };
       } else {
-        const { amount, priceId, img } = getSubscriptionData(planName);
         if (!customerId) {
-          console.log("no customer id found")
-          return;
+          throw data({ message: "customerId required for subscription!" }, { status: 400 })
         }
         if (amount <= 0) {
           // Create a SetupIntent for a Free subcription

@@ -43,8 +43,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   switch (request.method) {
     case "DELETE": {
-      console.log(status, isProcessed, orderDate.getTime(), today.getTime())
-      if (!status || isProcessed === "false" || String(status) !== "Paid" && orderDate.getTime() >= today.getTime()) {
+      // todo fix this condition
+      if (!status || (isProcessed === "false" && status === "Paid" && orderDate.getTime() >= today.getTime())) {
         throw data({ message: "Estas intentando borrar un pedido sin procesar de hoy!" }, { status: 400 });
       }
       try {
@@ -133,7 +133,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               <span>
                 {index + 1}. {order.id}{" "}
               </span>
-              <span className="me-5">{formatDate(order.createdAt)}</span>
+              <span className="me-5">{formatDate(order.updatedAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
               {order?.status === "Paid" ? (

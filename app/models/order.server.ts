@@ -21,11 +21,13 @@ export interface ExtendedOrder extends Order {
 
 export async function createOrder(
   userId: string,
+  cartId: string,
   cartItems: CartItem[],
   shippingId?: string
 ) {
   const data: any = {
     guest: userId.startsWith("guest-"),
+    cartId,
     orderItems: {
       create: cartItems.map(item => ({
         product: { connect: { id: item.product.id } },
@@ -47,6 +49,53 @@ export async function createOrder(
   const order = await prisma.order.create({ data });
 
   return order.id;
+}
+
+export async function updateOrderItems(id: string, cartItems: CartItem[]) {
+  const updatedOrder = await prisma.order.update({
+    where: { id },
+    data: {
+      orderItems: {
+        deleteMany: {}, // Remove old items
+        create: cartItems.map(item => ({
+          product: { connect: { id: item.product.id } },
+          price: { connect: { id: item.price.id } },
+          quantity: item.quantity || 1
+        }))
+      }
+    }
+  });
+  return updatedOrder;
+}
+export async function updateOrderPaymentIntent(id: string, intentId: string) {
+  const updatedOrder = await prisma.order.update({
+    where: { id },
+    data: { paymentIntentId: intentId }
+  });
+  return updatedOrder;
+}
+
+export async function isOrderExist(userId: string, cartId: string) {
+  const order = await prisma.order.findFirst({
+    where: {
+      AND: [
+        { status: "Pending" },
+        { cartId },
+        {
+          OR: [
+            {
+              userId: userId?.startsWith("guest-") ? undefined : userId
+            },
+            {
+              guestId: userId?.startsWith("guest-") ? userId : undefined
+            }
+          ]
+        }
+      ]
+    },
+    include: { orderItems: true }
+  });
+  return order;
 }
 
 export async function updateOrderItem(orderItemId: string, quantity: number) {

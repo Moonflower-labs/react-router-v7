@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PaymentElement, useStripe, useElements, AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
-import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
+import type { PaymentIntent, SetupIntent, StripeAddressElementOptions, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Form, useNavigate, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/payment";
 import type { User } from "~/models/user.server";
@@ -78,8 +78,21 @@ function CheckoutForm() {
         // email: user?.email,
       }
     },
-
   };
+  const addressElementOptions: StripeAddressElementOptions = {
+    mode: "shipping",
+    defaultValues: {
+      name: user?.username,
+      address: {
+        line1: user?.shippingAddress[0]?.line1,
+        line2: user?.shippingAddress[0]?.line2,
+        city: user?.shippingAddress[0]?.city,
+        state: user?.shippingAddress[0]?.state,
+        postal_code: user?.shippingAddress[0]?.postalCode,
+        country: user?.shippingAddress[0]?.country
+      }
+    }
+  }
 
   return (
     <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-lg border border-base-300 bg-base-100 shadow-lg px-8 min-w-[400px] w-[30vw] text-center">
@@ -90,7 +103,7 @@ function CheckoutForm() {
       {shippingRateAmount > 0 &&
         <>
           <h3 className="text-primary text-lg font-semibold my-3">Dirección postal</h3>
-          <AddressElement options={{ mode: "shipping" }} />
+          <AddressElement options={addressElementOptions} />
         </>
       }
 
@@ -99,7 +112,7 @@ function CheckoutForm() {
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
       {deductions && <div className="font-semibold">Crédito utilizado £{(usedBalance / 100)}</div>}
-      {shippingRateAmount > 0 && <div className="mb-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
+      {shippingRateAmount > 0 && <div className="my-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
       <button disabled={!stripe || !elements} id="submit" className="btn btn-lg btn-primary mx-auto my-3">
         <span>Pagar £{amount / 100}</span>
         {loading && <span className="loading loading-spinner loading-md"></span>}

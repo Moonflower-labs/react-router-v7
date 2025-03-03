@@ -27,7 +27,7 @@ export async function createPaymentIntent({
       "wechat_pay"
     ],
     metadata: {
-      order_number: orderId
+      orderId
     }
   };
   if (customerId) {
@@ -46,6 +46,40 @@ export async function createPaymentIntent({
   } catch (error) {
     return error;
   }
+}
+
+export async function updateOrCreatePaymentIntent({
+  id,
+  customerId,
+  amount,
+  orderId,
+  usedBalance
+}: {
+  id?: string | null;
+  customerId?: string | null;
+  amount: number;
+  orderId: string;
+  usedBalance?: number;
+}) {
+  if (id) {
+    const paymentIntent = await stripe.paymentIntents.update(id, {
+      amount,
+      metadata: {
+        orderId
+      }
+    });
+    console.log("INTENT UPDATED");
+    return paymentIntent;
+  }
+
+  const newIntent = await createPaymentIntent({
+    customerId,
+    amount,
+    orderId,
+    usedBalance
+  });
+  console.log("INTENT CREATED");
+  return newIntent as Stripe.PaymentIntent;
 }
 
 export async function retrievePaymentIntent(id: string) {

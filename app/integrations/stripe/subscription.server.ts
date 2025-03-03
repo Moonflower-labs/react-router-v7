@@ -1,4 +1,3 @@
-import { prisma } from "~/db.server";
 import { stripe } from "./stripe.server";
 import personalitImg from "../../icons/plan-personality.svg";
 import soulImg from "../../icons/plan-soul.svg";
@@ -118,7 +117,7 @@ export async function updateStripeSubscription(
     default_payment_method: customer.invoice_settings
       .default_payment_method as string
   });
-  const newSubscription = await stripe.subscriptions.update(
+  const updatedSubscription = await stripe.subscriptions.update(
     String(subscriptionId),
     {
       items: [
@@ -135,7 +134,7 @@ export async function updateStripeSubscription(
       cancel_at_period_end: false
     }
   );
-  return newSubscription;
+  return updatedSubscription;
 }
 
 export async function cancelStripeSubscription(subscriptionId: string) {

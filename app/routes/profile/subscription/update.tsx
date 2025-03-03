@@ -7,7 +7,7 @@ import { getUserId, requireUserId } from "~/utils/session.server";
 import { formatUnixDate } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
-import { getUserSubscription } from "~/models/subscription.server";
+import { getSubscription, getUserSubscription } from "~/models/subscription.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -51,10 +51,23 @@ export async function action({ request }: Route.ActionArgs) {
       if (!subscriptionId || !newPriceId) {
         return { success: false, message: "Missing required parameters" };
       }
+      const subscription = await getSubscription(String(subscriptionId))
       try {
         await updateStripeSubscription(String(subscriptionId), newPriceId)
+
+
       } catch (e) {
         console.error(e);
+        // todo: allow for expired payment_method :)
+        // const {updatedSubscription,error}  =  await updateStripeSubscription(String(subscriptionId), newPriceId)
+        if (e instanceof Error) {
+          if (e.message === "requires_payment_method") {
+            // todo: add query search params
+            throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscriptionId}&plan=${subscription?.plan?.name}`)
+          } else if (e.message === "something_else") {
+            // fix something else :)
+          }
+        }
         return { success: false, message: "Ha ocurrido un error" };
       }
       return redirect("/profile/subscription/confirmation");

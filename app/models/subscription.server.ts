@@ -6,3 +6,9 @@ export async function getUserSubscription(userId: string) {
     include: { plan: true }
   });
 }
+export async function getSubscription(id: string) {
+  return prisma.subscription.findUnique({
+    where: { id },
+    include: { plan: true }
+  });
+}

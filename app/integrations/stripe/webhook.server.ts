@@ -304,7 +304,7 @@ export async function handleSubscriptionDeleted(event: Stripe.Event) {
 
 export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const orderId = paymentIntent.metadata?.order_number;
+  const orderId = paymentIntent.metadata?.orderId;
   const usedBalance = paymentIntent.metadata?.used_balance;
   if (!orderId) return;
   try {
@@ -392,7 +392,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   const freeSubscription = !!setupIntent.metadata?.free_subscription;
   const priceId = setupIntent.metadata?.price_id;
   // If has order id in meta it must be a free Order!
-  const orderId = setupIntent.metadata?.order_number;
+  const orderId = setupIntent.metadata?.orderId;
 
   // fetch the user
   const user = await getUserByCustomerId(String(setupIntent.customer));

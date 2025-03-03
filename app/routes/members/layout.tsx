@@ -15,7 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect(href("/profile"))
   }
   if (subscription.status === "past_due") {
-    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}7plan=${subscription.plan.name}`)
+    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}&plan=${subscription.plan.name}`)
   }
 }
 

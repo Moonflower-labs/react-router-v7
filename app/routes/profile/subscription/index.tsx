@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect(href("/profile"))
   }
   if (subscription.status === "past_due") {
-    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}`)
+    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}&plan=${subscription.plan.name}`)
   }
   const planData = getSubscriptionData(subscription?.plan?.name as string);
   const stripeSubscription = await stripe.subscriptions.retrieve(subscription?.id as string, { expand: ["default_payment_method"] }) as Stripe.Subscription;

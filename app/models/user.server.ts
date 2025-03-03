@@ -1,4 +1,9 @@
-import type { Password, User as PrismaUser, Profile } from "@prisma/client";
+import type {
+  Password,
+  User as PrismaUser,
+  Profile,
+  ShippingAddress
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -6,6 +11,7 @@ import { createCustomer } from "~/integrations/stripe";
 
 export interface User extends PrismaUser {
   profile: Profile | null;
+  shippingAddress: ShippingAddress[];
 }
 
 export async function getUserById(id: User["id"]) {
