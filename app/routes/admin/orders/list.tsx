@@ -113,7 +113,6 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
         </div>
       </div>,
       {
-        // position: "top-right",
         autoClose: false,
       }
     );

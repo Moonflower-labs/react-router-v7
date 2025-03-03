@@ -20,7 +20,7 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       <h2 className="text-xl text-primary text-center mx-auto my-5">
         Detalles del pedido: <span className="font-bold">{order?.id}</span>
       </h2>
-      <p className="font-semibold mb-4">Fecha: {formatDate(order?.createdAt)}</p>
+      <p className="font-semibold mb-4">Actualizado: {formatDate(order?.updatedAt)}</p>
       {order?.guest
         ? <p className="font-semibold mb-4 text-warning/75">Pedido de invitado</p>
         : <div className="flex flex-row gap-2 items-center mb-4">

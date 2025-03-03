@@ -40,8 +40,9 @@ model Order {
   shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
 
   paymentIntentId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now()) @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastModified    DateTime?
 }
 
 enum OrderStatus {

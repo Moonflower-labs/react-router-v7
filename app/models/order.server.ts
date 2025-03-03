@@ -62,7 +62,8 @@ export async function updateOrderItems(id: string, cartItems: CartItem[]) {
           price: { connect: { id: item.price.id } },
           quantity: item.quantity || 1
         }))
-      }
+      },
+      lastModified: new Date() // Triggers @updatedAt
     }
   });
   return updatedOrder;

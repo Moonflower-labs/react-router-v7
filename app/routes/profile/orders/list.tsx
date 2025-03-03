@@ -32,7 +32,7 @@ export default function UserOrders({ loaderData }: Route.ComponentProps) {
             {orders?.length ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-3 mb-4">
                     {orders.map((order, index) => (
-                        <div key={order.id} className="card bg-base-200/50 card-md shadow-sm">
+                        <div key={order.id} className="card card-md shadow-md border">
                             <div className="card-body">
                                 <h2 className="card-title">{index + 1}. Pedido: {order.id}</h2>
                                 <span className="me-5">{formatDate(order.createdAt)}</span>
