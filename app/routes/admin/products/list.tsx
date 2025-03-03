@@ -4,10 +4,10 @@ import { getAllProducts } from "~/models/product.server";
 import { Form, Link, Outlet } from "react-router";
 import { FaEye } from "react-icons/fa";
 import { ImBin } from "react-icons/im";
-import { formatDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { syncStripeProducts } from "~/models/cart.server";
+import { syncStripeShippingRates } from "~/models/utils.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -23,7 +23,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const userId = await requireUserId(request);
   if (request.method === "POST") {
-    const products = await syncStripeProducts();
+    await syncStripeProducts();
+    await syncStripeShippingRates()
     return { success: true };
   }
 

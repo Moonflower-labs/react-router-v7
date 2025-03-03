@@ -105,8 +105,8 @@ model Review {
 
 model ShippingAddress {
   id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   line1      String
   line2      String?
   city       String?

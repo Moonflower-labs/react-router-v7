@@ -23,10 +23,11 @@ model CartItem {
 }
 
 model Order {
-  id      String  @id @default(cuid())
-  guest   Boolean
-  guestId String?
-  cartId  String?
+  id         String  @id @default(cuid())
+  guest      Boolean
+  guestId    String?
+  guestEmail String?
+  cartId     String? @unique
 
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId      String?
