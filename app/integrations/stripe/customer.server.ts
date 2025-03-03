@@ -105,11 +105,16 @@ export async function isSubscriptionDefaultPaymentMethodValid(
       switch (userSubscription?.default_payment_method?.type) {
         case "card": {
           const card = userSubscription.default_payment_method.card;
-          const isCardExpired =
-            card?.exp_year! < new Date().getFullYear() ||
-            (card?.exp_year! === new Date().getFullYear() &&
-              card?.exp_month! < new Date().getMonth() + 1);
-          return !isCardExpired;
+
+          if (!card || !card.exp_year || !card.exp_month) {
+            return false; // If card data missing assume expired
+          }
+          const currentYear = new Date().getFullYear();
+          const currentMonth = new Date().getMonth() + 1;
+          const isCardValid =
+            card.exp_year > currentYear ||
+            (card.exp_year === currentYear && card.exp_month >= currentMonth);
+          return isCardValid;
         }
         case "link":
         case "cashapp":
@@ -129,6 +134,8 @@ export async function isSubscriptionDefaultPaymentMethodValid(
           return false;
         }
       }
+    } else {
+      return false;
     }
   } catch (e) {
     console.log(e);

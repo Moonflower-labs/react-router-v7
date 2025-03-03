@@ -169,6 +169,7 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
 
 export async function handleSubscriptionUpdated(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
+
   const plan = await stripe.products.retrieve(
     subscription.items.data[0].plan.product as string
   );
@@ -182,36 +183,37 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       priceId: subscription.items.data[0].price.id
     });
   }
+
   const user = await getUserByCustomerId(String(subscription.customer));
   if (!user) {
     console.error(
-      `Subscription can't be updated as no user found with customerId: ${subscription.customer}!`
+      `Unable to update Subscription. No user with customerId: ${subscription.customer}!`
     );
     return;
   }
+
   // Retrieve the user subscription
   const userSubscription = await prisma.subscription.findUnique({
     where: { userId: user.id }
   });
 
-  // Handle canceled subscription
-  if (subscription.cancel_at_period_end) {
-    console.info(`Subscription ${subscription.id} is pending cancelation`);
-    console.info(
-      `Subscription will end on ${new Date(
-        subscription.current_period_end * 1000
-      )}`
-    );
-    return prisma.subscription.update({
-      where: { id: userSubscription?.id },
-      data: {
-        cancellationDate: new Date(subscription.current_period_end * 1000)
-      }
-    });
-  }
-  console.log("SUBS STATUS: ", subscription.status);
   switch (subscription.status) {
     case "active": {
+      // Handle subscriptions set to cancel
+      if (subscription.cancel_at_period_end) {
+        console.info(`Subscription ${subscription.id} is pending cancelation`);
+        console.info(
+          `Subscription will end on ${new Date(
+            subscription.current_period_end * 1000
+          )}`
+        );
+        return prisma.subscription.update({
+          where: { id: userSubscription?.id },
+          data: {
+            cancellationDate: new Date(subscription.current_period_end * 1000)
+          }
+        });
+      }
       if (!userSubscription) {
         console.info(
           `✅ Saving active subscription for user with Id ${user?.id}...`
@@ -240,7 +242,6 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       console.info("Subscription succesfully updated!");
       return updatedUserSubscription;
     }
-    // Todo: handle updates to canceled, incomplete, incomplete_expired, past_due, paused, unpaid, trialing
     case "past_due": {
       if (!userSubscription) return;
       // Udate Plan and Status for the user Subscription
@@ -253,6 +254,8 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       });
 
       console.info("Subscription updated to past_due !");
+      //todo: Notify user (e.g., via email or push notification)
+      // await notifyUserOfPaymentFailure(user, subscription);
       // TODO: Contact user requesting payment method update!!!
       return updatedUserSubscription;
     }
@@ -388,60 +391,47 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   const customerId = setupIntent.customer as string;
   const freeSubscription = !!setupIntent.metadata?.free_subscription;
   const priceId = setupIntent.metadata?.price_id;
+  // If has order id in meta it must be a free Order!
   const orderId = setupIntent.metadata?.order_number;
-  if (setupIntent.payment_method) {
-    if (freeSubscription && priceId) {
-      try {
-        // Create a free subscription with the default payment method attached
-        const stripeSubscription = await stripe.subscriptions.create({
-          customer: customerId,
-          items: [
-            {
-              price: priceId
-            }
-          ],
-          default_payment_method: setupIntent.payment_method as string,
-          payment_behavior: "default_incomplete",
-          expand: ["latest_invoice.payment_intent"]
-        });
-        console.info(`Free subscription created for ${customerId}`);
-        return;
-        // TODO: send email with invoice details plan Personalidad
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-    if (orderId) {
-      // Upadate the order status
-      await prisma.order.update({
-        data: {
-          status: setupIntent.status === "succeeded" ? "Paid" : "Pending"
-        },
-        where: { id: orderId },
-        include: { orderItems: true }
+
+  // fetch the user
+  const user = await getUserByCustomerId(String(setupIntent.customer));
+
+  if (!user) {
+    console.log("no user found");
+    throw new Error("no user found can't process setup intent");
+  }
+  const userId = user.id;
+  if (!setupIntent.payment_method) return;
+  if (freeSubscription && priceId) {
+    try {
+      // Create a free subscription with the default payment method attached
+      const stripeSubscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [
+          {
+            price: priceId
+          }
+        ],
+        default_payment_method: setupIntent.payment_method as string,
+        payment_behavior: "default_incomplete",
+        expand: ["latest_invoice.payment_intent"]
       });
-      console.info(`Order ${orderId} status updated to succeeded`);
-      const usedBalance = setupIntent.metadata?.used_balance;
-      // Deduct customer balance if used
-      if (usedBalance && Number(usedBalance) > 0) {
-        await deductBalanceUsed(
-          setupIntent.customer as string,
-          Number(usedBalance)
-        );
-        console.warn(
-          `Deducted ${usedBalance} from customer ${setupIntent.customer}`
-        );
-      }
-      // TODO: send email with invoice and order details
+      console.info(`Free subscription created for ${customerId}`);
+      return;
+      // TODO: send email with invoice details plan Personalidad
+      // await sendSubscriptionEmail(user?.email,user?.username,plan)
+    } catch (e) {
+      console.log(e);
       return;
     }
-
-    // This sets the payment method as default for the SUBSCRIPTION
+  } else {
+    // Handle a normal setup by setting the payment method as default for the SUBSCRIPTION
     const userSubscription = await stripe.subscriptions.list({
       customer: setupIntent.customer as string,
       status: "active"
     });
+
     await stripe.subscriptions.update(userSubscription.data[0].id, {
       default_payment_method: setupIntent.payment_method as string
     });

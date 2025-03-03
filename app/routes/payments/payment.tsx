@@ -25,7 +25,7 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const { amount = 0, customerBalance, shippingRateAmount, cartId, type } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
+  const { amount = 0, customerBalance, usedBalance, shippingRateAmount, cartId, type } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
   const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -98,8 +98,10 @@ function CheckoutForm() {
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
+      {deductions && <div className="font-semibold">Crédito utilizado £{(usedBalance / 100)}</div>}
+      {shippingRateAmount && <div className="mb-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
       <button disabled={!stripe || !elements} id="submit" className="btn btn-lg btn-primary mx-auto my-3">
-        {deductions ? <span>Pagar £{amount < customerBalance ? 0 : (amount! - customerBalance) / 100}</span> : <span>Pagar £{amount! / 100}</span>}
+        <span>Pagar £{amount / 100}</span>
         {loading && <span className="loading loading-spinner loading-md"></span>}
       </button>
       {errorMessage && <div className="text-error mb-4">{errorMessage}</div>}

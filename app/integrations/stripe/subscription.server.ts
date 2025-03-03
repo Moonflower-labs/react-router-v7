@@ -92,8 +92,10 @@ export async function createSubscription({
 }
 
 export async function retrieveSubscription(subscriptionId: string) {
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  return subscription;
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ["latest_invoice.payment_intent"]
+  });
+  return subscription as Stripe.Subscription;
 }
 
 export async function updateStripeSubscription(
@@ -134,32 +136,6 @@ export async function updateStripeSubscription(
     }
   );
   return newSubscription;
-}
-
-export async function retrieveStripeSubscription({
-  userId
-}: {
-  userId: string;
-}) {
-  try {
-    const userSubscription = await prisma.subscription.findUnique({
-      where: { userId }
-    });
-    if (!userSubscription) return null;
-    const subscription = await stripe.subscriptions.retrieve(
-      userSubscription.id
-    );
-    return subscription;
-  } catch (error) {
-    return {
-      error: {
-        message:
-          error instanceof Error
-            ? error?.message
-            : "Error retrieving the subscription"
-      }
-    };
-  }
 }
 
 export async function cancelStripeSubscription(subscriptionId: string) {

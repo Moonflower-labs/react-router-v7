@@ -1,14 +1,22 @@
-import { NavLink, Outlet } from "react-router";
+import { href, NavLink, Outlet, redirect } from "react-router";
 import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
 import ScrollToHash from "~/components/shared/ScrollToHash";
+import { getUserSubscription } from "~/models/subscription.server";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
-  return requireUserId(request)
+  const userId = await requireUserId(request);
+  const subscription = await getUserSubscription(userId)
+  if (!subscription) {
+    throw redirect(href("/profile"))
+  }
+  if (subscription.status === "past_due") {
+    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}7plan=${subscription.plan.name}`)
+  }
 }
 
 export default function MembersLayout({ }: Route.ComponentProps) {

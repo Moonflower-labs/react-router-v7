@@ -1,4 +1,4 @@
-import { Form, redirect, useNavigate, useRouteLoaderData } from "react-router";
+import { Form, href, redirect, useNavigate, useRouteLoaderData } from "react-router";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useCallback, useState } from "react";
@@ -10,7 +10,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
   const userSubscription = await getUserSubscription(userId);
   if (userSubscription?.status === "active") {
-    return redirect("/profile/plan/update");
+    return redirect(href("/profile/subscription/update"));
   }
 }
 
@@ -21,13 +21,19 @@ type ConfirmResponse = {
 };
 
 export default function Subscribe() {
-  const { amount, priceId, planName, img, type } = useRouteLoaderData("stripe");
+  const { amount, priceId, planName, img, type, isMissedPayment } = useRouteLoaderData("stripe");
 
   return (
     <main className="pb-3 text-center">
-      <h1 className="text-center text-3xl text-primary font-semibold pt-3 my-6">
-        Confirma tu suscripción a <span>{planName}</span>
-      </h1>
+      {isMissedPayment ? (
+        <h1 className="text-center text-3xl text-primary font-semibold pt-3 my-6">
+          Confirme el pago para reanudar su suscripción a <span>{planName}</span>
+        </h1>
+      ) : (
+        <h1 className="text-center text-3xl text-primary font-semibold pt-3 my-6">
+          Confirma tu suscripción a <span>{planName}</span>
+        </h1>
+      )}
       <div className="avatar mb-4">
         <div className="w-14 rounded">
           <img src={img} alt="logo" className="transform scale-110" />
@@ -59,10 +65,7 @@ function SubscriptionForm({ amount, priceId, planName, type }: SubscriptionFormP
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
+    if (!stripe || !elements) return;
     // Handle loading state
     setLoading(true);
 

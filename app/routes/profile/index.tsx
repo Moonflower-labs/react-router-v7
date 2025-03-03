@@ -1,13 +1,14 @@
 import { getUserProfile, updateUserAvatar } from "~/models/profile.server";
 import type { Route } from "./+types/index";
 import { requireUserId } from "~/utils/session.server";
-import { Link, useSubmit } from "react-router";
+import { href, Link, useSubmit } from "react-router";
 import { translateSubscriptionStatus } from "~/utils/translations";
 import { IoOptionsOutline } from "react-icons/io5";
 import { useState } from "react";
 import { getSubscriptionData } from "~/integrations/stripe";
 import { GoArrowRight } from "react-icons/go";
 import { getUserOrderCount } from "~/models/order.server";
+import { BiErrorCircle } from "react-icons/bi";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
@@ -90,6 +91,18 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   <div>
                     Plan <span>{subscription?.plan?.name}</span>
                   </div>
+                  {subscription.status === "past_due" && (
+                    <div role="alert" className="alert alert-error my-2">
+                      <BiErrorCircle size={24} />
+                      <div className="text-center">
+                        <p className="mb-1.5">Renovacion Incompleta! No hemos podido recolectar el pago de su suscripción.</p>
+                        <Link
+                          to={`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}&plan=${subscription.plan.name}`}
+                          className="text-center link link-primary"
+                        >Resolver informacion de pago invalida</Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <Link to={"subscription"} className="text-primary flex justify-end badge-s" viewTransition>
                   <IoOptionsOutline size={24} />

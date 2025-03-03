@@ -1,4 +1,4 @@
-import { data, Form, Link, redirect, useNavigation, useOutletContext, useSubmit } from "react-router";
+import { data, Form, href, Link, redirect, useNavigation, useOutletContext, useSubmit } from "react-router";
 import { useCallback, useState } from "react";
 import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeSubscription } from "~/integrations/stripe";
 import type { Route } from "./+types/update";
@@ -13,6 +13,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
   const userSubscription = await getUserSubscription(userId as string)
   let error = null
+  if (userSubscription?.status === "past_due") {
+    throw redirect(href("/profile/subscription"))
+  }
   if (!await isSubscriptionDefaultPaymentMethodValid(userSubscription?.id as string)) {
     error = "No default payment method attached"
   }
@@ -92,7 +95,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
                 //   return submit(searchParams, { action: "/payments/subscribe" });
                 // }
                 setSelectedPlan(plan.priceId);
-                submit({ priceId: plan.priceId, subscriptionId: subscription?.id }, { method: "post", encType: "application/json" });
+                submit({ priceId: plan.priceId, subscriptionId: subscription?.id }, { method: "POST", encType: "application/json" });
               }}>
               <input
                 type="radio"

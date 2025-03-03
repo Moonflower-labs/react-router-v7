@@ -2,19 +2,28 @@ import { data, href, Link } from "react-router";
 import type { Route } from "./+types/cart";
 import { CartItem as Item } from "~/components/shop/CartItem";
 import { addToCart, calculateTotalAmount, getShoppingCart, removeFromCart } from "~/models/cart.server";
-import { getSession } from "~/utils/session.server";
-import { fetchStripeShippinRates } from "~/integrations/stripe/shipping-rate";
+import { getSession, getUserId } from "~/utils/session.server";
 import { useState } from "react";
 import { motion } from "motion/react";
+import { getShippinRates } from "~/models/shippingRate";
+import { getUserById } from "~/models/user.server";
+import { getCustomerBalance } from "~/integrations/stripe";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  const userId = session.get("userId");
-  const cart = await getShoppingCart(userId);
+  const userId = await getUserId(request)
+  const cart = await getShoppingCart(userId!);
   const totalAmount = calculateTotalAmount(cart?.cartItems || []);
-  const shippingRates = await fetchStripeShippinRates()
+  const shippingRates = await getShippinRates()
 
-  return { cart, totalAmount, shippingRates };
+  const user = await getUserById(userId!)
+  if (!user) return { cart, totalAmount, shippingRates };
+
+  let customerBalance = 0;
+  if (user?.customerId) {
+    customerBalance = await getCustomerBalance(user.customerId);
+  }
+
+  return { cart, totalAmount, shippingRates, customerBalance };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -45,7 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Cart({ loaderData }: Route.ComponentProps) {
-  const { cart, shippingRates } = loaderData;
+  const { cart, shippingRates, customerBalance = 0, totalAmount } = loaderData;
   const [selectedRateId, setSelectedRateId] = useState<string | undefined>(undefined);
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value; // This will be the rate.id
@@ -70,9 +79,12 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
             </table>
           </div>
           <div className="mb-4">
-            <div className="font-bold">Subtotal £{loaderData?.totalAmount / 100}</div>
-            <div className="font-bold">Gastos Postales £{selectedRate?.fixed_amount ? selectedRate.fixed_amount?.amount / 100 : 0}</div>
-            <div className="font-bold">TOTAL £{(loaderData?.totalAmount + (selectedRate?.fixed_amount ? selectedRate.fixed_amount?.amount : 0)) / 100}</div>
+            <div className="font-bold">Subtotal £{totalAmount / 100}</div>
+            <div className="font-bold">Gastos Postales £{selectedRate?.amount ? selectedRate.amount / 100 : 0}</div>
+            {customerBalance > 0 && <div className="font-bold">Crédito disponible £{customerBalance / 100}</div>}
+            <div className="font-bold">Total Artículos + Envío £{(totalAmount + (selectedRate?.amount ? selectedRate.amount : 0)) / 100}</div>
+            <div className="font-bold">Total a Pagar £{Math.max((totalAmount + (selectedRate?.amount ? selectedRate.amount : 0) - (customerBalance ?? 0)), 50) / 100}</div>
+
           </div>
           <div role="alert" className="alert flex flex-col alert-warning mb-4 md:w-[60%] mx-auto">
             <div className="flex gap-3 items-center justify-center">
@@ -105,7 +117,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 Seleciona una opción de envío para continuar
               </option>
               {shippingRates.map((rate) =>
-                <option key={rate.id} value={rate.id}>{rate.display_name}</option>
+                <option key={rate.id} value={rate.id}>{rate.displayName}</option>
               )}
             </select>
             : null}

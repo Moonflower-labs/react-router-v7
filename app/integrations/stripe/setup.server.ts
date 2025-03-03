@@ -31,9 +31,6 @@ export async function createFreeSubscriptionSetupIntent({
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
     payment_method_types: ["card", "link"],
-    // automatic_payment_methods: {
-    //   enabled: true
-    // },
     usage: "off_session",
     metadata: {
       ...metadata,

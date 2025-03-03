@@ -11,12 +11,16 @@ import { calculateRenewalDate } from "~/utils/helpers";
 import { translateSubscriptionStatus } from "~/utils/translations";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
+import { BiErrorCircle } from "react-icons/bi";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
   const subscription = await getUserSubscription(userId)
   if (!subscription) {
     throw redirect(href("/profile"))
+  }
+  if (subscription.status === "past_due") {
+    throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}`)
   }
   const planData = getSubscriptionData(subscription?.plan?.name as string);
   const stripeSubscription = await stripe.subscriptions.retrieve(subscription?.id as string, { expand: ["default_payment_method"] }) as Stripe.Subscription;
@@ -29,16 +33,35 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   const subscription = loaderData?.subscription;
   const paymentMethod = loaderData?.paymentMethod;
   const planData = loaderData?.planData;
+  const isPastDue = subscription.status === "past_due"
+
+
+
 
   return (
     <main className="text-center pb-8 mx-2">
       <h2 className="text-2xl text-primary font-bold py-4">Mi Suscripción</h2>
+      <div className="md:w-fit md:mx-auto my-2">
+        {isPastDue && (
+          <div role="alert" className="alert alert-warning">
+            <BiErrorCircle size={24} />
+            <div className="text-center">
+              <p className="mb-3">Renovacion Incompleta! No hemos podido recolectar el pago de su suscripción.</p>
+              <Link
+                to={`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}&plan=${subscription.plan.name}`}
+                className="text-center btn btn-primary"
+              >Resolver pago</Link>
+            </div>
+          </div>
+        )}
+      </div>
       {subscription?.cancellationDate &&
-        <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDate(subscription.cancellationDate)}</InfoAlert>}
+        <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDate(subscription.cancellationDate)}</InfoAlert>
+      }
       <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
         <p className="flex justify-between items-center">
           <span className="font-semibold">Estado</span>
-          <span className={`font-semibold badge ${subscription?.status === "active" ? "badge-success" : "badge-warning"}`}>{translateSubscriptionStatus(subscription?.status)}</span>
+          <span className={`font-semibold badge ${isPastDue ? "badge-warning" : "badge-success"}`}>{translateSubscriptionStatus(subscription?.status)}</span>
         </p>
       </div>
       <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
@@ -59,24 +82,33 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <span>Próxima renovación</span>
           <span className="font-semibold">{formatDate(calculateRenewalDate(subscription?.updatedAt))}</span>
         </p>
-        <div className="flex flex-row gap-4 justify-between items-center">
-          <span className="font-bold">
-            Cambiar Plan
-          </span>
-          <Link to={"/profile/subscription/update"} className="btn btn-sm btn-primary btn-outline" preventScrollReset>
-            <GrUpdate size={24} />
-          </Link>
-        </div>
-        {!subscription?.cancellationDate &&
-          <div className="flex flex-row gap-4 justify-between items-center">
-            <span className="font-bold">
-              Cancelar suscripción
-            </span>
-            <Link to={"/profile/subscription/delete"} className="btn btn-sm btn-error btn-outline " preventScrollReset>
-              <RiDeleteBin6Line size={24} />
-            </Link>
-          </div>
-        }
+        {/* Only show for active subscriptions */}
+        {!isPastDue ? (
+          <>
+            <div className="flex flex-row gap-4 justify-between items-center">
+              <span className="font-bold">
+                Cambiar Plan
+              </span>
+              <Link to={"/profile/subscription/update"} className="btn btn-sm btn-primary btn-outline" preventScrollReset>
+                <GrUpdate size={24} />
+              </Link>
+            </div>
+            {!subscription?.cancellationDate && (
+              <div className="flex flex-row gap-4 justify-between items-center">
+                <span className="font-bold">
+                  Cancelar suscripción
+                </span>
+                <Link to={"/profile/subscription/delete"} className="btn btn-sm btn-error btn-outline " preventScrollReset>
+                  <RiDeleteBin6Line size={24} />
+                </Link>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Todo: add terminate subscription option by calling stripe.subscription.del() */}
+          </>
+        )}
       </div>
       {subscription ? (
         <div className="overflow-x-auto mt-8 w-full">
@@ -106,7 +138,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               <span className="font-bold">
                 Actualizar mi método de pago
               </span>
-              <Link to="/payments/setup" className="link link-primary">
+              <Link to={href("/payments/setup")} className="link link-primary">
                 <GoArrowRight size={24} />
               </Link>
             </div>
