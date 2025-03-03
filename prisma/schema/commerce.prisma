@@ -26,6 +26,7 @@ model Order {
   id      String  @id @default(cuid())
   guest   Boolean
   guestId String?
+  cartId  String?
 
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId      String?
@@ -38,7 +39,9 @@ model Order {
   shippingAddressId String?
   shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
 
-  createdAt DateTime @default(now())
+  paymentIntentId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 enum OrderStatus {

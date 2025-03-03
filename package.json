@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "cally": "^0.8.0",
     "cloudinary": "^2.5.1",
+    "date-fns": "^4.1.0",
     "isbot": "^5.1.17",
     "motion": "^12.4.3",
     "nodemailer": "^6.9.16",
