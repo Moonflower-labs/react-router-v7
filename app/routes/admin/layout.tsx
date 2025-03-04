@@ -39,17 +39,6 @@ export default function AdminLayout() {
         ref={setSidebarRef}
         className="grid grid-rows-2 grid-flow-col gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit"
       >
-        {/* <motion.div
-        animate={{ height: collapsed ? 0 : "auto", width: collapsed ? 0 : "90%", opacity: collapsed ? 0 : 1 }}
-        transition={{
-          duration: 1,
-          ease: "easeInOut"
-        }}
-        initial={false}
-        ref={setSidebarRef}
-        className="flex max-h-[5rem] flex-wrap w-full justify- items-center gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50"
-      > */}
-        {/* Sidebar Content */}
         {!collapsed && (
           <>
             {LINKS.map(({ href, icon, text }) => (
