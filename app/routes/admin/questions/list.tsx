@@ -93,9 +93,9 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
         <span>Sección</span>
         <Form onChange={e => submit(e.currentTarget)} className="my-auto">
           <div className="join">
-            <input className="join-item btn btn-primary border-primary-content w-28" type="radio" name="section" value="basic" aria-label="Personalidad" />
-            <input className="join-item btn btn-primary border-primary-content w-28" type="radio" name="section" value="tarot" aria-label="Tarot" />
-            <input className="join-item btn btn-primary border-primary-content w-28" type="radio" name="section" value="live" aria-label="Directo" />
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="basic" aria-label="Personalidad" />
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="tarot" aria-label="Tarot" />
+            <input className="join-item btn btn-primary w-28" type="radio" name="section" value="live" aria-label="Directo" />
           </div>
         </Form>
       </label>
