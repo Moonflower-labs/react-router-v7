@@ -8,7 +8,7 @@ import { RiLiveLine, RiWebhookFill } from "react-icons/ri";
 import { href, NavLink, Outlet } from "react-router";
 import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdOutlineClose } from "react-icons/md";
 
@@ -17,15 +17,38 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function AdminLayout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+  // Ref callback to capture the sidebar element
+  const setSidebarRef = useCallback((node: HTMLDivElement | null) => {
+    if (node && !collapsed) {
+      const activeLink = node.querySelector(".active");
+      activeLink?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [collapsed]);
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Collapsible Sidebar */}
       <motion.div
-        animate={{ height: collapsed ? 0 : "auto", width: collapsed ? 0 : "90%", opacity: collapsed ? 0 : 1 }}
-        className="flex max-h-fit w-full justify-center items-center gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50"
+        animate={{
+          height: collapsed ? 0 : "auto",
+          width: collapsed ? 0 : "90%",
+          opacity: collapsed ? 0 : 1,
+        }}
+        initial={false}
+        ref={setSidebarRef}
+        className="grid grid-rows-2 grid-flow-col gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit"
       >
+        {/* <motion.div
+        animate={{ height: collapsed ? 0 : "auto", width: collapsed ? 0 : "90%", opacity: collapsed ? 0 : 1 }}
+        transition={{
+          duration: 1,
+          ease: "easeInOut"
+        }}
+        initial={false}
+        ref={setSidebarRef}
+        className="flex max-h-[5rem] flex-wrap w-full justify- items-center gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50"
+      > */}
         {/* Sidebar Content */}
         {!collapsed && (
           <>
@@ -52,14 +75,13 @@ export default function AdminLayout() {
       {/* Floating Collapse Button */}
       <motion.button
         onClick={() => setCollapsed(!collapsed)}
-        className={` md:flex fixed left-2 top-[80px] btn btn-sm btn-circle bg-base-200/90 shadow-md z-50`}
+        className={` md:flex fixed left-1 top-[80px] btn btn-sm btn-circle bg-base-200/90 shadow-md z-50`}
         animate={{ left: collapsed ? 10 : "92%" }}
       >
         {collapsed ?
           <FaBars /> :
           <MdOutlineClose />}
       </motion.button>
-
       {/* Main Content */}
       <div className="min-h-screen px-3 w-full">
         <Outlet />
@@ -67,34 +89,6 @@ export default function AdminLayout() {
     </div>
   );
 }
-
-// export default function AdminLayout() {
-//   return (
-//     <div className="flex flex-col md:flex-row min-h-screen">
-//       <div className="hidden md:block w-52 shrink-0" />
-//       <div
-//         role="tablist"
-//         className="bg-base-200 flex flex-wrap md:flex-nowrap flex-row md:flex-col gap-1 py-1 justify-center md:justify-start w-full overflow-x-auto md:w-52 sticky top-[72px] md:fixed md:left-0 z-50 h-auto md:h-[calc(100vh-72px)] rounded-lg">
-//         {LINKS.map(({ href, icon, text }) => (
-//           <NavLink
-//             key={href}
-//             to={href}
-//             role="tab"
-//             className={({ isActive }) =>
-//               `flex flex-col justify-start items-center md:flex-row gap-2 border rounded-md p-2 ${isActive && "bg-primary text-primary-content"}`
-//             }
-//             end
-//             viewTransition>
-//             {icon}
-//             {text ? <span className="text-xs md:text-lg">{text}</span> : null}
-//           </NavLink>))}
-//       </div>
-//       <div className="min-h-screen px-3 w-full">
-//         <Outlet />
-//       </div>
-//     </div>
-//   );
-// }
 
 const LINKS = [
   { href: href("/admin"), icon: <FaHome size={24} /> },

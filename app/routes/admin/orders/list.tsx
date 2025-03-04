@@ -128,7 +128,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
           <div
             key={order.id}
             className={`flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border ${order.id === orderId ? "border-warning border-2" : ""} rounded-lg shadow-md md:w-2/3 mx-auto mb-6`}>
-            <div className="flex justify-between items-center w-full">
+            <div className="flex flex-wrap justify-between items-center w-full">
               <span>
                 {index + 1}. {order.id}{" "}
               </span>
