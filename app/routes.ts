@@ -31,7 +31,7 @@ export default [
 
   // Profile
   route("profile", "routes/profile/layout.tsx", [
-    index("routes/profile/index.tsx"),
+    index("routes/profile/dashboard.tsx"),
     route("favorites", "routes/profile/favorites.tsx"),
     route("invoices", "routes/profile/invoices.tsx"),
     route("orders", "routes/profile/orders/list.tsx"),

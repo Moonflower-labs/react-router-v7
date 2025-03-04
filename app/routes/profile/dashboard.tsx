@@ -1,5 +1,5 @@
 import { getUserProfile, updateUserAvatar } from "~/models/profile.server";
-import type { Route } from "./+types/index";
+import type { Route } from "./+types/dashboard";
 import { requireUserId } from "~/utils/session.server";
 import { href, Link, useSubmit } from "react-router";
 import { translateSubscriptionStatus } from "~/utils/translations";
@@ -42,6 +42,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   const favVids = favorites?.filter((favorite) => favorite.videoId !== null);
   const [avatar, setAvatar] = useState(profile?.avatar || "/avatars/girl.jpg");
   const submit = useSubmit();
+
 
   return (
     <div className="px-4 mb-6">
@@ -158,7 +159,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <div className="flex flex-col justify-evenly gap-2 h-full">
               <h2 className="text-xl text-center text-primary font-semibold py-3">Mis Pedidos</h2>
               <div className="flex justify-between">
-                {orderCount && orderCount > 1 ?
+                {orderCount && orderCount > 0 ?
                   <>
                     Pedidos realizados
                     <span className="badge badge-primary badge-outline">{orderCount}</span>
