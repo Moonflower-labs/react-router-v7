@@ -6,6 +6,7 @@ import InfoAlert from '~/components/shared/info'
 export async function loader({ request }: Route.LoaderArgs) {
     const images = await cloudinary.api.resources({
         type: "upload",
+        prefix: "susurros",
         max_results: 20
     })
     return { images: images.resources, cloudName: process.env.CLOUD_NAME }
@@ -16,7 +17,6 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
 
 
     return (
-
         <main className="text-center min-h-screen p-4">
             <h1 className='text-primary text-3xl pt-3 mb-4'>Susurros de La Flor Blanca</h1>
             <p className='mb-4'>En esta sección verás...</p>
