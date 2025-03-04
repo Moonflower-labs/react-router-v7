@@ -1,22 +1,31 @@
 import { type FileUpload, parseFormData, } from "@mjackson/form-data-parser";
 import type { Route } from "./+types/upload";
-import { Form, redirect, useNavigation } from "react-router";
+import { Form, useNavigation } from "react-router";
 import { uploadImage } from "~/integrations/cloudinary/service.server";
 import { MultipartParseError } from "@mjackson/multipart-parser";
-import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { BiUpload } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 const MAX_FILE_SIZE = 3000000; // 3MB
 
-export async function action({ request }: Route.ActionArgs) {
 
+export async function action({ request }: Route.ActionArgs) {
+    // Clone the request to peek at the form data without consuming it fully
+    const formData = await request.clone().formData();
+    const folder = formData.get("folder");
+    console.log("folder", folder)
+
+    // Validate folder
+    if (!folder || (folder !== "avatars" && folder !== "susurros")) {
+        return { error: "Invalid or missing folder value" };
+    }
     const uploadHandler = async (fileUpload: FileUpload) => {
         if (fileUpload.fieldName === "image") {
             // process the upload and return a File
             // upload to cloudinary
             try {
-                const uploadedImage = await uploadImage(fileUpload.stream())
+                const uploadedImage = await uploadImage(fileUpload.stream(), folder)
                 return uploadedImage.secure_url;
 
             } catch (error) {
@@ -27,18 +36,15 @@ export async function action({ request }: Route.ActionArgs) {
     };
 
     try {
-
         const formData = await parseFormData(
             request,
+            { maxFileSize: MAX_FILE_SIZE },
             uploadHandler,
-            {
-                maxFileSize: MAX_FILE_SIZE
-            }
         );
         // 'image' has already been processed at this point
         const imgSource = formData.get("image");
         if (!imgSource) {
-            return { error: "something is wrong", };
+            return { error: "Something went wrong", };
         }
         return { imgSource }
 
@@ -47,9 +53,8 @@ export async function action({ request }: Route.ActionArgs) {
         if (error instanceof MultipartParseError) {
             return { error: "Upload  Exeeded max file size" }
         }
-        return { error: "Upload  unsuccessfull" }
+        return { error: "Upload unsuccessfull" }
     }
-    return redirect("..")
 }
 
 export default function Component({ actionData }: Route.ComponentProps) {
@@ -57,6 +62,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
     return (
         <main>
             <h1 className="text-3xl text-center font-semibold text-primary pt-4 mb-4">Upload Image</h1>
+            <p className="p-4 text-center">Elige la sesción adecuada, Avatars o Susurros.</p>
             <UploadForm error={actionData?.error} />
             {actionData?.imgSource && (
                 <section className="w-full flex flex-col gap-3 justify-center items-center mb-4">
@@ -143,7 +149,7 @@ function UploadForm({ error }: { error: string | undefined }) {
         <Form
             method="post"
             encType="multipart/form-data"
-            className="max-w-xl mx-auto mb-4"
+            className="max-w-xl mx-auto mb-4 text-center"
             onDragOver={(e) => {
                 e.preventDefault();
                 setDragActive(true);
@@ -151,6 +157,13 @@ function UploadForm({ error }: { error: string | undefined }) {
             onDragLeave={() => setDragActive(false)}
             onDrop={handleDrop}
         >
+            <label className="select mx-auto my-4">
+                <span className="label">Sección</span>
+                <select name="folder">
+                    <option value="surros">Susurros</option>
+                    <option value="avatars">Avatars</option>
+                </select>
+            </label>
             {/* Hidden file input */}
             <input
                 type="file"

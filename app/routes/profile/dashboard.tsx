@@ -1,14 +1,15 @@
 import { getUserProfile, updateUserAvatar } from "~/models/profile.server";
 import type { Route } from "./+types/dashboard";
 import { requireUserId } from "~/utils/session.server";
-import { href, Link, useSubmit } from "react-router";
+import { href, Link, useSubmit, type SubmitFunction } from "react-router";
 import { translateSubscriptionStatus } from "~/utils/translations";
 import { IoOptionsOutline } from "react-icons/io5";
-import { useState } from "react";
-import { getSubscriptionData } from "~/integrations/stripe";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe";
 import { GoArrowRight } from "react-icons/go";
 import { getUserOrderCount } from "~/models/order.server";
 import { BiErrorCircle } from "react-icons/bi";
+import cloudinary from "~/integrations/cloudinary/service.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
@@ -16,12 +17,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     const [userProfile, orderCount] = await Promise.all([
       getUserProfile(String(userId)), getUserOrderCount(String(userId))
     ])
+    const avatars = await cloudinary.api.resources({
+      type: "upload",
+      prefix: "avatars",
+    })
 
     const planName = userProfile?.subscription?.plan?.name
-    return { userProfile, orderCount, planData: planName ? getSubscriptionData(planName) : null };
+    return { userProfile, orderCount, avatars: avatars.resources, planData: planName ? getSubscriptionData(planName as SubscriptionPlan["name"]) : null };
   } catch (error) {
     console.error(error);
-    return null;
+    return {};
   }
 }
 
@@ -34,14 +39,15 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
-  const profile = loaderData?.userProfile?.profile;
-  const subscription = loaderData?.userProfile?.subscription;
-  const favorites = loaderData?.userProfile?.favorites;
-  const orderCount = loaderData?.orderCount
+  const { orderCount, userProfile, avatars } = loaderData
+  const profile = userProfile?.profile;
+  const subscription = userProfile?.subscription;
+  const favorites = userProfile?.favorites;
   const favPosts = favorites?.filter((favorite) => favorite.postId !== null);
   const favVids = favorites?.filter((favorite) => favorite.videoId !== null);
-  const [avatar, setAvatar] = useState(profile?.avatar || "/avatars/girl.jpg");
+  const [selectedAvatar, setSelectedAvatar] = useState(profile?.avatar || "/avatars/girl.jpg");
   const submit = useSubmit();
+  console.log(avatars)
 
 
   return (
@@ -54,26 +60,52 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <div className="flex-grow flex flex-col items-center">
               <div className="avatar mx-auto mb-4">
                 <div className="w-24 rounded-full">
-                  <img src={avatar} className="object-top" />
+                  <img src={selectedAvatar} className="object-top" />
                 </div>
               </div>
             </div>
-            <select
-              name="avatar"
-              id="avatar"
-              className="select select-sm w-full"
-              onChange={e => {
-                setAvatar(e.currentTarget.value), submit({ avatar: e.currentTarget.value }, { method: "POST", navigate: false });
-              }}
-              defaultValue={avatar}>
-              <option value="/avatars/teenage-girl.jpg">Tenage Girl</option>
-              <option value="/avatars/girl.jpg">Girl</option>
-              <option value="/avatars/dark-valentine.jpg">Dark Valentine</option>
-              <option value="/avatars/wizard.jpg">Wizard</option>
-              <option value="/avatars/crystal.jpg">Crystal</option>
-              <option value="/avatars/geisha.jpg">Geisha</option>
-              <option value="/avatars/fox.jpg">Fox</option>
-            </select>
+            <AvatarSelector
+              avatars={avatars}
+              selectedAvatar={selectedAvatar}
+              setSelectedAvatar={setSelectedAvatar}
+              submit={submit} />
+
+            {/* <div className="w-full">
+              <label htmlFor="avatar" className="label">Select Avatar</label>
+              <div className="avatar-selector grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+                {avatars.length > 0 ? (
+                  avatars.map((avatar: any) => {
+                    const thumbnailUrl = avatar.secure_url.replace(
+                      '/upload/',
+                      '/upload/w_100,h_100,c_fill,g_auto,q_auto/'
+                    );
+                    return (
+                      <div
+                        key={avatar.asset_id}
+                        className={`avatar-option cursor-pointer rounded-lg overflow-hidden border-2 ${avatar.secure_url === avatar ? 'border-primary' : 'border-transparent'
+                          } hover:border-primary transition-all`}
+                        onClick={() => {
+                          setSelectedAvatar(avatar.secure_url);
+                          submit(
+                            { avatar: avatar.secure_url },
+                            { method: 'POST', navigate: false }
+                          );
+                        }}
+                      >
+                        <div key={avatar.asset_id} className="avatar mx-auto mb-4">
+                          <div className={`w-24 rounded-full ${avatar.secure_url === selectedAvatar ? "border-4 border-primary" : ""}`}>
+                            <img src={thumbnailUrl} className="object-top" />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="col-span-full text-center">No avatars disponibles</p>
+                )}
+              </div>
+            </div> */}
+
           </div>
 
           <div className="rounded-lg border shadow-lg p-4 text-center flex flex-col">
@@ -180,11 +212,82 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               <Link to={"invoices"} viewTransition><GoArrowRight size={24} /></Link>
             </div>
           </div>
-
         </div>
       ) : (
         <div>No hemos encontrado tu perfil</div>
       )}
+    </div>
+  );
+}
+
+
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface AvatarSelectorPops {
+  avatars: any[],
+  setSelectedAvatar: Dispatch<SetStateAction<string>>,
+  selectedAvatar: string,
+  submit: SubmitFunction,
+}
+
+function AvatarSelector({ avatars, setSelectedAvatar, submit, selectedAvatar }: AvatarSelectorPops) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="w-full">
+      <button
+        className="btn btn-sm btn-outline w-full mb-2 flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{isOpen ? 'Esconder Avatars' : 'Ver Avatars'}</span>
+        <span>{isOpen ? '▲' : '▼'}</span>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="avatar-selector grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-base-100 rounded-lg"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            {avatars.length > 0 ? (
+              avatars.map((avatar) => {
+                const thumbnailUrl = avatar.secure_url.replace(
+                  '/upload/',
+                  '/upload/w_100,h_100,c_fill,g_auto,q_auto/'
+                );
+                return (
+                  <motion.div
+                    key={avatar.asset_id}
+                    className={`cursor-pointer overflow-hidden transition-all`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setSelectedAvatar(avatar.secure_url);
+                      submit(
+                        { avatar: avatar.secure_url },
+                        { method: 'POST', navigate: false }
+                      );
+                    }}
+                  >
+                    <div className="avatar mx-auto mb-4">
+                      <div
+                        className={`w-24 rounded-full ${avatar.secure_url === selectedAvatar ? 'border-4 border-primary' : ''
+                          }`}
+                      >
+                        <img src={thumbnailUrl} className="object-top" alt={avatar.public_id.split('/').pop()} />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <p className="col-span-full text-center">No avatars disponibles</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
