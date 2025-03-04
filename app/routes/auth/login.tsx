@@ -14,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (userId && !userId.startsWith("guest-")) {
     return redirect("/");
   }
-  return null;
+  return {};
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -48,7 +48,6 @@ export async function action({ request }: Route.ActionArgs) {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    console.log("no user");
     return { errors: { email: "Invalid email or password", password: null } }
   }
   // Manage cart merging

@@ -118,14 +118,13 @@ export default function ResgisterPage({ actionData }: Route.ComponentProps) {
             </label>
             <div className="form-control mt-6">
               <button className="btn btn-primary" disabled={navigation.state === "submitting"}>
-                {navigation.state === "idle"
-                  ? "Registrar"
-                  : navigation.state === "submitting" && (
-                    <>
-                      Registrando usuario...
-                      <span className="loading loading-ring loading-lg"></span>
-                    </>
-                  )}
+                {navigation.state === "submitting" ? (
+                  <>
+                    Registrando usuario...
+                    <span className="loading loading-ring loading-lg"></span>
+                  </>
+                ) : "Registrar"
+                }
               </button>
             </div>
           </div>
