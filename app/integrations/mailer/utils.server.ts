@@ -2,6 +2,9 @@ import { transporter } from "./mailer.server";
 import { renderWelcomeEmail } from "./html-templates/welcome";
 import { renderNewOrderEmail } from "./html-templates/new-order";
 import type { ExtendedOrder } from "~/models/order.server";
+import { getSubscriptionData, type SubscriptionPlan } from "../stripe";
+import { renderNewSubscriptionEmail } from "./html-templates/new-subscription";
+import { renderMissedSubscriptionPaymentEmail } from "./html-templates/missed-payment";
 
 export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
@@ -13,13 +16,49 @@ export async function sendWelcomeEmail(email: string, username: string) {
   });
 }
 
-export async function sendSubscriptionEmail(email: string, username: string) {
+export async function sendSubscriptionEmail(
+  email: string,
+  username: string,
+  plan: SubscriptionPlan["name"]
+) {
+  const planData = getSubscriptionData(plan);
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,
-    subject: "Tu suscripción a La Flor Blanca",
+    subject: `Tu suscripción a ${planData.name}`,
     text: `Tu suscripción a La Flor Blanca`,
-    html: await renderWelcomeEmail({ username })
+    html: await renderNewSubscriptionEmail({ planData, username })
+  });
+}
+
+export async function sendSubscriptionUpdatedEmail(
+  email: string,
+  username: string,
+  plan: SubscriptionPlan["name"]
+) {
+  // todo: construct this email remarking changes
+  const planData = getSubscriptionData(plan);
+  return transporter.sendMail({
+    from: "admin@thechicnoir.com",
+    to: email,
+    subject: `Tu suscripción a ${planData.name}`,
+    text: `Tu suscripción a La Flor Blanca`,
+    html: await renderNewSubscriptionEmail({ planData, username })
+  });
+}
+
+export async function sendMissedSubscriptionPaymentEmail(
+  email: string,
+  username: string,
+  plan: SubscriptionPlan["name"]
+) {
+  const planData = getSubscriptionData(plan);
+  return transporter.sendMail({
+    from: "admin@thechicnoir.com",
+    to: email,
+    subject: `Tu suscripción a ${planData.name}`,
+    text: `Tu suscripción a La Flor Blanca`,
+    html: await renderMissedSubscriptionPaymentEmail({ planData, username })
   });
 }
 

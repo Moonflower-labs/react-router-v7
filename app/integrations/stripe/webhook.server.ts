@@ -1,7 +1,11 @@
 import type Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
-import { deductBalanceUsed, stripe } from "~/integrations/stripe";
+import {
+  deductBalanceUsed,
+  stripe,
+  type SubscriptionPlan
+} from "~/integrations/stripe";
 import {
   createSubscriptionPlan,
   getSubscriptionPlan
@@ -11,7 +15,12 @@ import {
   getUserByEmail,
   updateUserCustomerId
 } from "~/models/user.server";
-import { sendOrderEmail } from "../mailer/utils.server";
+import {
+  sendMissedSubscriptionPaymentEmail,
+  sendOrderEmail,
+  sendSubscriptionEmail,
+  sendSubscriptionUpdatedEmail
+} from "../mailer/utils.server";
 import type { ExtendedOrder } from "~/models/order.server";
 
 export async function getStripeEvent(request: Request) {
@@ -218,9 +227,8 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         console.info(
           `✅ Saving active subscription for user with Id ${user?.id}...`
         );
-        // TODO: send email notification here
         // Create a new subsbcription
-        return prisma.subscription.create({
+        await prisma.subscription.create({
           data: {
             id: subscription.id,
             user: { connect: { id: user.id } },
@@ -228,6 +236,13 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
             plan: { connect: { id: plan.id } }
           }
         });
+        // Send email confirmation
+        await sendSubscriptionEmail(
+          user?.email,
+          user?.username,
+          plan?.name as SubscriptionPlan["name"]
+        );
+        return;
       }
       // Udate Plan and Status for the user Subscription
       const updatedUserSubscription = await prisma.subscription.update({
@@ -238,9 +253,14 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
           cancellationDate: null
         }
       });
-      // TODO: send email notification here
       console.info("Subscription succesfully updated!");
-      return updatedUserSubscription;
+      // TODO: plan or status updated
+      await sendSubscriptionUpdatedEmail(
+        user?.email,
+        user?.username,
+        plan?.name as SubscriptionPlan["name"]
+      );
+      return;
     }
     case "past_due": {
       if (!userSubscription) return;
@@ -253,11 +273,13 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         }
       });
 
-      console.info("Subscription updated to past_due !");
-      //todo: Notify user (e.g., via email or push notification)
-      // await notifyUserOfPaymentFailure(user, subscription);
-      // TODO: Contact user requesting payment method update!!!
-      return updatedUserSubscription;
+      console.info("Subscription updated to past_due ⛔️");
+      await sendMissedSubscriptionPaymentEmail(
+        user?.email,
+        user?.username,
+        plan?.name as SubscriptionPlan["name"]
+      );
+      return;
     }
     case "unpaid":
     case "incomplete_expired":
@@ -314,24 +336,28 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
     // If no customer Id means is a GUEST ORDER
     if (!paymentIntent.customer && guestEmail) {
       // create a user null shipping address to add to order
-      // Create a new shipping address if it doesn't exist
-      const guestAddress = await prisma.shippingAddress.create({
-        data: {
-          line1: address?.line1 as string,
-          line2: address?.line2,
-          city: address?.city,
-          state: address?.state,
-          postalCode: address?.postal_code as string,
-          country: address?.country as string
-        }
-      });
-      console.log("Guest address created");
+      let guestShippingAddress;
+      // Create a new shipping address if needed
+      if (address) {
+        guestShippingAddress = await prisma.shippingAddress.create({
+          data: {
+            line1: address?.line1 as string,
+            line2: address?.line2,
+            city: address?.city,
+            state: address?.state,
+            postalCode: address?.postal_code as string,
+            country: address?.country as string
+          }
+        });
+        console.info("Guest address created ✅");
+      }
+      if (!guestShippingAddress) console.info("NO address shipping required");
       // add email and address to order and update status
       const order = await prisma.order.update({
         data: {
           guestEmail,
           status: paymentIntent.status === "succeeded" ? "Paid" : "Pending",
-          shippingAddressId: guestAddress.id
+          shippingAddressId: guestShippingAddress?.id
         },
         where: { id: orderId },
         include: {
@@ -347,7 +373,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
     // fetch the user
     const user = await getUserByCustomerId(String(paymentIntent.customer));
     if (!user) {
-      console.log("no user found");
+      console.error("no user found");
       throw new Error("no user found can't process payment intent");
     }
     const userId = user.id;
@@ -425,7 +451,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   const setupIntent = event.data.object as Stripe.SetupIntent;
   const customerId = setupIntent.customer as string;
   const freeSubscription = !!setupIntent.metadata?.free_subscription;
-  const priceId = setupIntent.metadata?.price_id;
+  const priceId = setupIntent.metadata?.priceId;
   // If has order id in meta it must be a free Order!
   const orderId = setupIntent.metadata?.orderId;
 
@@ -433,8 +459,8 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   const user = await getUserByCustomerId(String(setupIntent.customer));
 
   if (!user) {
-    console.log("no user found");
-    throw new Error("no user found can't process setup intent");
+    console.error("No user found");
+    throw new Error("No user found can't process setup intent");
   }
   const userId = user.id;
   if (!setupIntent.payment_method) return;
@@ -453,9 +479,9 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
         expand: ["latest_invoice.payment_intent"]
       });
       console.info(`Free subscription created for ${customerId}`);
-      return;
       // TODO: send email with invoice details plan Personalidad
-      // await sendSubscriptionEmail(user?.email,user?.username,plan)
+      await sendSubscriptionEmail(user?.email, user?.username, "Personalidad");
+      return;
     } catch (e) {
       console.log(e);
       return;

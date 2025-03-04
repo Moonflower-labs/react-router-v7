@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { href, Link, useLocation, useRouteLoaderData } from "react-router";
 import type { PaymentIntent, SetupIntent } from "@stripe/stripe-js";
-import { getSubscriptionData } from "~/integrations/stripe";
+import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe";
 import { retrievePaymentIntent } from "~/integrations/stripe/payment.server";
 import type { Route } from "./+types/success";
 import { deleteCart } from "~/models/cart.server";
@@ -14,41 +14,44 @@ export async function loader({ request }: Route.LoaderArgs) {
   const cartId = url.searchParams.get("cartId");
   const paymentIntentId = url.searchParams.get("paymentIntentId");
   const setupIntentId = url.searchParams.get("setupIntentId");
+  const orderId = url.searchParams.get("orderId");
   const success = url.searchParams.get("success");
   const mode = plan ? "subscription" : paymentIntentId ? "payment" : "setup"
   // Clear the cart
   if (cartId) {
     await deleteCart(cartId);
   }
-  if (plan) {
-    const planData = getSubscriptionData(plan)
+
+  if (plan && ["Personalidad", "Alma", "Espíritu"].includes(plan)) {
+    const planData = getSubscriptionData(plan as SubscriptionPlan["name"]);
     return { planData, mode };
   }
+  let intent;
 
   if (paymentIntentId) {
     const paymentIntent = (await retrievePaymentIntent(paymentIntentId)) as PaymentIntent;
-    return { paymentIntent, mode };
+    intent = paymentIntent
   }
   if (setupIntentId) {
-    const paymentIntent = (await retrieveSetupIntent(setupIntentId)) as SetupIntent;
-    return { paymentIntent, mode };
+    const setupIntent = (await retrieveSetupIntent(setupIntentId)) as SetupIntent;
+    intent = setupIntent
   }
 
-  return null;
+  return { intent, orderId, mode };
 }
 
 export default function Success({ loaderData }: Route.ComponentProps) {
+  const { planData, orderId, intent, mode } = loaderData;
+  const { user } = useRouteLoaderData("root")
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const planData = loaderData?.planData;
   const clientSecret = searchParams.get("clientSecret");
-  const mode = loaderData?.mode
   const [message, setMessage] = useState("");
-  const paymentOrSetupIntent = loaderData?.paymentIntent;
+
 
   useEffect(() => {
-    if (paymentOrSetupIntent) {
-      switch (paymentOrSetupIntent?.status) {
+    if (intent) {
+      switch (intent?.status) {
         case "succeeded":
           setMessage("Pago realizado con éxito!");
           break;
@@ -63,7 +66,7 @@ export default function Success({ loaderData }: Route.ComponentProps) {
           break;
       }
     }
-  }, [clientSecret, paymentOrSetupIntent]);
+  }, [clientSecret, intent]);
 
   return (
     <div className="min-h-[80vh] flex flex-col gap-6 justify-center items-center text-center">
@@ -78,8 +81,24 @@ export default function Success({ loaderData }: Route.ComponentProps) {
           </div>
           <p>Visita la <Link to={"/members"} className="link link-primary">sección de miembros</Link></p>
         </div>
-      ) :
-        <p className="p-10">Gracias por tu compra!. Estamos procesando el pedido y pronto estará contigo.</p>}
+      ) : (
+        <div className="p-10">
+          <p>Gracias por tu compra!. Estamos procesando el pedido y pronto estará contigo.</p>
+          <div className="mb-3">Te hemos enviado un email de confirmación</div>
+          <div className="font-bold text-xl mb-4">Número de Pedido: {orderId}</div>
+          {user ? (
+            <p className="max-w-md mx-auto">Para ver su listado de pedidos vaya a la sección de
+              <Link to={href("/profile/orders")} className="link link-primary"> pedidos</Link> en su perfil.
+            </p>
+          ) : (
+            <p className="max-w-md mx-auto">Tome nota de su número de pedido por si acaso.
+              Y considera el <Link to={href("/register")} className="link link-primary">registrarte</Link> con nosotros,
+              es gratuito y podrás ver el historial de tus compras y mucho más.
+            </p>
+          )}
+        </div>
+      )
+      }
     </div>
   );
 }

@@ -4,7 +4,14 @@ import soulImg from "../../icons/plan-soul.svg";
 import spiritImg from "../../icons/plan-spirit.svg";
 import type Stripe from "stripe";
 
-export const PLANS = [
+export interface SubscriptionPlan {
+  name: "Personalidad" | "Alma" | "Espíritu";
+  priceId: string;
+  amount: number;
+  mode: string;
+  img: string;
+}
+export const PLANS: SubscriptionPlan[] = [
   {
     name: "Personalidad",
     priceId: "price_1Ng3CfAEZk4zaxmwMXEF9bfR",
@@ -28,7 +35,7 @@ export const PLANS = [
   }
 ];
 
-export function getSubscriptionData(name: string) {
+export function getSubscriptionData(name: SubscriptionPlan["name"]) {
   const data = PLANS.find(plan => plan.name === name);
   if (!data) {
     throw new Error("Plan not found");
@@ -40,10 +47,12 @@ export function getSubscriptionData(name: string) {
 
 export async function createSubscription({
   priceId,
-  customerId
+  customerId,
+  metadata
 }: {
   priceId: string;
   customerId: string;
+  metadata: Record<string, string> | undefined;
 }) {
   try {
     const subscription = await stripe.subscriptions.create({
@@ -55,7 +64,10 @@ export async function createSubscription({
       ],
       payment_behavior: "default_incomplete",
       payment_settings: { save_default_payment_method: "on_subscription" },
-      expand: ["latest_invoice.payment_intent", "pending_setup_intent"]
+      expand: ["latest_invoice.payment_intent", "pending_setup_intent"],
+      metadata: {
+        ...metadata
+      }
     });
     // ? This code block will only execute when creating a Free subscription
     if (
@@ -105,7 +117,11 @@ export async function updateStripeSubscription(
   if (subscription.status !== "active") {
     // Todo: Allow for inactive subscription scenario by creating a new one and confirm it
     const customerId = subscription.customer as string;
-    return await createSubscription({ priceId, customerId });
+    return await createSubscription({
+      priceId,
+      customerId,
+      metadata: undefined
+    });
   }
   const customer = (await stripe.customers.retrieve(
     subscription.customer as string

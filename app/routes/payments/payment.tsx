@@ -68,7 +68,8 @@ function CheckoutForm() {
       const params = new URLSearchParams();
       params.set("clientSecret", result?.client_secret as string);
       type === "setup" ? params.set("setupIntentId", result?.id as string) : params.set("paymentIntentId", result?.id as string);;
-      params.set("cartId", cartId!);
+      params.set("cartId", cartId);
+      params.set("orderId", orderId);
 
       // Redirect to success page with parameters
       return navigate(`/payments/success?${params}`);

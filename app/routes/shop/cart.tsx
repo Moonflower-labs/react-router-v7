@@ -58,7 +58,6 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
   const [selectedRateId, setSelectedRateId] = useState<string | undefined>(undefined);
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value; // This will be the rate.id
-    console.log("Selected rate ID:", value);
     setSelectedRateId(value);
   };
 
@@ -78,14 +77,8 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               </tbody>
             </table>
           </div>
-          <div className="mb-4">
-            <div className="font-bold">Subtotal £{totalAmount / 100}</div>
-            <div className="font-bold">Gastos Postales £{selectedRate?.amount ? selectedRate.amount / 100 : 0}</div>
-            {customerBalance > 0 && <div className="font-bold">Crédito disponible £{customerBalance / 100}</div>}
-            <div className="font-bold">Total Artículos + Envío £{(totalAmount + (selectedRate?.amount ? selectedRate.amount : 0)) / 100}</div>
-            <div className="font-bold">Total a Pagar £{Math.max((totalAmount + (selectedRate?.amount ? selectedRate.amount : 0) - (customerBalance ?? 0)), 50) / 100}</div>
+          <div className="font-bold my-4">Subtotal £{totalAmount / 100}</div>
 
-          </div>
           <div role="alert" className="alert flex flex-col alert-warning mb-4 md:w-[60%] mx-auto">
             <div className="flex gap-3 items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="h-6 w-6 shrink-0 stroke-current">
@@ -106,6 +99,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               </li>
             </ul>
           </div>
+
           {shippingRates && shippingRates.length > 0 ?
             <select
               id="shipping"
@@ -121,6 +115,13 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               )}
             </select>
             : null}
+
+          <div className="mb-4 mt-3">
+            <div className="font-bold">Gastos Postales £{selectedRate?.amount ? selectedRate.amount / 100 : 0}</div>
+            {customerBalance > 0 && <div className="font-bold">Crédito disponible £{customerBalance / 100}</div>}
+            <div className="font-bold">Total Artículos + Envío £{(totalAmount + (selectedRate?.amount ? selectedRate.amount : 0)) / 100}</div>
+            <div className="font-bold">Total a Pagar £{Math.max((totalAmount + (selectedRate?.amount ? selectedRate.amount : 0) - (customerBalance ?? 0)), 50) / 100}</div>
+          </div>
           {selectedRateId && (
             <motion.div
               initial={{ opacity: 0, height: 0, y: 0 }}

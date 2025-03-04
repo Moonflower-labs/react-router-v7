@@ -11,7 +11,9 @@ export async function createSetupIntent({
     customer: customerId,
     payment_method_types: ["card", "link"],
     usage: "off_session",
-    metadata
+    metadata: {
+      ...metadata
+    }
   });
   return {
     clientSecret: setupIntent.client_secret,
@@ -35,7 +37,7 @@ export async function createFreeSubscriptionSetupIntent({
     metadata: {
       ...metadata,
       free_subscription: "true",
-      price_id: priceId
+      priceId
     }
   });
   return {

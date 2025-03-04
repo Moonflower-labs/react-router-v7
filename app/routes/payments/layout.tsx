@@ -3,7 +3,7 @@ import { data, href, Outlet, redirect } from "react-router";
 import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
-import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription } from "~/integrations/stripe";
+import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe";
 import { getUser, getUserId } from "~/utils/session.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
@@ -130,7 +130,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       const isMissedPayment = missed?.toString() === "true";
 
       if (!planName) throw data({ message: "Plan name required" }, { status: 400 });
-      const { amount, priceId, img } = getSubscriptionData(planName);
+      const { amount, priceId, img } = getSubscriptionData(planName as SubscriptionPlan["name"]);
 
       if (isMissedPayment) {
         // Collect a different payment method to complete the missed payment. 
@@ -159,7 +159,7 @@ export async function loader({ request }: Route.LoaderArgs) {
           };
         }
         // Create a Subscription
-        const { subscriptionId, clientSecret, type } = await createSubscription({ priceId, customerId })
+        const { subscriptionId, clientSecret, type } = await createSubscription({ priceId, customerId, metadata: { plan: planName } })
 
         return {
           clientSecret, subscriptionId, amount, planName, customerSessionSecret, priceId, img, type
