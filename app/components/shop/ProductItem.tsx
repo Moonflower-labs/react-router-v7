@@ -6,21 +6,19 @@ export const ProductItem = ({ item }: { item: Product }) => {
 
   return (
     <div className="card w-[92%] bg-base-200 mx-auto shadow-lg">
-      <figure className="px-10 pt-10">
+      <figure className="p-10 pt-10">
         <img src={item?.thumbnail || ""} alt={item?.name} className="aspect-square rounded-xl" />
       </figure>
-      <div className="card-body">
+      <div className="card-body px-10">
         <h2 className="card-title">{item?.name}</h2>
         <p>{item?.description}</p>
         <div className="card-actions justify-center items-center">
           <fetcher.Form method="post" className="text-center w-full">
-            <label className="form-control w-full max-w-xs">
+            <label className="select w-full my-4">
               <input type="hidden" name="productId" value={item.id} />
               <input type="hidden" name="quantity" value={1} />
-              <div className="label mx-auto">
-                <span className="label-text">Elige uno</span>
-              </div>
-              <select name="priceId" className="select select-bordered mb-3">
+              <span className="label">Elige uno</span>
+              <select name="priceId" className="">
                 {item?.prices &&
                   item.prices.map(price => (
                     <option key={price.id} value={price.id}>
