@@ -13,6 +13,7 @@ import {
   Text,
   Tailwind,
   render,
+  Link,
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
 
@@ -22,8 +23,7 @@ interface WelcomeUserEmailProps {
 }
 
 const baseUrl = process.env.RENDER_URL
-  ? `https://laflorblanca-ysjl.onrender.com`
-  : "";
+  ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
 
 const WelcomeUserEmail = ({ username }: WelcomeUserEmailProps) => {
 
@@ -91,6 +91,21 @@ const WelcomeUserEmail = ({ username }: WelcomeUserEmailProps) => {
               If you were not expecting this invitation, you can ignore this email. If
               you are concerned about your account's safety, please reply to
               this email to get in touch with us.
+            </Text>
+            <Img
+              src={`${baseUrl}/static/logo.svg`}
+              width="32"
+              height="32"
+              className="rounded object-cover aspect-square"
+              alt="Logo"
+            />
+            <Text >
+              <Link
+                href="https://laflorblanca.com"
+                target="_blank"
+              >
+                laflorblanca.com
+              </Link>
             </Text>
           </Container>
         </Body>

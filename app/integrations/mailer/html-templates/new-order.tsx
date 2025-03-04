@@ -10,6 +10,7 @@ import {
     Tailwind,
     render,
     Link,
+    Img,
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
 import type { ExtendedOrder } from "~/models/order.server";
@@ -78,6 +79,21 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
                             If you were not expecting this invitation, you can ignore this email. If
                             you are concerned about your account's safety, please reply to
                             this email to get in touch with us.
+                        </Text>
+                        <Img
+                            src={`${baseUrl}/static/logo.svg`}
+                            width="32"
+                            height="32"
+                            className="rounded object-cover aspect-square"
+                            alt="Logo"
+                        />
+                        <Text >
+                            <Link
+                                href="https://laflorblanca.com"
+                                target="_blank"
+                            >
+                                laflorblanca.com
+                            </Link>
                         </Text>
                     </Container>
                 </Body>
