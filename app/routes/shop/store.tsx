@@ -1,13 +1,12 @@
-import { Await, data, Link, useFetcher, useRouteLoaderData } from "react-router";
+import { Await, data, Link, useRouteLoaderData } from "react-router";
 import StoreSkeleton from "~/components/skeletons/StoreSkeleton";
 import type { Route } from "./+types/store";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { addToCart } from "~/models/cart.server";
 import { getUserId } from "~/utils/session.server";
 import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
-import { toast } from "react-toastify";
 
 export async function loader() {
   // Return the promise
@@ -37,13 +36,13 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Store({ loaderData }: Route.ComponentProps) {
   const user = useRouteLoaderData("root")?.user as User;
-  const fetcher = useFetcher({ key: "add-to-cart" });
+  // const fetcher = useFetcher({ key: "add-to-cart" });
 
-  useEffect(() => {
-    if (fetcher?.data?.success && fetcher.state !== "idle") {
-      toast.success("Artículo añadido a la cesta!");
-    }
-  }, [fetcher.data]);
+  // useEffect(() => {
+  //   if (fetcher?.data?.success && fetcher.state !== "idle") {
+  //     toast.success("Artículo añadido a la cesta!");
+  //   }
+  // }, [fetcher.data]);
 
   return (
     <main className="min-h-screen">
