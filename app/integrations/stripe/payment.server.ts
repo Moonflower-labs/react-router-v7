@@ -1,17 +1,18 @@
 import type Stripe from "stripe";
 import { stripe } from "./stripe.server";
-import type { CartItem } from "~/models/cart.server";
 
 export async function createPaymentIntent({
   customerId,
   amount,
   orderId,
-  usedBalance
+  usedBalance,
+  metadata
 }: {
   customerId: string | null | undefined;
   amount: number;
   orderId: string;
   usedBalance?: number;
+  metadata: Record<string, string> | undefined;
 }) {
   const intentParams: Stripe.PaymentIntentCreateParams = {
     amount: amount,
@@ -27,6 +28,7 @@ export async function createPaymentIntent({
       "wechat_pay"
     ],
     metadata: {
+      ...metadata,
       orderId
     }
   };
@@ -36,7 +38,7 @@ export async function createPaymentIntent({
   if (usedBalance) {
     intentParams.metadata = {
       ...intentParams.metadata,
-      used_balance: usedBalance
+      usedBalance
     };
   }
   try {
@@ -44,7 +46,7 @@ export async function createPaymentIntent({
 
     return paymentIntent;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -53,32 +55,42 @@ export async function updateOrCreatePaymentIntent({
   customerId,
   amount,
   orderId,
-  usedBalance
+  usedBalance,
+  metadata
 }: {
   id?: string | null;
   customerId?: string | null;
   amount: number;
   orderId: string;
   usedBalance?: number;
-}) {
+  metadata?: Record<string, string>;
+}): Promise<Stripe.PaymentIntent> {
   if (id) {
-    const paymentIntent = await stripe.paymentIntents.update(id, {
-      amount,
-      metadata: {
-        orderId
-      }
-    });
-    console.log("INTENT UPDATED");
-    return paymentIntent;
+    try {
+      const paymentIntent = await stripe.paymentIntents.update(id, {
+        amount,
+        metadata: {
+          ...metadata,
+          orderId
+        }
+      });
+      console.log("INTENT UPDATED:", paymentIntent.id);
+      return paymentIntent;
+    } catch (error) {
+      console.error(`Failed to update PaymentIntent ${id}`);
+      // Fall back to creating a new intent if update fails (e.g., invalid ID)
+      console.info("Creating new PaymentIntent due to update failure...");
+    }
   }
 
   const newIntent = await createPaymentIntent({
     customerId,
     amount,
     orderId,
-    usedBalance
+    usedBalance,
+    metadata
   });
-  console.log("INTENT CREATED");
+  console.log("INTENT CREATED:", newIntent.id);
   return newIntent as Stripe.PaymentIntent;
 }
 

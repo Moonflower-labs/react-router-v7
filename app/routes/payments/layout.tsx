@@ -1,13 +1,13 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { data, href, Outlet, redirect } from "react-router";
-import type { Appearance, PaymentIntent, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
+import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
 import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription } from "~/integrations/stripe";
 import { getUser, getUserId } from "~/utils/session.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
-import { createPaymentIntent, updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
+import { updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
 import { createOrder, isOrderExist, updateOrderItems, updateOrderPaymentIntent } from "~/models/order.server";
 import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrations/stripe/setup.server";
 import { getShippinRate } from "~/models/shippingRate";
@@ -34,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       const cart = await getShoppingCart(userId as string);
       const shippingRateId = url.searchParams.get("shipping");
       if (!cart || cart.cartItems.length === 0) {
-        throw data({ message: "No cart fount. Cartis required for payment" }, { status: 400 });
+        throw redirect(href("/cart"))
       }
       if (!shippingRateId) {
         throw data({ message: "shippingRateId required" }, { status: 400 });
@@ -77,43 +77,43 @@ export async function loader({ request }: Route.LoaderArgs) {
       let orderId = existingOrder?.id;
       let paymentIntent;
 
+      // If order is stale or has no intent, create a new intent; otherwise, update existing
+      const needsNewIntent = isOrderStale || !existingOrder?.paymentIntentId;
+
       if (!existingOrder) {
+        // Create new order
         console.info("No existing order. Creating new order...");
-        orderId = await createOrder(String(userId), cart.id, cart.cartItems, shippingRateId);
-        paymentIntent = await createPaymentIntent({
-          customerId,
-          amount: finalAmount,
-          orderId,
-          usedBalance,
-        }) as PaymentIntent;
+        const order = await createOrder(String(userId), cart.id, cart.cartItems, shippingRateId);
+        orderId = order.id
+
       } else {
-        console.info("existing order found", existingOrder.id);
         // Update order items if cart has changed
+        console.info("existing order found", existingOrder.id);
         if (hasCartChanged) {
           console.info("Cart has changed. Updating order items...");
           await updateOrderItems(existingOrder.id, cart.cartItems);
         }
+      }
+      console.info("existing order found", existingOrder?.id);
 
-        // If order is stale or has no intent, create a new intent; otherwise, update existing
-        const needsNewIntent = isOrderStale || !existingOrder.paymentIntentId;
-        paymentIntent = await updateOrCreatePaymentIntent({
-          id: needsNewIntent ? undefined : existingOrder.paymentIntentId,
-          orderId: existingOrder.id,
-          customerId,
-          amount: finalAmount,
-          usedBalance,
-        });
-
-        // Update order with new intent if it’s new or missing
-        if (needsNewIntent || existingOrder.paymentIntentId !== paymentIntent?.id) {
-          console.info("Updating order with new payment intent...");
-          await updateOrderPaymentIntent(existingOrder.id, String(paymentIntent?.id));
+      paymentIntent = await updateOrCreatePaymentIntent({
+        id: needsNewIntent ? undefined : existingOrder.paymentIntentId,
+        orderId: orderId as string,
+        customerId,
+        amount: finalAmount,
+        usedBalance,
+        metadata: {
         }
+      });
+      // Update order with new intent if it’s new or missing
+      if (needsNewIntent || !existingOrder || existingOrder.paymentIntentId !== paymentIntent?.id) {
+        console.info("Updating order with new payment intent id 👌");
+        await updateOrderPaymentIntent(String(orderId), String(paymentIntent?.id));
       }
 
       return {
         clientSecret: paymentIntent?.client_secret, customerSessionSecret, amount: finalAmount,
-        shippingRateAmount, customerBalance, usedBalance, mode, cartId: cart.id,
+        shippingRateAmount, customerBalance, usedBalance, mode, cartId: cart.id, orderId
       };
     }
     case "setup": {

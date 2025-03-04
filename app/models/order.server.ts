@@ -48,7 +48,7 @@ export async function createOrder(
 
   const order = await prisma.order.create({ data });
 
-  return order.id;
+  return order;
 }
 
 export async function updateOrderItems(id: string, cartItems: CartItem[]) {
@@ -71,7 +71,7 @@ export async function updateOrderItems(id: string, cartItems: CartItem[]) {
 export async function updateOrderPaymentIntent(id: string, intentId: string) {
   const updatedOrder = await prisma.order.update({
     where: { id },
-    data: { paymentIntentId: intentId }
+    data: { paymentIntentId: intentId, lastModified: new Date() }
   });
   return updatedOrder;
 }

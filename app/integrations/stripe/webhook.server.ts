@@ -305,12 +305,47 @@ export async function handleSubscriptionDeleted(event: Stripe.Event) {
 export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
   const orderId = paymentIntent.metadata?.orderId;
-  const usedBalance = paymentIntent.metadata?.used_balance;
+  const usedBalance = paymentIntent.metadata?.usedBalance;
+  const guestEmail = paymentIntent.metadata?.guestEmail;
+  const address = paymentIntent.shipping?.address; // Stripe's shipping details
+
   if (!orderId) return;
   try {
+    // If no customer Id means is a GUEST ORDER
+    if (!paymentIntent.customer && guestEmail) {
+      // create a user null shipping address to add to order
+      // Create a new shipping address if it doesn't exist
+      const guestAddress = await prisma.shippingAddress.create({
+        data: {
+          line1: address?.line1 as string,
+          line2: address?.line2,
+          city: address?.city,
+          state: address?.state,
+          postalCode: address?.postal_code as string,
+          country: address?.country as string
+        }
+      });
+      console.log("Guest address created");
+      // add email and address to order and update status
+      const order = await prisma.order.update({
+        data: {
+          guestEmail,
+          status: paymentIntent.status === "succeeded" ? "Paid" : "Pending",
+          shippingAddressId: guestAddress.id
+        },
+        where: { id: orderId },
+        include: {
+          orderItems: { include: { price: true, product: true } },
+          shippingRate: true
+        }
+      });
+      console.log("Guest order updated ✅");
+      // Send email with invoice details
+      await sendOrderEmail(guestEmail, "Guest", order as ExtendedOrder);
+      return;
+    }
     // fetch the user
     const user = await getUserByCustomerId(String(paymentIntent.customer));
-    const address = paymentIntent.shipping?.address; // Stripe's shipping details
     if (!user) {
       console.log("no user found");
       throw new Error("no user found can't process payment intent");

@@ -27,7 +27,7 @@ model Order {
   guest      Boolean
   guestId    String?
   guestEmail String?
-  cartId     String? @unique
+  cartId     String?
 
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId      String?

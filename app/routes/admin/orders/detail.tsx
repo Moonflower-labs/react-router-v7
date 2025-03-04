@@ -13,7 +13,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function OrderDetail({ loaderData }: Route.ComponentProps) {
   const { order } = loaderData;
-  // console.log(order)
 
   return (
     <div className="mb-6 lg:w-2/3 mx-auto">
@@ -22,7 +21,10 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       </h2>
       <p className="font-semibold mb-4">Actualizado: {formatDate(order?.updatedAt)}</p>
       {order?.guest
-        ? <p className="font-semibold mb-4 text-warning/75">Pedido de invitado</p>
+        ? <div className="font-bold mb-4 t">
+          <p className="text-warning/70">Pedido de invitado</p>
+          <p>Email: {order.guestEmail}</p>
+        </div>
         : <div className="flex flex-row gap-2 items-center mb-4">
           <p className="font-semibold">Usuario: {order?.user?.username} / Email: {order?.user?.email}</p>
           <CopyToClipBoard href={order?.user?.email as string} />

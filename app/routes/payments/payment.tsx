@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PaymentElement, useStripe, useElements, AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
-import type { PaymentIntent, SetupIntent, StripeAddressElementOptions, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
+import type { PaymentIntent, SetupIntent, StripeAddressElementOptions, StripeError, StripeLinkAuthenticationElementChangeEvent, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Form, useNavigate, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/payment";
 import type { User } from "~/models/user.server";
@@ -25,11 +25,12 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const { amount = 0, customerBalance, usedBalance, shippingRateAmount, cartId, type } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
+  const { amount = 0, customerBalance, usedBalance, shippingRateAmount, cartId, type, orderId } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
   const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [guestEmail, setGuestEmail] = useState<string>("");
 
   const handleError = (error: StripeError) => {
     setLoading(false);
@@ -42,6 +43,16 @@ function CheckoutForm() {
     setLoading(true);
 
     try {
+
+      if (!user?.email && guestEmail) {
+        // Update order and PaymentIntent metadata with guest email
+        await fetch("/api/update-guest-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, guestEmail }),
+        });
+      }
+
       const confirmIntent = type === "setup" ? stripe.confirmSetup : stripe.confirmPayment;
       const { paymentIntent, setupIntent, error } = (await confirmIntent({
         elements,
@@ -68,6 +79,11 @@ function CheckoutForm() {
       setLoading(false);
     }
   };
+  // Retrieve email from LinkAuthenticationElement
+  const handleGuestEmail = (e: StripeLinkAuthenticationElementChangeEvent) => {
+    if (user) return;
+    setGuestEmail(e.value.email)
+  }
 
 
   const paymentElementOptions: StripePaymentElementOptions = {
@@ -98,7 +114,8 @@ function CheckoutForm() {
     <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-lg border border-base-300 bg-base-100 shadow-lg px-8 min-w-[400px] w-[30vw] text-center">
       <h3 className="text-primary text-lg font-semibold my-3">Email</h3>
       <LinkAuthenticationElement
-        options={{ defaultValues: { email: user?.email || "" } }}
+        options={{ defaultValues: { email: user?.email || guestEmail } }}
+        onChange={handleGuestEmail}
         className="my-3" />
       {shippingRateAmount > 0 &&
         <>
@@ -106,7 +123,6 @@ function CheckoutForm() {
           <AddressElement options={addressElementOptions} />
         </>
       }
-
       <h3 className="text-primary text-lg font-semibold my-3">Pago</h3>
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="amount" value={amount} />
