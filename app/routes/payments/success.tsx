@@ -62,7 +62,7 @@ export default function Success({ loaderData }: Route.ComponentProps) {
           setMessage("El pago no se ha podido realizar");
           break;
         default:
-          setMessage("Something went wrong.");
+          setMessage("Ha ocurrido un error");
           break;
       }
     }
