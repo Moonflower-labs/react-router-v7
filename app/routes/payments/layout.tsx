@@ -94,7 +94,6 @@ export async function loader({ request }: Route.LoaderArgs) {
           await updateOrderItems(existingOrder.id, cart.cartItems);
         }
       }
-      console.info("existing order found", existingOrder?.id);
 
       paymentIntent = await updateOrCreatePaymentIntent({
         id: needsNewIntent ? undefined : existingOrder.paymentIntentId,
