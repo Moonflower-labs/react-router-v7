@@ -23,8 +23,7 @@ interface NewSubscriptionEmailProps {
 }
 
 const baseUrl = process.env.RENDER_URL
-    ? `https://laflorblanca-ysjl.onrender.com`
-    : "";
+    ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
 
 const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps) => {
 

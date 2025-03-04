@@ -23,8 +23,7 @@ interface MissedSubscriptionPaymentEmailProps {
 }
 
 const baseUrl = process.env.RENDER_URL
-    ? `https://laflorblanca-ysjl.onrender.com`
-    : "";
+    ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
 
 const MissedSubscriptionPaymentEmail = ({ planData, username }: MissedSubscriptionPaymentEmailProps) => {
 
