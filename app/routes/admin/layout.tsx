@@ -23,8 +23,8 @@ export default function AdminLayout() {
     <div className="flex flex-col min-h-screen">
       {/* Collapsible Sidebar */}
       <motion.div
-        animate={{ height: collapsed ? 0 : "5rem", width: collapsed ? 0 : "90%", opacity: collapsed ? 0 : 1 }}
-        className="flex flex-wrap max-h-[4.5rem] w-full justify-center items-center gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50"
+        animate={{ height: collapsed ? 0 : "auto", width: collapsed ? 0 : "90%", opacity: collapsed ? 0 : 1 }}
+        className="flex max-h-fit w-full justify-center items-center gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50"
       >
         {/* Sidebar Content */}
         {!collapsed && (
