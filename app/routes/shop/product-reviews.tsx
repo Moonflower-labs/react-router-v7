@@ -64,7 +64,7 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                 </div>
             </div>
             <section className='text-center'>
-                <h2 className='text-2xl mb-4'>Product Reviews</h2>
+                <h2 className='text-2xl mb-4'>Opiniones sobre el Producto</h2>
                 {reviews && reviews.length > 0 ? (
                     <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-full'>
                         {reviews.map((review) => (
@@ -85,16 +85,17 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                     <p>Todavía no hay ningún review de este producto.</p>
                 )}
             </section>
-            {/* Hide if no user */}
             <section className='mt-10 text-center'>
+                <h2 className='text-2xl font-bold mb-3'>¿ Has probado este producto ?</h2>
+                <p className='mb-4'>Cuéntanos que te ha parecido</p>
                 <Form method='POST' ref={formRef} className='max-w-96 mx-auto p-6 rounded-lg border border-base-200'>
                     <div className="rating rating-md">
                         <input type="radio" name="productRating" className="rating-hidden" aria-label="clear" />
-                        <input type="radio" name="productRating" value={1} className="mask mask-star-2" aria-label="1 star" />
-                        <input type="radio" name="productRating" value={2} className="mask mask-star-2" aria-label="2 star" defaultChecked />
-                        <input type="radio" name="productRating" value={3} className="mask mask-star-2" aria-label="3 star" />
-                        <input type="radio" name="productRating" value={4} className="mask mask-star-2" aria-label="4 star" />
-                        <input type="radio" name="productRating" value={5} className="mask mask-star-2" aria-label="5 star" />
+                        <input type="radio" name="productRating" value={1} className="mask mask-star-2 bg-warning" aria-label="1 star" />
+                        <input type="radio" name="productRating" value={2} className="mask mask-star-2 bg-warning" aria-label="2 star" />
+                        <input type="radio" name="productRating" value={3} className="mask mask-star-2 bg-warning" aria-label="3 star" />
+                        <input type="radio" name="productRating" value={4} className="mask mask-star-2 bg-warning" aria-label="4 star" />
+                        <input type="radio" name="productRating" value={5} className="mask mask-star-2 bg-warning" aria-label="5 star" defaultChecked />
                     </div>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Título</legend>

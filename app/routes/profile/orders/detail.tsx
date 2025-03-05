@@ -46,9 +46,9 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                 <div>
                     {order?.status === "Paid" ? <div className="badge badge-success">Pagado</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
                 </div>
-                <div className="font-bold text-xl">Subtotal £{total}</div>
-                <div className="font-bold text-xl">Envío £{shippingCost}</div>
-                <div className="font-bold text-2xl">Total £{Number(total) + shippingCost}</div>
+                <div className="text-xl">Subtotal £{total}</div>
+                <div className="text-xl">Envío £{shippingCost}</div>
+                <div className="font-bold text-xl">Total £{Number(total) + shippingCost}</div>
             </div>
 
             <h3 className="font-bold text-xl mb-2.5">Artículos</h3>
