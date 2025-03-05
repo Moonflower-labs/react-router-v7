@@ -1,9 +1,22 @@
 import { FaRegCommentAlt } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
-import { href, Link } from "react-router";
+import { href, Link, useLocation } from "react-router";
 import type { Post } from "~/models/post.server";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+  XIcon,
+  TelegramIcon,
+  TelegramShareButton,
+} from 'react-share';
 
-export function PostListCard({ post }: { post: Post }) {
+export function PostListCard({ post, baseUrl }: { post: Post, baseUrl: string }) {
+  const { pathname } = useLocation()
+  const postUrl = `${baseUrl}/${pathname}/members/personality/post/${post.id}`;
+
   return (
     <div className="card w-[98%] sm:max-w-96 bg-base-100 shadow-xl">
       <figure className="px-10 pt-10">
@@ -25,6 +38,20 @@ export function PostListCard({ post }: { post: Post }) {
             <FaRegCommentAlt size={30} />
             <div className="">{post?.comments?.length || 0}</div>
           </div>
+        </div>
+        <div className="flex gap-2 mt-4 justify-end">
+          <TelegramShareButton url={postUrl} title={post.title}>
+            <TelegramIcon size={32} round />
+          </TelegramShareButton>
+          <FacebookShareButton url={postUrl} title={post.title}>
+            <FacebookIcon size={32} round />
+          </FacebookShareButton>
+          <TwitterShareButton url={postUrl} title={post.title}>
+            <XIcon size={32} round />
+          </TwitterShareButton>
+          <WhatsappShareButton url={postUrl} title={post.title}>
+            <WhatsappIcon size={30} round />
+          </WhatsappShareButton>
         </div>
       </div>
     </div>

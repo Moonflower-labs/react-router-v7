@@ -21,13 +21,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { posts, pagination } = await fetchPostsWithAverageRating({ title, categories: pickedCategories, page, pageSize });
   const categories = await fetchCategories();
 
-  return { posts, pagination, categories, q: title };
+  return { posts, pagination, categories, q: title, baseUrl: url.origin };
 }
 
 
 export default function Personality({ loaderData }: Route.ComponentProps) {
   const data = loaderData?.posts as Post[];
-  const pagination = loaderData?.pagination;
+  const { pagination, baseUrl } = loaderData;
 
   return (
     <main className="text-center px-1 pt-2" data-testid="personality-index">
@@ -64,7 +64,7 @@ export default function Personality({ loaderData }: Route.ComponentProps) {
       {data?.length ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-items-center pb-4">
           {data.map(post => (
-            <PostListCard post={post} key={post.id} />
+            <PostListCard post={post} key={post.id} baseUrl={baseUrl} />
           ))}
         </div>
       ) : (

@@ -12,6 +12,24 @@ import RatingForm from "~/components/members/Rating";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.server";
 
+export function meta({ data }: Route.MetaArgs) {
+  const { post } = data;
+  const postUrl = `${process.env.RENDER_URL || 'http://localhost:5173'}/members/personality/post/${post.id}`;
+
+  return [
+    { title: post.title },
+    { name: "description", content: "Check out this awesome post!" },
+    { property: "og:title", content: post.title },
+    { property: "og:description", content: "Check out this awesome post!" },
+    { property: "og:image", content: "/flower.png" }, // Use actual post image if available
+    { property: "og:url", content: postUrl },
+    { property: "og:type", content: "article" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: post.title },
+    { name: "twitter:description", content: "Check out this awesome post!" },
+    { name: "twitter:image", content: "/flower.png" },
+  ];
+}
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   if (!params.id) {
