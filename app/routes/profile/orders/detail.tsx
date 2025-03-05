@@ -27,7 +27,7 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                     <p className="font-semibold">Usuario: {order?.user?.username} / Email: {order?.user?.email}</p>
                 </div>}
 
-            <div className="flex flex-row gap-4 items-center mb-5">
+            <div className="flex flex-row flex-wrap gap-4 items-center mb-5">
                 {order?.isProcessed ? (
                     <>
                         <div className="inline-grid *:[grid-area:1/1]">
