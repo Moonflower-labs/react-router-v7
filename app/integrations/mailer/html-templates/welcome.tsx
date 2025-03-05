@@ -16,6 +16,7 @@ import {
   Link,
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
+import { href } from "react-router";
 
 
 interface WelcomeUserEmailProps {
@@ -79,7 +80,7 @@ const WelcomeUserEmail = ({ username }: WelcomeUserEmailProps) => {
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
                 className="bg-[#9d67e9] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-                href={`${baseUrl}/plans`}
+                href={`${baseUrl}${href("/plans")}`}
               >
                 Suscríbete
               </Button>

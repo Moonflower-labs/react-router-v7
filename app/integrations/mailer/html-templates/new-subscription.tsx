@@ -59,7 +59,7 @@ const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps)
                         <Section className="text-center mt-[32px] mb-[32px]">
                             <Link
                                 className="bg-[#9d67e9] rounded text-white text-[12px] font-semibold no-underline text-center px-4 py-2 shadow"
-                                href={`${baseUrl}/${href("/members")}`}
+                                href={`${baseUrl}${href("/members")}`}
                             >
                                 Visita el Rincón de Miembros
                             </Link>

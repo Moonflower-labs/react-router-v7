@@ -67,7 +67,7 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
                         <Section className="text-center mt-[32px] mb-[32px]">
                             <Link
                                 className="bg-[#9d67e9] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-                                href={`${baseUrl}/${href("/profile/orders/:orderId", { orderId: order.id })}`}
+                                href={`${baseUrl}${href("/profile/orders/:orderId", { orderId: order.id })}`}
                             >
                                 Ver pedido
                             </Link>
