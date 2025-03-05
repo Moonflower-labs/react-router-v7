@@ -157,7 +157,7 @@ const themes = [
 
 function ShoppingCartIcon({ count }: { count: number }) {
   return (
-    <Link to={"./cart"} className="btn btn-ghost btn-circle" viewTransition>
+    <Link to={href("/cart")} className="btn btn-ghost btn-circle" viewTransition>
       <div className="indicator cursor-pointer">
         <CgShoppingCart className="h-8 w-8 ms-2 text-primary cursor-pointer" />
         <AnimatePresence mode="wait">
