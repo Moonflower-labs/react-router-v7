@@ -27,7 +27,7 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                     <p className="font-semibold">Usuario: {order?.user?.username} / Email: {order?.user?.email}</p>
                 </div>}
 
-            <div className="flex flex-row flex-wrap gap-4 items-center mb-5">
+            <div className="flex flex-row flex-wrap gap-4 justify-center items-center mb-5">
                 {order?.isProcessed ? (
                     <>
                         <div className="inline-grid *:[grid-area:1/1]">
@@ -47,7 +47,6 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
                     {order?.status === "Paid" ? <div className="badge badge-success">Pagado</div> : <div className="badge badge-secondary">Pendiente de pago</div>}
                 </div>
                 <div className="font-bold text-xl">Subtotal £{total}</div>
-                <div className="font-bold text-xl">&</div>
                 <div className="font-bold text-xl">Envío £{shippingCost}</div>
                 <div className="font-bold text-2xl">Total £{Number(total) + shippingCost}</div>
             </div>
