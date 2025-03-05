@@ -13,6 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // }
 
   const url = new URL(request.url);
+  const baseUrl = url.origin
   const title = url.searchParams.get("search");
   let pickedCategories = url.searchParams.getAll("categories") || [];
 
@@ -21,7 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { posts, pagination } = await fetchPostsWithAverageRating({ title, categories: pickedCategories, page, pageSize });
   const categories = await fetchCategories();
 
-  return { posts, pagination, categories, q: title, baseUrl: url.origin };
+  return { posts, pagination, categories, q: title, baseUrl };
 }
 
 

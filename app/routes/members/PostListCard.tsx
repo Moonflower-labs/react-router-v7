@@ -15,7 +15,7 @@ import {
 
 export function PostListCard({ post, baseUrl }: { post: Post, baseUrl: string }) {
   const { pathname } = useLocation()
-  const postUrl = `${baseUrl}/${pathname}/members/personality/post/${post.id}`;
+  const postUrl = `${baseUrl}/${pathname}/post/${post.id}`;
 
   return (
     <div className="card w-[98%] sm:max-w-96 bg-base-100 shadow-xl">
