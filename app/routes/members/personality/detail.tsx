@@ -22,13 +22,13 @@ export function meta({ data, location }: Route.MetaArgs) {
     { name: "description", content: "Check out this awesome post!" },
     { property: "og:title", content: post.title },
     { property: "og:description", content: "Check out this awesome post!" },
-    { property: "og:image", content: "https://laflorblanca-ysjl.onrender.com/flower.png" }, // Use actual post image if available
+    { property: "og:image", content: `${baseUrl}/flower-tiny.png` }, // Use actual post image if available
     { property: "og:url", content: postUrl },
     { property: "og:type", content: "article" },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: post.title },
     { name: "twitter:description", content: "Check out this awesome post!" },
-    { name: "twitter:image", content: "https://laflorblanca-ysjl.onrender.com/flower.png" },
+    { name: "twitter:image", content: `${baseUrl}/flower-tiny.png` },
   ];
 }
 
