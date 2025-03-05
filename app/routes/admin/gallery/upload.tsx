@@ -14,8 +14,6 @@ export async function action({ request }: Route.ActionArgs) {
     // Clone the request to peek at the form data without consuming it fully
     const formData = await request.clone().formData();
     const folder = formData.get("folder");
-    console.log("folder", folder)
-
     // Validate folder
     if (!folder || (folder !== "avatars" && folder !== "susurros")) {
         return { error: "Invalid or missing folder value" };
