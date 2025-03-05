@@ -1,6 +1,6 @@
 import { FaRegCommentAlt } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
-import { href, Link, useLocation } from "react-router";
+import { href, Link } from "react-router";
 import type { Post } from "~/models/post.server";
 import {
   FacebookShareButton,
@@ -14,8 +14,8 @@ import {
 } from 'react-share';
 
 export function PostListCard({ post, baseUrl }: { post: Post, baseUrl: string }) {
-  const { pathname } = useLocation()
-  const postUrl = `${baseUrl}/${pathname}/post/${post.id}`;
+
+  const postUrl = `${baseUrl}/members/personality/post/${post.id}`;
 
   return (
     <div className="card w-[98%] sm:max-w-96 bg-base-100 shadow-xl">

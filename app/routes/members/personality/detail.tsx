@@ -12,9 +12,10 @@ import RatingForm from "~/components/members/Rating";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.server";
 
-export function meta({ data }: Route.MetaArgs) {
-  const { post } = data;
-  const postUrl = `${process.env.RENDER_URL || 'http://localhost:5173'}/members/personality/post/${post.id}`;
+export function meta({ data, location }: Route.MetaArgs) {
+  const { post, baseUrl } = data;
+
+  const postUrl = `${baseUrl}${location.pathname}?v=1`;
 
   return [
     { title: post.title },
@@ -36,6 +37,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw data({ message: "No post ID provided!" }, { status: 400 });
   }
   const url = new URL(request.url);
+  const baseUrl = url.origin
+  console.log(baseUrl)
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
   const [post, { comments, pagination }] = await Promise.all([
@@ -45,7 +48,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   if (!post) {
     throw data({ message: "No hemos encontrado el post 🙁" }, { status: 404 });
   }
-  return { post, comments, page, pagination };
+  return { post, comments, page, pagination, baseUrl };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
