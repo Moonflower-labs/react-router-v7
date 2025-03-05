@@ -98,11 +98,11 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                     </div>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Título</legend>
-                        <input type="text" name='title' className="input w-full" placeholder="Título" />
+                        <input type="text" name='title' className="input input-lg w-full" placeholder="Título" />
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Tu Opinión</legend>
-                        <textarea className="textarea h-24 w-full" name='text' placeholder="Mi opinión sobre este producto..." ></textarea>
+                        <textarea className="textarea textarea-lg h-24 w-full" name='text' placeholder="Mi opinión sobre este producto..." ></textarea>
                     </fieldset>
                     {actionData?.error && <ActionError actionData={actionData} />}
                     <button type='submit' className='btn btn-primary my-3'>Enviar</button>
