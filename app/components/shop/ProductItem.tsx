@@ -1,4 +1,4 @@
-import { useFetcher } from "react-router";
+import { href, Link, useFetcher } from "react-router";
 import type { Product } from "~/models/product.server";
 
 export const ProductItem = ({ item }: { item: Product }) => {
@@ -14,7 +14,7 @@ export const ProductItem = ({ item }: { item: Product }) => {
         <p>{item?.description}</p>
         <div className="card-actions justify-center items-center">
           <fetcher.Form method="post" className="text-center w-full">
-            <label className="select w-full my-4">
+            <label className="select w-full mt-4 mb-6">
               <input type="hidden" name="productId" value={item.id} />
               <input type="hidden" name="quantity" value={1} />
               <span className="label">Elige uno</span>
@@ -32,6 +32,12 @@ export const ProductItem = ({ item }: { item: Product }) => {
             </button>
           </fetcher.Form>
         </div>
+        <Link
+          to={href("/store/product/:productId/reviews", { productId: item.id })}
+          className="text-sm font-bold py-4 text-end"
+        >
+          <span className="border-base-300 badge badge-accent shadow">Ver Reviews</span>
+        </Link>
       </div>
     </div>
   );

@@ -25,10 +25,12 @@ export default [
     route("checkout", "routes/payments/payment.tsx")
   ]),
   route("payments/success", "routes/payments/success.tsx"),
+  // Store
   route("store", "routes/shop/store.tsx"),
+  route("store/product/:productId/reviews", "routes/shop/product-reviews.tsx"),
   route("cart", "routes/shop/cart.tsx"),
+  // Help
   route("help", "routes/help.tsx"),
-
   // Profile
   route("profile", "routes/profile/layout.tsx", [
     index("routes/profile/dashboard.tsx"),

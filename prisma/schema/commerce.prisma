@@ -100,6 +100,8 @@ model ProductReview {
   title     String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

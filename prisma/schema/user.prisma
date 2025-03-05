@@ -11,6 +11,7 @@ model User {
   cart             Cart?             @relation(fields: [cartId], references: [id])
   cartId           String?
   reviews          Review[]
+  productReviews   ProductReview[]
   subscription     Subscription?
   comments         Comment[]
   posts            Post[]
