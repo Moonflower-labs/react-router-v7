@@ -16,9 +16,31 @@ export async function getProduct(productId: string) {
     where: { id: productId },
     include: {
       prices: true,
-      reviews: { include: { user: { select: { username: true } } } }
+      reviews: {
+        include: { user: { select: { username: true } } },
+        orderBy: { createdAt: "desc" }
+      }
     }
   });
+}
+
+export async function getProductReviews(
+  productId: string,
+  page: number = 1,
+  pageSize: number = 3
+) {
+  const [reviews, totalReviews] = await Promise.all([
+    prisma.productReview.findMany({
+      where: { productId },
+      include: { user: { select: { username: true } } },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize
+    }),
+    prisma.productReview.count({ where: { productId } })
+  ]);
+
+  return { reviews, totalReviews };
 }
 
 export async function getPrice(priceId: string) {

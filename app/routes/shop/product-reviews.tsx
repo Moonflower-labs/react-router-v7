@@ -1,4 +1,4 @@
-import { createProductReview, getProduct } from '~/models/product.server';
+import { createProductReview, getProduct, getProductReviews } from '~/models/product.server';
 import type { Route } from './+types/product-reviews'
 import { Form, href, Link } from 'react-router';
 import { useCallback } from 'react';
@@ -7,11 +7,19 @@ import { getUserId } from '~/utils/session.server';
 import { formatDate } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
 
-export async function loader({ params }: Route.LoaderArgs) {
-    const product = await getProduct(params.productId);
 
-    return { product };
+export async function loader({ params, request }: Route.LoaderArgs) {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") || "1", 10);
+
+    const [product, { reviews, totalReviews }] = await Promise.all([
+        getProduct(params.productId),
+        getProductReviews(params.productId, page),
+    ]);
+
+    return { product, reviews, page, totalReviews };
 }
+
 export async function action({ request, params }: Route.ActionArgs) {
     const formData = await request.formData()
     const productId = params.productId
@@ -36,8 +44,10 @@ export async function action({ request, params }: Route.ActionArgs) {
 }
 
 export default function ProductReviews({ loaderData, actionData }: Route.ComponentProps) {
-    const { product } = loaderData
-    const reviews = product?.reviews
+    const { product, reviews, page, totalReviews } = loaderData
+    const pageSize = 3; // Match getProductReviews default
+    const totalPages = Math.ceil(totalReviews / pageSize);
+    // const reviews = product?.reviews
 
     const formRef = useCallback((node: HTMLFormElement | null) => {
         if (node && actionData?.success) {
@@ -83,6 +93,31 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                     </div>
                 ) : (
                     <p>Todavía no hay ningún review de este producto.</p>
+                )}
+                {totalReviews > pageSize && (
+                    <div className="join pt-10">
+                        <Link
+                            to={`?page=${page - 1}`}
+                            className={`join-item btn btn-sm btn-outline btn-primary ${page === 1 ? 'btn-disabled' : ''}`}
+                            preventScrollReset
+                            aria-disabled={page === 1}
+                            viewTransition
+                        >
+                            Anterior
+                        </Link>
+                        <div className='join-item btn btn-sm btn-outline btn-primary pointer-events-none'>
+                            Página {page} de {totalPages}
+                        </div>
+                        <Link
+                            to={`?page=${page + 1}`}
+                            className={`join-item btn btn-sm btn-outline btn-primary ${page === totalPages ? 'btn-disabled' : ''}`}
+                            preventScrollReset
+                            aria-disabled={page === totalPages}
+                            viewTransition
+                        >
+                            Siguiente
+                        </Link>
+                    </div>
                 )}
             </section>
             <section className='mt-10 text-center'>
