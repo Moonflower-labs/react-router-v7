@@ -2,7 +2,7 @@ import { createProductReview, getProduct } from '~/models/product.server';
 import type { Route } from './+types/product-reviews'
 import { Form, href, Link } from 'react-router';
 import { useCallback } from 'react';
-import { FaStar } from 'react-icons/fa';
+import { FaArrowLeft, FaStar } from 'react-icons/fa';
 import { getUserId } from '~/utils/session.server';
 import { formatDate } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
@@ -53,13 +53,17 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
     }, []);
 
     return (
-        <main className='min-h-screen text-center p-4'>
-            <Link to={href("/store")} className='btn btn-primary'>Atrás</Link>
-            <h1 className='text-3xl mb-4'>Información del Producto</h1>
-            <div>
-                <img src={product?.thumbnail || ""} alt={product?.name} className='rounded-box w-56' />
+        <main className='min-h-screen p-4'>
+            <Link to={href("/store")} className='btn btn-primary'><FaArrowLeft />Atrás</Link>
+            <h1 className='text-3xl my-4 text-center'>Producto</h1>
+            <div className='mb-4 text-center'>
+                <img src={product?.thumbnail || ""} alt={product?.name} className='rounded-box w-56 mx-auto' />
+                <div className='flex flex-col gap-2 mt-2 max-w-lg mx-auto'>
+                    <p className='font-bold text-lg'>{product?.name}</p>
+                    <p>{product?.description}</p>
+                </div>
             </div>
-            <section>
+            <section className='text-center'>
                 <h2 className='text-2xl mb-4'>Product Reviews</h2>
                 {reviews && reviews.length > 0 ? (
                     <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-full'>
@@ -82,8 +86,8 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                 )}
             </section>
             {/* Hide if no user */}
-            <section className='mt-10'>
-                <Form method='POST' ref={formRef} className='max-w-96 mx-auto'>
+            <section className='mt-10 text-center'>
+                <Form method='POST' ref={formRef} className='max-w-96 mx-auto p-6 rounded-lg border border-base-200'>
                     <div className="rating rating-md">
                         <input type="radio" name="productRating" className="rating-hidden" aria-label="clear" />
                         <input type="radio" name="productRating" value={1} className="mask mask-star-2" aria-label="1 star" />
@@ -94,11 +98,11 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                     </div>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Título</legend>
-                        <input type="text" name='title' className="input" placeholder="Título" />
+                        <input type="text" name='title' className="input w-full" placeholder="Título" />
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Tu Opinión</legend>
-                        <textarea className="textarea h-24" name='text' placeholder="Mi opinión sobre este producto..." ></textarea>
+                        <textarea className="textarea h-24 w-full" name='text' placeholder="Mi opinión sobre este producto..." ></textarea>
                     </fieldset>
                     {actionData?.error && <ActionError actionData={actionData} />}
                     <button type='submit' className='btn btn-primary my-3'>Enviar</button>
