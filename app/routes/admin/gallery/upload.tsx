@@ -160,7 +160,7 @@ function UploadForm({ error }: { error: string | undefined }) {
             <label className="select mx-auto my-4">
                 <span className="label">Sección</span>
                 <select name="folder">
-                    <option value="surros">Susurros</option>
+                    <option value="susurros">Susurros</option>
                     <option value="avatars">Avatars</option>
                 </select>
             </label>
