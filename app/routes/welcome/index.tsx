@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import logo from "./logo.svg"
 import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
+import { getMembersCount, getUsersCount } from "~/models/user.server";
 
 
 export const meta: Route.MetaFunction = () => {
@@ -13,9 +14,11 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({ }: Route.LoaderArgs) {
+    const userCount = await getUsersCount()
+    const membersCount = await getMembersCount()
     // Retutn the reviews promise
     const reviews = getReviews()
-    return { reviews };
+    return { reviews, userCount, membersCount };
 }
 
 
@@ -39,8 +42,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 
 
-export default function Welcome({ }: Route.ComponentProps) {
-
+export default function Welcome({ loaderData }: Route.ComponentProps) {
+    const { userCount, membersCount } = loaderData
     // Container variants for staggered children animations
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -48,7 +51,7 @@ export default function Welcome({ }: Route.ComponentProps) {
             opacity: 1,
             transition: {
                 staggerChildren: 0.3,
-                duration: 0.6,
+                duration: 0.4,
                 ease: "easeOut"
             }
         }
@@ -61,7 +64,7 @@ export default function Welcome({ }: Route.ComponentProps) {
             y: 0,
             opacity: 1,
             transition: {
-                duration: 0.8,
+                duration: 0.6,
                 type: "spring",
                 bounce: 0.2,
                 damping: 20
@@ -83,7 +86,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                 variants={itemVariants}
             >
                 <div className="flex flex-col gap-4 justify-center items-center py-4">
-                    <h1 className="text-5xl font-bold text-primary mb-4 flex flex-col md:flex-row gap-5 justify-center items-center"><span>Bienvenid@</span> <span>a</span></h1>
+                    <h1 className="text-4xl font-bold text-primary mb-4 md:flex-row gap-5 justify-center items-center"><span>Bienvenidos</span></h1>
                     <div className="avatar">
                         <div className="w-36 rounded">
                             <img src={logo} alt="logo" className="aspect-video transform scale-150" />
@@ -102,12 +105,12 @@ export default function Welcome({ }: Route.ComponentProps) {
                     Comunidad anónima de espiritualidad y bienestar.
                 </div>
             </motion.div>
-            <div className="flex flex-row text-center justify-center items-stretch gap-2 w-[96%] md:w-[40%] font-bold text-primary">
+            <div className="flex flex-row text-center justify-center items-stretch gap-2 w-[96%] md:w-[55%] font-bold text-primary">
                 {/* Link containers */}
                 <motion.div
-                    className="flex flex-wrap justify-center items-center border border-primary/40 rounded p-4 shadow-sm w-1/3"
+                    className="w-1/3"
                     whileHover={{
-                        scale: 1.05,
+                        scale: 1.03,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -115,15 +118,15 @@ export default function Welcome({ }: Route.ComponentProps) {
                         stiffness: 300
                     }}
                 >
-                    <Link to={href("/about")} viewTransition>
+                    <Link to={href("/about")} className="w-full h-full flex justify-center items-center border border-primary/40 rounded p-4 shadow" viewTransition>
                         Sobre La Flor Blanca
                     </Link>
                 </motion.div>
 
                 <motion.div
-                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow-sm w-1/3"
+                    className="w-1/3"
                     whileHover={{
-                        scale: 1.05,
+                        scale: 1.03,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -131,14 +134,14 @@ export default function Welcome({ }: Route.ComponentProps) {
                         stiffness: 300
                     }}
                 >
-                    <Link to={href("/members/personality")} viewTransition>
+                    <Link to={href("/members/personality")} className="w-full h-full flex justify-center items-center border border-primary/40 rounded p-4 shadow" viewTransition>
                         Miembros
                     </Link>
                 </motion.div>
                 <motion.div
-                    className="flex justify-center items-center border border-primary/40 rounded p-4 shadow-sm w-1/3"
+                    className="w-1/3"
                     whileHover={{
-                        scale: 1.05,
+                        scale: 1.03,
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
                     }}
                     transition={{
@@ -146,7 +149,7 @@ export default function Welcome({ }: Route.ComponentProps) {
                         stiffness: 300
                     }}
                 >
-                    <Link to={"/store"} viewTransition>
+                    <Link to={href("/store")} className="w-full h-full flex justify-center items-center border border-primary/40 rounded p-4 shadow" viewTransition>
                         Productos
                     </Link>
                 </motion.div>
@@ -212,6 +215,22 @@ export default function Welcome({ }: Route.ComponentProps) {
                         <IoMdArrowDroprightCircle size={24} />
                     </Link>
                 </motion.div>
+            </div>
+            <div className="stats shadow mb-3">
+                <div className="stat">
+                    <div className="stat-title">Downloads</div>
+                    <div className="stat-value">31K</div>
+                </div>
+
+                <div className="stat">
+                    <div className="stat-title">Usuarios</div>
+                    <div className="stat-value">{userCount}</div>
+                </div>
+
+                <div className="stat">
+                    <div className="stat-title">Miembros</div>
+                    <div className="stat-value">{membersCount}</div>
+                </div>
             </div>
         </motion.div>
     );

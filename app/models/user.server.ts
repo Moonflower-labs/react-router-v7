@@ -92,3 +92,15 @@ export async function updateUserCustomerId(userId: string, customerId: string) {
     }
   });
 }
+
+export async function getUsersCount() {
+  return prisma.user.count();
+}
+
+export async function getMembersCount() {
+  return prisma.subscription.count({
+    where: {
+      status: "active"
+    }
+  });
+}
