@@ -64,12 +64,11 @@ const MissedSubscriptionPaymentEmail = ({ planData, username }: MissedSubscripti
                         <Text className="text-[#666666] text-[12px] leading-[24px]">
                             This email was intended for{" "}
                             <span className="text-black">{username}</span>.
-                            If you were not expecting this invitation, you can ignore this email. If
-                            you are concerned about your account's safety, please reply to
+                            If you are concerned about your account's safety, please reply to
                             this email to get in touch with us.
                         </Text>
                         <Img
-                            src={`${baseUrl}/static/logo.svg`}
+                            src={`${baseUrl}/logo.svg`}
                             width="32"
                             height="32"
                             className="rounded object-cover aspect-square"

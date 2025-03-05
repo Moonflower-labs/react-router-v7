@@ -57,7 +57,7 @@ export const ResetPasswordLinkEmail = ({
                         this email to get in touch with us.
                     </Text>
                     <Img
-                        src={`${baseUrl}/static/logo.svg`}
+                        src={`${baseUrl}/logo.svg`}
                         width="32"
                         height="32"
                         className="rounded object-cover aspect-square"
