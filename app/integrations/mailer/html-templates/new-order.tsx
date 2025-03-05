@@ -23,7 +23,7 @@ interface NewOrderEmailProps {
 }
 
 const baseUrl = process.env.RENDER_URL
-    ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
+    ? process.env.RENDER_URL : `http://localhost:5173`
 
 const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
 
@@ -80,8 +80,9 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
                             you are concerned about your account's safety, please reply to
                             this email to get in touch with us.
                         </Text>
+                        {/* todo: fix the image path */}
                         <Img
-                            src={`${baseUrl}/static/logo.svg`}
+                            src={`${baseUrl}/logo.svg`}
                             width="32"
                             height="32"
                             className="rounded object-cover aspect-square"
