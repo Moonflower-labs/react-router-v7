@@ -110,7 +110,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
                 : null
             ))
           ) : (
-            <div className="w-full p-8 text-center">No hay reviews todavía.</div>
+            <div className="w-full p-8 text-center flex justify-center h-full items-center m-auto">No hay reviews todavía.</div>
           )}
         </AnimatePresence>
         <div className="absolute flex justify-between transform -translate-y-1/2 left-0 right-0 top-1/2">

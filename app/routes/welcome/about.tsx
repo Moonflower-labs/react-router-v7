@@ -89,7 +89,7 @@ export default function About({ loaderData }: Route.ComponentProps) {
           </p>
         </FadeInComponent>
       </section>
-      <section className="grid md:grid-cols-2 gap-4 mb-4 px-2 pb-10">
+      <section className="grid md:grid-cols-2 items-end gap-4 mb-4 px-2 pb-10">
         <FadeInComponent>
           <div className="flex flex-col m-10">
             <p className="text-primary text-2xl font-bold text-center mb-3">Gracias por llegar Aquí: Miembros</p>

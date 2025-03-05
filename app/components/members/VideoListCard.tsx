@@ -7,11 +7,13 @@ const VideoListCard = ({ video }: { video: Video }) => {
   return (
     <div className="card w-[98%] bg-base-100 shadow-xl">
       <figure className="px-10 pt-10">
-        <img src={`https://i.ytimg.com/vi/${video.url}/sddefault.jpg`} alt="" className="rounded-xl aspect-video" width={300} />
+        <Link to={`video/${video.id}`} viewTransition>
+          <img src={`https://i.ytimg.com/vi/${video.url}/sddefault.jpg`} alt="" className="rounded-xl aspect-video object-cover" width={300} />
+        </Link>
       </figure>
       <div className="card-body">
         <h2 className="card-title text-primary mb-5">
-          <Link to={`video/${video.id}`} viewTransition> {video.title}</Link>
+          <Link to={`video/${video.id}`} viewTransition>{video.title}</Link>
         </h2>
         <div className=" divider"></div>
         <div className="text-secondary flex flex-col md:flex-row gap-3">
