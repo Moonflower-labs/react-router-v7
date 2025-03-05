@@ -1,8 +1,19 @@
+import type { ProductReview } from "@prisma/client";
+import { FaStar } from "react-icons/fa";
 import { href, Link, useFetcher } from "react-router";
 import type { Product } from "~/models/product.server";
 
 export const ProductItem = ({ item }: { item: Product }) => {
   const fetcher = useFetcher({ key: "add-to-cart" });
+  const calculateAverageRating = (reviews: ProductReview[]): number => {
+    if (!reviews || reviews.length === 0) return 0;
+
+    const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
+    const average = totalScore / reviews.length;
+
+    return Number(average.toFixed(1)); // Round to 1 decimal place and convert to number
+  };
+  const averageRating = calculateAverageRating(item.reviews as ProductReview[])
 
   return (
     <div className="card w-[92%] bg-base-200 mx-auto shadow-lg">
@@ -32,12 +43,18 @@ export const ProductItem = ({ item }: { item: Product }) => {
             </button>
           </fetcher.Form>
         </div>
-        <Link
-          to={href("/store/product/:productId/reviews", { productId: item.id })}
-          className="text-sm font-bold py-4 text-end"
-        >
-          <span className="border-base-300 badge badge-accent shadow">Ver Reviews</span>
-        </Link>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-row gap-2 items-center j">
+            <FaStar size={24} />
+            <span>{averageRating > 0 ? averageRating : null}</span>
+          </div>
+          <Link
+            to={href("/store/product/:productId/reviews", { productId: item.id })}
+            className="text-sm font-bold py-4 text-end"
+          >
+            <span className="border-base-300 badge badge-secondary shadow">Ver Reviews</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

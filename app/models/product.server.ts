@@ -1,13 +1,14 @@
 import { prisma } from "~/db.server";
 
-import type { Product as Prod, Price } from "@prisma/client";
+import type { Product as Prod, Price, ProductReview } from "@prisma/client";
 
 export interface Product extends Prod {
   prices: Price[];
+  reviews?: ProductReview[];
 }
 
 export async function getAllProducts() {
-  return prisma.product.findMany({ include: { prices: true } });
+  return prisma.product.findMany({ include: { prices: true, reviews: true } });
 }
 
 export async function getProduct(productId: string) {
