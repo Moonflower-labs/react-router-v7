@@ -1,12 +1,13 @@
 import { href, Link } from "react-router";
 import type { Route } from "./+types/index";
 import { getUserId } from "~/utils/session.server";
-import { createReview, getReviews } from "~/models/review.server";
+import { createReview } from "~/models/review.server";
 import { motion } from "motion/react";
 import logo from "./logo.svg"
 import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 import { getMembersCount, getUsersCount } from "~/models/user.server";
+import { getOrderCount } from "~/models/order.server";
 
 
 export const meta: Route.MetaFunction = () => {
@@ -14,11 +15,13 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({ }: Route.LoaderArgs) {
-    const userCount = await getUsersCount()
-    const membersCount = await getMembersCount()
-    // Retutn the reviews promise
-    const reviews = getReviews()
-    return { reviews, userCount, membersCount };
+    const [userCount, membersCount, orderCount] = await Promise.all([
+        getUsersCount(),
+        getMembersCount(),
+        getOrderCount("Paid")
+    ])
+
+    return { userCount, membersCount, orderCount };
 }
 
 
@@ -43,7 +46,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 
 export default function Welcome({ loaderData }: Route.ComponentProps) {
-    const { userCount, membersCount } = loaderData
+    const { userCount, membersCount, orderCount } = loaderData
     // Container variants for staggered children animations
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -218,8 +221,8 @@ export default function Welcome({ loaderData }: Route.ComponentProps) {
             </div>
             <div className="stats shadow mb-3">
                 <div className="stat">
-                    <div className="stat-title">Downloads</div>
-                    <div className="stat-value">31K</div>
+                    <div className="stat-title">Pedidos</div>
+                    <div className="stat-value">{orderCount}</div>
                 </div>
 
                 <div className="stat">

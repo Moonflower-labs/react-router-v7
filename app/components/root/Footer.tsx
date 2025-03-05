@@ -16,7 +16,7 @@ export function Footer() {
         </div>
         <p className="text-primary-content">&copy; La Flor Blanca {year}</p>
 
-        <a className="link link-primary" href="https://portfolio-42z.pages.dev/" target="_blank" rel="noreferrer">
+        <a className="link link-primary" href="https://moonflowerlabs.vercel.app/" target="_blank" rel="noreferrer">
           &copy; Moonflower Labs
         </a>
       </aside>
