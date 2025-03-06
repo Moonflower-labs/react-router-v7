@@ -14,21 +14,23 @@ import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.
 
 export function meta({ data, location }: Route.MetaArgs) {
   const { post, baseUrl } = data;
-
-  const postUrl = `${baseUrl}${location.pathname}?v=1`;
+  const postUrl = `${baseUrl}${location.pathname}`;
 
   return [
-    { title: post.title },
     { name: "description", content: "Check out this awesome post!" },
-    { property: "og:title", content: post.title },
-    { property: "og:description", content: "Check out this awesome post!" },
-    { property: "og:image", content: `${baseUrl}/flower-tiny.png` }, // Use actual post image if available
+    //  Open Graph required
     { property: "og:url", content: postUrl },
     { property: "og:type", content: "article" },
+    { property: "og:title", content: post.title },
+    { property: "og:description", content: "Nuevo Blog de La Flor Blanca" },
+    { property: "og:image", content: `${baseUrl}/flower-tiny.png?=1` }, // Use actual post image if available
+    // X specific
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: post.title },
     { name: "twitter:description", content: "Check out this awesome post!" },
     { name: "twitter:image", content: `${baseUrl}/flower-tiny.png` },
+    { title: post.title },
+
   ];
 }
 
@@ -38,7 +40,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
   const url = new URL(request.url);
   const baseUrl = url.origin
-  console.log(baseUrl)
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
   const [post, { comments, pagination }] = await Promise.all([
