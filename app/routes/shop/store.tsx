@@ -8,10 +8,12 @@ import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const baseUrl = url.origin
   // Return the promise
   const products = getAllProducts()
-  return { products };
+  return { products, baseUrl };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -68,7 +70,7 @@ export default function Store({ loaderData }: Route.ComponentProps) {
             products?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
                 {products.map((item: Product) =>
-                  <ProductItem key={item.id} item={item} />)}
+                  <ProductItem key={item.id} item={item} baseUrl={loaderData?.baseUrl} />)}
               </div>
             ) : (
               <div className="text-2xl text-center mx-auto col-span-full">No hay productos que mostrar</div>

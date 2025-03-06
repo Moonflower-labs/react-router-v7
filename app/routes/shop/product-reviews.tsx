@@ -8,8 +8,30 @@ import { formatDate } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
 
 
+export function meta({ data, location }: Route.MetaArgs) {
+    const { product, baseUrl } = data;
+    const postUrl = `${baseUrl}${location.pathname}`;
+
+    return [
+        { name: "description", content: "Check out this awesome post!" },
+        //  Open Graph required
+        { property: "og:url", content: postUrl },
+        { property: "og:type", content: "producct" },
+        { property: "og:title", content: product?.name },
+        { property: "og:description", content: "Producto de La Flor Blanca" },
+        { property: "og:image", content: product?.thumbnail },
+        // X specific
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: product?.name },
+        { name: "twitter:description", content: "Check out this awesome product!" },
+        { name: "twitter:image", content: product?.thumbnail },
+        { title: product?.name },
+    ];
+}
+
 export async function loader({ params, request }: Route.LoaderArgs) {
     const url = new URL(request.url);
+    const baseUrl = url.origin
     const page = parseInt(url.searchParams.get("page") || "1", 10);
 
     const [product, { reviews, totalReviews }] = await Promise.all([
@@ -17,7 +39,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
         getProductReviews(params.productId, page),
     ]);
 
-    return { product, reviews, page, totalReviews };
+    return { product, reviews, page, totalReviews, baseUrl };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
