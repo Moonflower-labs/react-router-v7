@@ -35,16 +35,19 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   switch (mode) {
     case "payment": {
-      const cart = await getShoppingCart(userId as string);
       const shippingRateId = url.searchParams.get("shipping");
-      if (!cart || cart.cartItems.length === 0) {
-        throw redirect(href("/cart"))
-      }
       if (!shippingRateId) {
         throw data({ message: "shippingRateId required" }, { status: 400 });
       }
 
-      const shippingRate = await getShippinRate(shippingRateId);
+      const [cart, shippingRate] = await Promise.all([
+        getShoppingCart(userId as string),
+        getShippinRate(shippingRateId)
+      ])
+      if (!cart || cart.cartItems.length === 0) {
+        throw redirect(href("/cart"))
+      }
+
       const shippingRateAmount = shippingRate?.amount;
 
       if (isNaN(Number(shippingRateAmount))) {

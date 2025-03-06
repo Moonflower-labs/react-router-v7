@@ -11,28 +11,24 @@ import { getCustomerBalance, type SubscriptionPlan } from "~/integrations/stripe
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request)
-  const [cart, user] = await Promise.all([
+  const [cart, user, shippingRates] = await Promise.all([
     getShoppingCart(userId!),
-    getUserById(userId!)
+    getUserById(userId!),
+    getShippinRates()
   ])
+
   const planName = user?.subscription?.plan?.name as SubscriptionPlan["name"]
-
-  let discount = getUserDiscount(planName)
-
+  const discount = getUserDiscount(planName)
   const totalAmount = calculateTotalAmount(cart?.cartItems || [], discount);
 
-  const shippingRates = await getShippinRates()
-
   if (!user) return { cart, totalAmount, shippingRates, discount };
-
-
 
   let customerBalance = 0;
   if (user?.customerId) {
     customerBalance = await getCustomerBalance(user.customerId);
   }
 
-  return { cart, totalAmount, shippingRates, customerBalance, discount };
+  return { cart, totalAmount, shippingRates, discount, customerBalance };
 }
 
 export async function action({ request }: Route.ActionArgs) {
