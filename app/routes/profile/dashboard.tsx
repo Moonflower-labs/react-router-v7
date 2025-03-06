@@ -47,7 +47,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   const favVids = favorites?.filter((favorite) => favorite.videoId !== null);
   const [selectedAvatar, setSelectedAvatar] = useState(profile?.avatar || "/avatars/girl.jpg");
   const submit = useSubmit();
-  console.log(avatars)
 
 
   return (
