@@ -1,4 +1,4 @@
-import { Await, data, Link, useRouteLoaderData } from "react-router";
+import { Await, data, href, Link, useRouteLoaderData } from "react-router";
 import StoreSkeleton from "~/components/skeletons/StoreSkeleton";
 import type { Route } from "./+types/store";
 import { Suspense } from "react";
@@ -47,21 +47,36 @@ export default function Store({ loaderData }: Route.ComponentProps) {
   // }, [fetcher.data]);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen mx-2">
       <h2 className="text-3xl text-center text-primary font-semibold pt-3 mb-4">Tienda</h2>
       {!user && (
-        <div role="alert" className="alert bg-warning/60 b mb-4 w-fit mx-auto">
+        <div role="alert" className="alert alert-warning mb-4 w-fit max-w-xl mx-auto">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-black shrink-0 w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <span>
-            Si estás suscrito a cualquier plan de <span className="text-primary">La Flor Blanca</span>, asegúrate de
-            <Link to={"/login"} className="link link-primary">
+          <div className="text-center">
+            Si estás suscrito a cualquier plan de <span className="text-primary font-bold">La Flor Blanca</span>, asegúrate de
+            <Link to={href("/login")} className="link link-primary">
               {" "}
               iniciar sesión
             </Link>{" "}
-            para aprovecharte de los precios de miembros.{" "}
-          </span>
+            para aprovecharte de los descuentos de miembros:
+            <ul className="text-start list-disc w-fit mx-auto pt-1">
+              <li>
+                5% ~ Personalidad
+              </li>
+              <li>
+                10% ~ Alma
+              </li>
+              <li>
+                15% ~ Espíritu.
+              </li>
+            </ul>
+            <Link to={href("/plans")} className="link link-primary float-end pt-2">
+              {" "}
+              Ver Planes de Suscripción
+            </Link>
+          </div>
         </div>
       )}
       <Suspense fallback={<StoreSkeleton />}>
