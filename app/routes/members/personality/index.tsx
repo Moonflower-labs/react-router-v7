@@ -6,14 +6,11 @@ import { PostListCard } from "../PostListCard";
 import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";
 
+// todo: make middleware function to check for the user subscription
+
 export async function loader({ request }: Route.LoaderArgs) {
-  // todo: make utility fn to check for the user subscription
-  // if(!userHasMembership){
-  //     return redirect("/")
-  // }
 
   const url = new URL(request.url);
-  const baseUrl = url.origin
   const title = url.searchParams.get("search");
   let pickedCategories = url.searchParams.getAll("categories") || [];
 
@@ -22,13 +19,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { posts, pagination } = await fetchPostsWithAverageRating({ title, categories: pickedCategories, page, pageSize });
   const categories = await fetchCategories();
 
-  return { posts, pagination, categories, q: title, baseUrl };
+  return { posts, pagination, categories, q: title };
 }
 
 
 export default function Personality({ loaderData }: Route.ComponentProps) {
   const data = loaderData?.posts as Post[];
-  const { pagination, baseUrl } = loaderData;
+  const { pagination } = loaderData;
 
   return (
     <main className="text-center px-1 pt-2" data-testid="personality-index">
@@ -65,7 +62,7 @@ export default function Personality({ loaderData }: Route.ComponentProps) {
       {data?.length ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-items-center pb-4">
           {data.map(post => (
-            <PostListCard post={post} key={post.id} baseUrl={baseUrl} />
+            <PostListCard post={post} key={post.id} />
           ))}
         </div>
       ) : (

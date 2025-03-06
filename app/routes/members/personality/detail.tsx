@@ -12,34 +12,12 @@ import RatingForm from "~/components/members/Rating";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.server";
 
-export function meta({ data, location }: Route.MetaArgs) {
-  const { post, baseUrl } = data;
-  const postUrl = `${baseUrl}${location.pathname}`;
-
-  return [
-    { name: "description", content: "Check out this awesome post!" },
-    //  Open Graph required
-    { property: "og:url", content: postUrl },
-    { property: "og:type", content: "article" },
-    { property: "og:title", content: post.title },
-    { property: "og:description", content: "Nuevo Blog de La Flor Blanca" },
-    { property: "og:image", content: `${baseUrl}/flower-tiny.png?=1` }, // Use actual post image if available
-    // X specific
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: post.title },
-    { name: "twitter:description", content: "Check out this awesome post!" },
-    { name: "twitter:image", content: `${baseUrl}/flower-tiny.png` },
-    { title: post.title },
-
-  ];
-}
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   if (!params.id) {
     throw data({ message: "No post ID provided!" }, { status: 400 });
   }
   const url = new URL(request.url);
-  const baseUrl = url.origin
   const page = Number(url.searchParams.get("page")) || 1;
   const pageSize = 10;
   const [post, { comments, pagination }] = await Promise.all([
@@ -49,7 +27,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   if (!post) {
     throw data({ message: "No hemos encontrado el post 🙁" }, { status: 404 });
   }
-  return { post, comments, page, pagination, baseUrl };
+  return { post, comments, page, pagination };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -119,6 +97,7 @@ export default function PersonalityDetail({ loaderData }: Route.ComponentProps) 
 
   return (
     <>
+      <title>{post.title}</title>
       <article className="pb-6 pt-16 px-10 md:px-40">
         <h2 className="text-primary font-semibold text-2xl text-center mt-4 mb-3">{post?.title}</h2>
         <div className="mb-4 flex gap-2">

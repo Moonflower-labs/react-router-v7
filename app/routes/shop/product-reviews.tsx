@@ -13,7 +13,7 @@ export function meta({ data, location }: Route.MetaArgs) {
     const postUrl = `${baseUrl}${location.pathname}`;
 
     return [
-        { name: "description", content: "Check out this awesome post!" },
+        { name: "description", content: product?.name },
         //  Open Graph required
         { property: "og:url", content: postUrl },
         { property: "og:type", content: "producct" },
