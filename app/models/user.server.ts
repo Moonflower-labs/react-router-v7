@@ -9,7 +9,7 @@ import type {
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
-import { createCustomer } from "~/integrations/stripe";
+import { createCustomer, type SubscriptionPlan } from "~/integrations/stripe";
 
 export interface User extends PrismaUser {
   profile: Profile | null;
@@ -104,7 +104,7 @@ export async function updateUserCustomerId(userId: string, customerId: string) {
   });
 }
 
-export function getUserDiscount(plan: string | undefined) {
+export function getUserDiscount(plan: SubscriptionPlan["name"] | undefined) {
   if (!plan) return 0;
   return plan === "Espíritu"
     ? 15

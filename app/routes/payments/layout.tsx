@@ -30,7 +30,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // set balances to 0
   let [customerBalance, usedBalance] = [0, 0];
   // get user discount if no user will return 0 
-  const discount = getUserDiscount(user?.subscription?.plan?.name)
+  const discount = getUserDiscount(user?.subscription?.plan?.name as SubscriptionPlan["name"])
   const customerId = user?.customerId;
 
   switch (mode) {

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { getShippinRates } from "~/models/shippingRate";
 import { getUserById, getUserDiscount } from "~/models/user.server";
-import { getCustomerBalance } from "~/integrations/stripe";
+import { getCustomerBalance, type SubscriptionPlan } from "~/integrations/stripe";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request)
@@ -15,8 +15,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     getShoppingCart(userId!),
     getUserById(userId!)
   ])
+  const planName = user?.subscription?.plan?.name as SubscriptionPlan["name"]
 
-  let discount = getUserDiscount(user?.subscription?.plan?.name)
+  let discount = getUserDiscount(planName)
 
   const totalAmount = calculateTotalAmount(cart?.cartItems || [], discount);
 
