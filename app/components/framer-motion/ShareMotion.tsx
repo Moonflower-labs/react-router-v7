@@ -14,18 +14,18 @@ export function ShareMotion({ url, title }: ShareMotionProps) {
     // Animation variants
     const containerVariants = {
         closed: {
-            width: '40px', // Matches share icon size
+            width: '40px', // Share icon width
             transition: { duration: 0.3, ease: 'easeInOut' },
         },
         open: {
-            width: 'auto', // Expands to fit content
+            width: '195px', // Approximate width for 4 icons + gaps (adjust as needed)
             transition: { duration: 0.3, ease: 'easeInOut', staggerChildren: 0.1 },
         },
     };
 
     const buttonVariants = {
-        closed: { opacity: 0, x: -20, width: 0 },
-        open: { opacity: 1, x: 0, width: 'auto' },
+        closed: { opacity: 0, x: 0, width: 0 }, // Start hidden, no overlap
+        open: { opacity: 1, x: 0, width: 'auto', transition: { duration: 0.2 } }, // Fade in place
     };
 
     return (
@@ -38,12 +38,21 @@ export function ShareMotion({ url, title }: ShareMotionProps) {
                 onClick={() => setIsOpen(!isOpen)}
             >
                 {/* Share Icon (always visible) */}
-                <IoShareSocial size={32} className="cursor-pointer mb-1" />
+                <IoShareSocial size={32} className="cursor-pointer mb-1 flex-shrink-0" />
 
-                {/* Share Buttons */}
+                {/* Share Buttons Container */}
                 <AnimatePresence>
                     {isOpen && (
-                        <>
+                        <motion.div
+                            className="flex gap-2"
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            variants={{
+                                closed: { opacity: 0 },
+                                open: { opacity: 1, transition: { staggerChildren: 0.1 } },
+                            }}
+                        >
                             <motion.div variants={buttonVariants}>
                                 <TelegramShareButton url={url} title={title}>
                                     <TelegramIcon size={32} round />
@@ -64,7 +73,7 @@ export function ShareMotion({ url, title }: ShareMotionProps) {
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
                             </motion.div>
-                        </>
+                        </motion.div>
                     )}
                 </AnimatePresence>
             </motion.div>
