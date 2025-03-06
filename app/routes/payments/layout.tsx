@@ -13,6 +13,7 @@ import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrat
 import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
 import { differenceInDays } from "date-fns"
+import { getUserDiscount } from "~/models/user.server";
 
 
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
@@ -26,7 +27,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const mode = url.pathname.includes("subscribe") ? "subscription" : url.pathname.includes("setup") ? "setup" : "payment"
   const customerSessionSecret = user?.customerId && mode === "payment" ? await createCustomerSession(user?.customerId) : null;
+  // set balances to 0
   let [customerBalance, usedBalance] = [0, 0];
+  // get user discount if no user will return 0 
+  const discount = getUserDiscount(user?.subscription?.plan?.name)
   const customerId = user?.customerId;
 
   switch (mode) {
@@ -47,8 +51,9 @@ export async function loader({ request }: Route.LoaderArgs) {
         throw data({ message: "shippingRateId required" }, { status: 400 });
       }
 
-      const baseAmount = calculateTotalAmount(cart.cartItems, shippingRateAmount);
+      const baseAmount = calculateTotalAmount(cart.cartItems, discount, shippingRateAmount);
       let finalAmount = baseAmount;
+
 
       if (customerId) {
         customerBalance = await getCustomerBalance(customerId);
@@ -111,7 +116,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       }
 
       return {
-        clientSecret: paymentIntent?.client_secret, customerSessionSecret, amount: finalAmount,
+        clientSecret: paymentIntent?.client_secret, customerSessionSecret, amount: finalAmount, discount,
         shippingRateAmount, customerBalance, usedBalance, mode, cartId: cart.id, orderId
       };
     }

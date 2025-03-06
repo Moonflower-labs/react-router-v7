@@ -1,8 +1,10 @@
 import type {
   Password,
+  Plan,
   User as PrismaUser,
   Profile,
-  ShippingAddress
+  ShippingAddress,
+  Subscription
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -12,12 +14,21 @@ import { createCustomer } from "~/integrations/stripe";
 export interface User extends PrismaUser {
   profile: Profile | null;
   shippingAddress: ShippingAddress[];
+  subscription: UserSubscription;
+}
+
+export interface UserSubscription extends Subscription {
+  plan: Plan;
 }
 
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({
     where: { id },
-    include: { profile: true, shippingAddress: true }
+    include: {
+      profile: true,
+      shippingAddress: true,
+      subscription: { include: { plan: true } }
+    }
   });
 }
 
@@ -91,6 +102,17 @@ export async function updateUserCustomerId(userId: string, customerId: string) {
       customerId
     }
   });
+}
+
+export function getUserDiscount(plan: string | undefined) {
+  if (!plan) return 0;
+  return plan === "Espíritu"
+    ? 15
+    : plan === "Alma"
+      ? 10
+      : plan === "Personalidad"
+        ? 5
+        : 0;
 }
 
 export async function getUsersCount() {

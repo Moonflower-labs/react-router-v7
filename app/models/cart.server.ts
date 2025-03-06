@@ -33,7 +33,8 @@ export async function getCartItemsCount(userId: string) {
 
 export function calculateTotalAmount(
   cartItems: CartItem[],
-  shippingRate?: number
+  discount: number = 0,
+  shippingRate: number = 0
 ): number {
   if (!cartItems || cartItems?.length === 0) {
     return 0;
@@ -43,9 +44,16 @@ export function calculateTotalAmount(
   const subtotal = cartItems.reduce((total, cartItem) => {
     return total + cartItem.quantity * cartItem.price.amount;
   }, 0);
+  // Apply discount if it’s 5, 10, or 15
+  // Calculate discount amount in cents as an integer
+  const validDiscounts = [5, 10, 15];
+  const discountPercentage = validDiscounts.includes(discount) ? discount : 0;
+  const discountAmount = Math.round((subtotal * discountPercentage) / 100); // Integer discount
+  const discountedSubtotal = subtotal - discountAmount;
 
-  // Add shipping rate if provided, default to 0 if undefined
-  return subtotal + (shippingRate ?? 0);
+  // todo: consider return {amount, deductedAmount,}
+  // Add shipping rate (default to 0 if undefined)
+  return discountedSubtotal + (shippingRate ?? 0);
 }
 
 export async function addShoppingCart(userId: string) {

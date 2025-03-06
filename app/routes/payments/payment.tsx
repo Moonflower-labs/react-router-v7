@@ -25,7 +25,7 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const { amount = 0, customerBalance, usedBalance, shippingRateAmount, cartId, type, orderId } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
+  const { amount = 0, customerBalance, usedBalance, shippingRateAmount, discount, cartId, type, orderId } = useRouteLoaderData("stripe") //(useOutletContext() as ContextType);
   const { user } = useRouteLoaderData("root") as { user: User }
   const deductions = (customerBalance / 100) > 0;
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -129,6 +129,7 @@ function CheckoutForm() {
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
       {deductions && <div className="font-semibold">Crédito utilizado £{(usedBalance / 100)}</div>}
+      {discount > 0 && <div className="font-bold text-success my-2">Descuento applicado {discount}%</div>}
       {shippingRateAmount > 0 && <div className="my-3 font-semibold">Envío £{(shippingRateAmount / 100)}</div>}
       <button disabled={!stripe || !elements} id="submit" className="btn btn-lg btn-primary mx-auto my-3">
         <span>Pagar £{amount / 100}</span>
