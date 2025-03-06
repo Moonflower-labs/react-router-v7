@@ -2,7 +2,6 @@ import {
     Body,
     Container,
     Head,
-    Heading,
     Hr,
     Html,
     Section,
@@ -40,7 +39,7 @@ const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps)
                             </Text>
                             <Img
                                 className="rounded-md object-cover mx-auto"
-                                src={planData.img}
+                                src={`${baseUrl}/${planData.img}`}
                                 width="64"
                                 height="64"
                             />
