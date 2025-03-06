@@ -2,16 +2,7 @@ import type { ProductReview } from "@prisma/client";
 import { FaStar } from "react-icons/fa";
 import { href, Link, useFetcher } from "react-router";
 import type { Product } from "~/models/product.server";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  FacebookIcon,
-  WhatsappIcon,
-  XIcon,
-  TelegramIcon,
-  TelegramShareButton,
-} from 'react-share';
+import { ShareMotion } from "../framer-motion/ShareMotion";
 
 
 export const ProductItem = ({ item, baseUrl }: { item: Product, baseUrl: string }) => {
@@ -68,21 +59,11 @@ export const ProductItem = ({ item, baseUrl }: { item: Product, baseUrl: string 
             <span className="border-base-300 badge badge-secondary shadow">Ver Reviews</span>
           </Link>
         </div>
-        <div className="flex gap-2 mt-4 justify-end">
-          <TelegramShareButton url={productUrl} title={item.name}>
-            <TelegramIcon size={32} round />
-          </TelegramShareButton>
-          <FacebookShareButton url={productUrl} title={item.name}>
-            <FacebookIcon size={32} round />
-          </FacebookShareButton>
-          <TwitterShareButton url={productUrl} title={item.name}>
-            <XIcon size={32} round />
-          </TwitterShareButton>
-          <WhatsappShareButton url={productUrl} title={item.name}>
-            <WhatsappIcon size={30} round />
-          </WhatsappShareButton>
-        </div>
+        <ShareMotion url={productUrl} title={item.name} />
       </div>
     </div>
   );
 };
+
+
+
