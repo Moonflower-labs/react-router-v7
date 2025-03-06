@@ -4,6 +4,9 @@ import { href, Link } from "react-router";
 import type { Post } from "~/models/post.server";
 
 export function PostListCard({ post }: { post: Post }) {
+  const rating = post?.averageRating > 0
+    ? (Number.isInteger(post.averageRating) ? post.averageRating : post.averageRating.toFixed(1))
+    : 0;
 
   return (
     <div className="card w-[98%] sm:max-w-96 bg-base-100 shadow-xl">
@@ -20,7 +23,7 @@ export function PostListCard({ post }: { post: Post }) {
         <div className="text-secondary flex flex-col md:flex-row gap-3">
           <div className="flex gap-4 text-xl">
             <FaStar size={30} />
-            <div className="">{post?.averageRating?.toFixed(1)}</div>
+            <div className="">{rating}</div>
           </div>
           <div className="flex gap-4 text-xl">
             <FaRegCommentAlt size={30} />

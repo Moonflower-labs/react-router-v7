@@ -20,9 +20,8 @@ export function YoutubeVideo({ videoId, className }: { videoId: string; classNam
         </div>
       ) : (
         <div className={`hero shadow-xl ${className ? className : ""}`}>
-          <img src={`https://i.ytimg.com/vi/${videoId}/sddefault.jpg`} alt="" className="hero-overlay aspect-video rounded-lg w-full shadow-md" />
+          <img src={`https://i.ytimg.com/vi/${videoId}/sddefault.jpg`} alt="Video de La Flor Blanca" className="hero-overlay aspect-video object-cover rounded-lg w-full shadow-md" />
           <div className="card-body">
-            {/* <h2 className="card-title"></h2> */}
             <div className="card-actions justify-center">
               <button className="btn btn-primary" onClick={() => setIsFrameLoaded(true)}>
                 <FaPlayCircle size={25} />
