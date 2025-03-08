@@ -1,7 +1,7 @@
-import { Await, data, href, Link, useRouteLoaderData } from "react-router";
+import { data, href, Link, useRouteLoaderData } from "react-router";
 import StoreSkeleton from "~/components/skeletons/StoreSkeleton";
 import type { Route } from "./+types/store";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { addToCart } from "~/models/cart.server";
 import { getUserId } from "~/utils/session.server";
 import { getAllProducts, type Product } from "~/models/product.server";
@@ -11,8 +11,8 @@ import { ProductItem } from "~/components/shop/ProductItem";
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const baseUrl = url.origin
-  // Return the promise
-  const products = getAllProducts()
+
+  const products = getAllProducts()// Return promise to suspend
   return { products, baseUrl };
 }
 
@@ -37,14 +37,8 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Store({ loaderData }: Route.ComponentProps) {
-  const user = useRouteLoaderData("root")?.user as User;
-  // const fetcher = useFetcher({ key: "add-to-cart" });
+  const { user } = useRouteLoaderData("root") as { user: User };
 
-  // useEffect(() => {
-  //   if (fetcher?.data?.success && fetcher.state !== "idle") {
-  //     toast.success("Artículo añadido a la cesta!");
-  //   }
-  // }, [fetcher.data]);
 
   return (
     <main className="min-h-screen mx-2">
@@ -80,19 +74,27 @@ export default function Store({ loaderData }: Route.ComponentProps) {
         </div>
       )}
       <Suspense fallback={<StoreSkeleton />}>
-        <Await resolve={loaderData?.products} errorElement={<p className="text-error text-xl text-center">⚠️ Error cargando los productos!</p>}>
-          {products =>
-            products?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
-                {products.map((item: Product) =>
-                  <ProductItem key={item.id} item={item} baseUrl={loaderData?.baseUrl} />)}
-              </div>
-            ) : (
-              <div className="text-2xl text-center mx-auto col-span-full">No hay productos que mostrar</div>
-            )
-          }
-        </Await>
+        <Products productPromise={loaderData?.products} baseUrl={loaderData?.baseUrl} />
       </Suspense>
     </main>
   );
+}
+
+
+function Products({ productPromise, baseUrl }: { productPromise: Promise<Product[]>, baseUrl: string }) {
+  const products = use(productPromise)
+
+  return (
+    <div>
+      {products?.length > 0 ?
+        (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center pb-4 min-h-screen">
+            {products.map((item: Product) =>
+              <ProductItem key={item.id} item={item} baseUrl={baseUrl} />)}
+          </div>
+        ) : (
+          <div className="text-2xl text-center mx-auto col-span-full">No hay productos que mostrar</div>
+        )}
+    </div>
+  )
 }
