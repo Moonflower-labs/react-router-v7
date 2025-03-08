@@ -309,9 +309,9 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
             Cancelar
           </button>
           <button type="submit" className="btn btn-sm btn-primary"
-          // disabled={Number(questionCount) >= 3}
+            disabled={fetcher.state === "submitting" || Number(questionCount) >= 3}
           >
-            Enviar
+            {fetcher.state === "submitting" ? "Enviando..." : "Enviar"}
           </button>
         </div>
       </fetcher.Form>

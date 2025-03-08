@@ -106,8 +106,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <button type="reset" className="btn btn-sm btn-accent  btn-outline">
               Cancelar
             </button>
-            <button type="submit" className="btn btn-sm btn-primary">
-              Enviar
+            <button type="submit" className="btn btn-sm btn-primary" disabled={fetcher.state === "submitting"}>
+              {fetcher.state === "submitting" ? "Enviando..." : "Enviar"}
             </button>
           </div>
         </div>
