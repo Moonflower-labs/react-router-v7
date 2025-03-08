@@ -52,7 +52,6 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
 
   const userPrefs = await getUserPrefs(request);
   const theme = userPrefs?.theme ?? "florBlanca";
-  // const user = await getUserById(userId);
   const totalItemCount = await getCartItemsCount(String(userId));
 
   return { user, totalItemCount, theme, honeypotInputProps };
