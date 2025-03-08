@@ -1,7 +1,31 @@
-import { Link, Outlet, useLocation } from 'react-router'
+import { href, Link, Outlet, redirect, useLocation } from 'react-router'
+import { getUserSubscription } from '~/models/subscription.server';
+import type { Route } from './+types';
+import { getUserIdWithRole } from '~/utils/session.server';
 
 const links = [{ to: "/members/soul#videos", name: "Videos" }, { to: "/members/soul#podcasts", name: "Podcasts" }, { to: "/members/soul/question", name: "Pregunta" }]
 
+
+const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
+    console.log("soul middleware")
+    const { isAdmin, userId } = await getUserIdWithRole(request)
+    if (isAdmin) {
+        console.log("user is ADMIN")
+        return;
+    }
+    if (!userId || userId.startsWith("guest-")) {
+        console.log("Please Log in")
+        throw redirect(href("/login"), 302);
+    }
+    const userSubscription = await getUserSubscription(userId)
+    const planName = userSubscription?.plan.name
+    if (!planName || planName !== "Espíritu" && planName !== "Alma") {
+        console.log("Your plan has no access to alma!")
+        throw redirect(href("/plans"), 302);
+    }
+};
+
+export const unstable_middleware = [membersAuth]
 
 export default function Layout() {
     const { hash, pathname } = useLocation();
