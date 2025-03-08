@@ -2,7 +2,7 @@ import { href, Link, Outlet, redirect } from "react-router";
 import type { Route } from "./+types/index";
 import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
-import { getSubscriptionData, stripe } from "~/integrations/stripe";
+import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integrations/stripe";
 import type Stripe from "stripe";
 import { GoArrowRight } from "react-icons/go";
 import InfoAlert from "~/components/shared/info";
@@ -22,18 +22,20 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (subscription.status === "past_due") {
     throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscription.id}&plan=${subscription.plan.name}`)
   }
-  const planData = getSubscriptionData(subscription?.plan?.name as string);
+
+  const planData = getSubscriptionData(subscription?.plan?.name as SubscriptionPlan["name"]);
   const stripeSubscription = await stripe.subscriptions.retrieve(subscription?.id as string, { expand: ["default_payment_method"] }) as Stripe.Subscription;
   const paymentMethod = stripeSubscription?.default_payment_method as Stripe.PaymentMethod ?? null;
 
-  return { subscription, paymentMethod, planData }
+  return { subscription, paymentMethod, planData, stripeSubscription }
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
-  const subscription = loaderData?.subscription;
-  const paymentMethod = loaderData?.paymentMethod;
-  const planData = loaderData?.planData;
+  const { subscription, paymentMethod, planData } = loaderData;
   const isPastDue = subscription.status === "past_due"
+
+  console.log(loaderData.stripeSubscription)
+  console.log(subscription)
 
 
 
@@ -85,14 +87,14 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         {/* Only show for active subscriptions */}
         {!isPastDue ? (
           <>
-            <div className="flex flex-row gap-4 justify-between items-center">
+            {paymentMethod ? <div className="flex flex-row gap-4 justify-between items-center">
               <span className="font-bold">
                 Cambiar Plan
               </span>
               <Link to={"/profile/subscription/update"} className="btn btn-sm btn-primary btn-outline" preventScrollReset>
                 <GrUpdate size={24} />
               </Link>
-            </div>
+            </div> : null}
             {!subscription?.cancellationDate && (
               <div className="flex flex-row gap-4 justify-between items-center">
                 <span className="font-bold">
@@ -143,7 +145,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               </Link>
             </div>
           </div>
-          <Outlet context={{ subscription, paymentMethod }} />
+          <Outlet />
         </div>
       ) : (
         <div className="text-xl text-center text-semibold pt-8">No tienes ninguna suscripción.</div>

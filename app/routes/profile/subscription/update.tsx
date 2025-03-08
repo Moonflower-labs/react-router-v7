@@ -1,4 +1,4 @@
-import { data, Form, href, Link, redirect, useNavigation, useOutletContext, useSubmit } from "react-router";
+import { data, Form, href, Link, redirect, useNavigation, useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import { useCallback, useState } from "react";
 import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeSubscription } from "~/integrations/stripe";
 import type { Route } from "./+types/update";
@@ -79,7 +79,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function UpdateSubscriptionPage({ loaderData, actionData }: Route.ComponentProps) {
-  const { subscription }: any = useOutletContext() || {};
+  const { subscription } = useRouteLoaderData("profile-subscription");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const previewInvoice = actionData?.preview;
   const previewInvoiceRef = useCallback((node: HTMLDivElement | null) => node?.scrollIntoView({ behavior: "smooth" }), [previewInvoice])
