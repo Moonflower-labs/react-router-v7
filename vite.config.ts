@@ -5,12 +5,12 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { remixPWA } from "@remix-pwa/dev";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [
-    mode === "development" && reactRouterDevTools(),
     tailwindcss(),
+    reactRouterDevTools(),
     reactRouter(),
     tsconfigPaths(),
     remixPWA()
-  ].filter(Boolean)
-}));
+  ]
+});
