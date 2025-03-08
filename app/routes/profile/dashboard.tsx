@@ -67,44 +67,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               avatars={avatars}
               selectedAvatar={selectedAvatar}
               setSelectedAvatar={setSelectedAvatar}
-              submit={submit} />
-
-            {/* <div className="w-full">
-              <label htmlFor="avatar" className="label">Select Avatar</label>
-              <div className="avatar-selector grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                {avatars.length > 0 ? (
-                  avatars.map((avatar: any) => {
-                    const thumbnailUrl = avatar.secure_url.replace(
-                      '/upload/',
-                      '/upload/w_100,h_100,c_fill,g_auto,q_auto/'
-                    );
-                    return (
-                      <div
-                        key={avatar.asset_id}
-                        className={`avatar-option cursor-pointer rounded-lg overflow-hidden border-2 ${avatar.secure_url === avatar ? 'border-primary' : 'border-transparent'
-                          } hover:border-primary transition-all`}
-                        onClick={() => {
-                          setSelectedAvatar(avatar.secure_url);
-                          submit(
-                            { avatar: avatar.secure_url },
-                            { method: 'POST', navigate: false }
-                          );
-                        }}
-                      >
-                        <div key={avatar.asset_id} className="avatar mx-auto mb-4">
-                          <div className={`w-24 rounded-full ${avatar.secure_url === selectedAvatar ? "border-4 border-primary" : ""}`}>
-                            <img src={thumbnailUrl} className="object-top" />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="col-span-full text-center">No avatars disponibles</p>
-                )}
-              </div>
-            </div> */}
-
+              submit={submit}
+            />
           </div>
 
           <div className="rounded-lg border shadow-lg p-4 text-center flex flex-col">

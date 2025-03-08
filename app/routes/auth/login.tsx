@@ -50,6 +50,11 @@ export async function action({ request }: Route.ActionArgs) {
   if (!user) {
     return { errors: { email: "Invalid email or password", password: null } }
   }
+  const allowedAdmins = process.env.ADMIN_LIST
+    ? process.env.ADMIN_LIST.split(",").map((email) => email.trim())
+    : [];
+  const isAdmin = !!allowedAdmins?.includes(user.email)
+  console.log("IS ADMIN: ", isAdmin)
   // Manage cart merging
   const guestId = (await getUserId(request)) as string;
   await mergeGuestCart(guestId, user?.id);
@@ -57,6 +62,7 @@ export async function action({ request }: Route.ActionArgs) {
   // create user session
   return createUserSession({
     redirectTo,
+    isAdmin,
     remember: Boolean(remember === "on") ? true : false,
     request,
     userId: user.id

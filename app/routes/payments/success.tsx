@@ -53,8 +53,9 @@ export default function Success({ loaderData }: Route.ComponentProps) {
     if (intent) {
       switch (intent?.status) {
         case "succeeded":
-          setMessage("Pago realizado con éxito!");
+          setMessage(`${mode === "setup" ? "Setup" : "Pago"} realizado con éxito!`);
           break;
+
         case "processing":
           setMessage("El pago se está procesando");
           break;
@@ -80,6 +81,11 @@ export default function Success({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
           <p>Visita la <Link to={"/members"} className="link link-primary">sección de miembros</Link></p>
+        </div>
+      ) : mode === "setup" ? (
+        <div className="p-10">
+          <p>Gracias por actualizar tu método de pago!.</p>
+          <div className="mb-3">El método de pago ha sido guardado y será utilizado para futuros pagos de su suscripción.</div>
         </div>
       ) : (
         <div className="p-10">

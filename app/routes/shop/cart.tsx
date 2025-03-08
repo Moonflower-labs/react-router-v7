@@ -2,23 +2,20 @@ import { data, href, Link } from "react-router";
 import type { Route } from "./+types/cart";
 import { CartItem as Item } from "~/components/shop/CartItem";
 import { addToCart, calculateTotalAmount, getShoppingCart, removeFromCart } from "~/models/cart.server";
-import { getSession, getUserId } from "~/utils/session.server";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { getShippinRates } from "~/models/shippingRate";
-import { getUserById, getUserDiscount } from "~/models/user.server";
+import { getUserDiscount } from "~/models/user.server";
 import { getCustomerBalance, type SubscriptionPlan } from "~/integrations/stripe";
+import { sessionContext, userContext } from "~/utils/contexts.server";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request)
-  const [cart, user, shippingRates] = await Promise.all([
-    getShoppingCart(userId!),
-    getUserById(userId!),
-    getShippinRates()
-  ])
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext)
+  const user = context.get(userContext)
+  const userId = session.get("userId")
+  const [cart, shippingRates] = await Promise.all([getShoppingCart(userId as string), getShippinRates()])
 
-  const planName = user?.subscription?.plan?.name as SubscriptionPlan["name"]
-  const discount = getUserDiscount(planName)
+  const discount = getUserDiscount(user?.subscription?.plan?.name as SubscriptionPlan["name"])
   const totalAmount = calculateTotalAmount(cart?.cartItems || [], discount);
 
   if (!user) return { cart, totalAmount, shippingRates, discount };
@@ -31,12 +28,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { cart, totalAmount, shippingRates, discount, customerBalance };
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const action = formData.get("action");
-  const session = await getSession(request);
-  const userId = session.get("userId");
   const priceId = formData.get("priceId");
+  const session = context.get(sessionContext)
+  const userId = session.get("userId");
 
   switch (action) {
     case "addToCart":

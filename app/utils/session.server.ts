@@ -7,6 +7,8 @@ import { getUserById } from "~/models/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
+export type Session = Awaited<ReturnType<typeof getSession>>;
+
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__lfb_session",
@@ -32,12 +34,28 @@ export async function getUserId(
   const userId = session.get(USER_SESSION_KEY);
   return userId;
 }
-export async function setGuestId(request: Request) {
+
+export async function getUserIdWithRole(
+  request: Request
+): Promise<{ userId: User["id"] | undefined; isAdmin: Boolean }> {
   const session = await getSession(request);
+  const userId = session.get(USER_SESSION_KEY);
+  const isAdmin = session.get("isAdmin") ?? false;
+  return { userId, isAdmin };
+}
+
+export function setGuestId(session: Session) {
   const guestId = `guest-${randomUUID()}`;
   session.set(USER_SESSION_KEY, guestId);
   return session;
 }
+
+// export async function setGuestId(request: Request) {
+//   const session = await getSession(request);
+//   const guestId = `guest-${randomUUID()}`;
+//   session.set(USER_SESSION_KEY, guestId);
+//   return session;
+// }
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
@@ -75,15 +93,18 @@ export async function createUserSession({
   request,
   userId,
   remember,
+  isAdmin = false,
   redirectTo
 }: {
   request: Request;
   userId: string;
+  isAdmin: boolean;
   remember: boolean;
   redirectTo: string;
 }) {
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
+  session.set("isAdmin", isAdmin);
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {

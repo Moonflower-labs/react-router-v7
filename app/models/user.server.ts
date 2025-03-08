@@ -13,16 +13,17 @@ import { createCustomer, type SubscriptionPlan } from "~/integrations/stripe";
 
 export interface User extends PrismaUser {
   profile: Profile | null;
-  shippingAddress: ShippingAddress[];
-  subscription: UserSubscription;
+  shippingAddress?: ShippingAddress[];
+  subscription: UserSubscription | null;
 }
 
 export interface UserSubscription extends Subscription {
   plan: Plan;
 }
 
-export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({
+export async function getUserById(id: User["id"] | undefined) {
+  if (!id) return null;
+  return await prisma.user.findUnique({
     where: { id },
     include: {
       profile: true,
