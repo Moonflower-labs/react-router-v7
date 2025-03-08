@@ -1,5 +1,7 @@
 import { prisma } from "~/db.server";
 
+export type UserSubscription = Awaited<ReturnType<typeof getUserSubscription>>;
+
 export async function getUserSubscription(userId: string) {
   return prisma.subscription.findUnique({
     where: { userId },

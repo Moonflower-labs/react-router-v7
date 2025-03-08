@@ -6,6 +6,8 @@ export interface Favorite extends PrismaFav {
   video?: Video | null | undefined;
 }
 
+export type UserWithProfile = Awaited<ReturnType<typeof getUserProfile>>;
+
 export async function getUserProfile(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },
