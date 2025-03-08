@@ -38,6 +38,7 @@ export default [
     route("invoices", "routes/profile/invoices.tsx"),
     route("orders/", "routes/profile/orders/list.tsx"),
     route("orders/:orderId", "routes/profile/orders/detail.tsx"),
+    route("questions/", "routes/profile/questions.tsx"),
     route(
       "subscription",
       "routes/profile/subscription/index.tsx",
@@ -51,7 +52,6 @@ export default [
       "subscription/confirmation",
       "routes/profile/subscription/confirmation.tsx"
     ),
-    route("questions", "routes/profile/questions.tsx"),
     route("settings", "routes/profile/settings.tsx")
   ]),
 
