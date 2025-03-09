@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Plan" ADD COLUMN     "amount" INTEGER NOT NULL DEFAULT 995;

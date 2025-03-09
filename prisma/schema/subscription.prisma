@@ -1,21 +1,21 @@
 model Subscription {
-  id     String @id
-  status String
-  user   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
-  userId String @unique
-  plan   Plan   @relation(fields: [planId], references: [id])
-  planId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String    @id
+  status           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String    @unique
+  plan             Plan      @relation(fields: [planId], references: [id])
+  planId           String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
   cancellationDate DateTime?
 }
 
 model Plan {
-  id      String @id @default(cuid())
-  name    String
-  priceId String
-
+  id           String         @id @default(cuid())
+  name         String
+  priceId      String
+  amount       Int            @default(995)
+  thumbnail    String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   subscription Subscription[]
