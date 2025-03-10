@@ -116,16 +116,16 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
                             </span>
                         </div>
                         <div className="flex gap-3 items-center">
-                            <Link to={`${session.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
+                            <Link to={`${session.id}/detail`} className="btn btn-circle btn-sm btn-ghost shadow" viewTransition>
                                 <FaEye size={24} />
                             </Link>
-                            <Link to={`${session.id}/edit`} className="btn btn-sm btn-outline btn-info" viewTransition>
-                                <CiEdit size={24} />
+                            <Link to={href("/admin/live-sessions/edit/:sessionId", { sessionId: session.id })} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                                <CiEdit size={24} className="text-info" />
                             </Link>
                             <Form method="post" onSubmit={handleSbubmit}>
                                 <input type="hidden" name="date" value={session.createdAt.toISOString()} />
-                                <button type="submit" name="sessionId" value={session.id} className=" btn btn-sm btn-outline btn-error">
-                                    <ImBin size={24} />
+                                <button type="submit" name="sessionId" value={session.id} className="btn btn-circle btn-sm btn-ghost shadow">
+                                    <ImBin size={24} className="text-error" />
                                 </button>
                             </Form>
                         </div>

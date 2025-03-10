@@ -1,6 +1,6 @@
 import { createSession } from "~/utils/chat.server";
 import type { Route } from "./+types/create";
-import { Form, href, redirect } from "react-router";
+import { Form, href, redirect, useNavigation } from "react-router";
 
 
 export async function action({ request }: Route.ActionArgs) {
@@ -11,6 +11,7 @@ export async function action({ request }: Route.ActionArgs) {
     const name = formData.get("name");
     const link = formData.get("link");
 
+
     try {
         await createSession({
             name: name as string,
@@ -20,8 +21,6 @@ export async function action({ request }: Route.ActionArgs) {
             link: link as string
         });
 
-        return redirect(href("/admin/live-sessions"));
-
     } catch (error) {
         console.error(error);
         if (error instanceof Error) {
@@ -29,16 +28,18 @@ export async function action({ request }: Route.ActionArgs) {
         }
         return {};
     }
+
+    return redirect(href("/admin/live-sessions"));
 }
 
 
 export default function CreateSession({ }: Route.ComponentProps) {
-
+    const navigation = useNavigation()
 
     return (
         <main>
             <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Crea una Sessión</h1>
-            <Form action="/admin/live-sessions/create" method="post" >
+            <Form method="POST" >
                 <div className="card gap-4 w-fit p-4 mx-auto bg-base-200 border border-base-300">
                     <label className="floating-label">
                         <span>Nombre</span>
@@ -59,7 +60,7 @@ export default function CreateSession({ }: Route.ComponentProps) {
                     </label>
                     <label htmlFor="description">Descripción</label>
                     <textarea name="description" id="description" className="textarea" required />
-                    <button type="submit" className="btn btn-primary">Crear Sessión</button>
+                    <button type="submit" className="btn btn-primary" disabled={navigation.state !== "idle"}>Crear Sessión</button>
                 </div>
             </Form>
         </main>

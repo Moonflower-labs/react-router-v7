@@ -1,8 +1,5 @@
 import { prisma } from "~/db.server";
-import {
-  redisPublisher,
-  redisSubscriber
-} from "~/integrations/redis/service.server";
+import { redisPublisher, redisSubscriber } from "~/integrations/redis/service.server";
 import type { User } from "~/models/user.server";
 
 const DEMO_USER_ID = "demo-user-id";
@@ -49,11 +46,7 @@ export async function getMissedMessages(roomId: string, since: string) {
   });
 }
 
-export async function addMessage(
-  roomId: string,
-  text: string,
-  userId: string = DEMO_USER_ID
-) {
+export async function addMessage(roomId: string, text: string, userId: string = DEMO_USER_ID) {
   const message = await prisma.message.create({
     data: {
       text,
@@ -68,10 +61,7 @@ export async function addMessage(
   return message;
 }
 
-export function subscribeToMessages(
-  roomId: string,
-  callback: (message: any) => void
-) {
+export function subscribeToMessages(roomId: string, callback: (message: any) => void) {
   const channel = `chat:${roomId}`;
 
   const handleMessage = (message: string, ch: string) => {
@@ -79,10 +69,7 @@ export function subscribeToMessages(
       try {
         callback(JSON.parse(message));
       } catch (error) {
-        console.error(
-          `[${new Date().toISOString()}] Failed to parse message on ${channel}:`,
-          error
-        );
+        console.error(`[${new Date().toISOString()}] Failed to parse message on ${channel}:`, error);
       }
     }
   };
@@ -97,10 +84,7 @@ export function subscribeToMessages(
   };
 }
 
-export function subscribeToMessagesgood(
-  roomId: string,
-  callback: (message: any) => void
-) {
+export function subscribeToMessagesgood(roomId: string, callback: (message: any) => void) {
   const channel = `chat:${roomId}`;
   const participantKey = `room:${roomId}:participants`;
   const clientId = crypto.randomUUID(); // Unique identifier for this client
@@ -116,10 +100,7 @@ export function subscribeToMessagesgood(
     await redisPublisher.sAdd(participantKey, clientId);
     await redisPublisher.expire(participantKey, 30); // Set expiration to clean up stale entries
     const count = await redisPublisher.sCard(participantKey);
-    await redisPublisher.publish(
-      channel,
-      JSON.stringify({ event: "participants", data: count })
-    );
+    await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
   };
 
   // Initial subscription and participant update
@@ -133,10 +114,7 @@ export function subscribeToMessagesgood(
     redisSubscriber.unsubscribe(channel, handleMessage);
     redisPublisher.sRem(participantKey, clientId).then(async () => {
       const count = await redisPublisher.sCard(participantKey);
-      redisPublisher.publish(
-        channel,
-        JSON.stringify({ event: "participants", data: count })
-      );
+      redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
     });
   };
 }
@@ -179,7 +157,7 @@ export async function createSession(data: CreateSessionProps) {
 }
 
 export async function editSession(data: CreateSessionProps) {
-  return await prisma.session.update({
+  const session = await prisma.session.update({
     where: { id: data.id },
     data: {
       name: data.name,
@@ -187,8 +165,20 @@ export async function editSession(data: CreateSessionProps) {
       endDate: data.endDate,
       description: data.description,
       link: data.link
-    }
+    },
+    include: { room: true }
   });
+  //  Update also room name
+  if (session?.room?.id) {
+    await prisma.room.update({
+      where: { id: session.room.id },
+      data: {
+        name: data.name
+      }
+    });
+  }
+
+  return session;
 }
 
 export async function deleteSession(id: string) {
@@ -236,8 +226,7 @@ export async function getRoomStatus(roomId: string) {
     where: { id: roomId },
     include: { session: true }
   });
-  if (!room?.session)
-    return { status: "closed", message: "No hay sesión asociada" };
+  if (!room?.session) return { status: "closed", message: "No hay sesión asociada" };
 
   const now = new Date();
   const startDate = new Date(room.session.startDate);

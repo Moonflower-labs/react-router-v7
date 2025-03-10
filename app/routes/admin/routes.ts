@@ -12,21 +12,16 @@ export const adminRoutes = [
     //  Emails
     ...prefix("emails", [index("routes/admin/emails/send.tsx")]),
     //  Gallery
-    ...prefix("gallery", [
-      index("routes/admin/gallery/list.tsx"),
-      route("upload", "routes/admin/gallery/upload.tsx")
-    ]),
+    ...prefix("gallery", [index("routes/admin/gallery/list.tsx"), route("upload", "routes/admin/gallery/upload.tsx")]),
     // Live Sessions
     ...prefix("live-sessions", [
       index("routes/admin/live-sessions/list.tsx"),
-      route("create", "routes/admin/live-sessions/create.tsx")
+      route("create/", "routes/admin/live-sessions/create.tsx"),
+      route("edit/:sessionId", "routes/admin/live-sessions/edit.tsx")
       // route(":id/detail", "routes/admin/live-sessions/detail.tsx")
     ]),
     //  Orders
-    ...prefix("orders", [
-      index("routes/admin/orders/list.tsx"),
-      route(":id/detail", "routes/admin/orders/detail.tsx")
-    ]),
+    ...prefix("orders", [index("routes/admin/orders/list.tsx"), route(":id/detail", "routes/admin/orders/detail.tsx")]),
     //  Posts
     ...prefix("post", [
       index("routes/admin/posts/list.tsx"),
@@ -58,6 +53,8 @@ export const adminRoutes = [
       route("create", "routes/admin/videos/create.tsx"),
       route(":id/edit", "routes/admin/videos/edit.tsx")
     ]),
+    //  Webhooks
+    route("stripe", "routes/admin/stripe/layout.tsx", [index("routes/admin/stripe/test-past_due.tsx")]),
     //  Webhooks
     ...prefix("webhooks", [
       index("routes/admin/webhooks/list.tsx"),
