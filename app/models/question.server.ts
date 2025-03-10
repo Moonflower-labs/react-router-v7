@@ -32,9 +32,7 @@ export async function getQuestions({
       skip,
       include: { user: { select: { username: true } } }
     });
-    totalCount = await prisma.question.count({
-      where: {}
-    });
+    totalCount = await prisma.question.count();
   } else {
     questions = await prisma.premiumQuestion.findMany({
       where: { section },
@@ -42,10 +40,10 @@ export async function getQuestions({
       take,
       skip
     });
+    totalCount = await prisma.premiumQuestion.count({
+      where: { section: section as string }
+    });
   }
-  totalCount = await prisma.premiumQuestion.count({
-    where: { section: section as string }
-  });
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
