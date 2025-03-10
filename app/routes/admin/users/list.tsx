@@ -47,7 +47,7 @@ export default function UserList({ loaderData, actionData }: Route.ComponentProp
   return (
     <div className="mb-3">
       <h2 className="text-2xl text-primary text-center font-bold my-4">Usuarios</h2>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {users &&
           users.map(user => (
             <div key={user.id} className="card bg-base-100 shadow-sm">
