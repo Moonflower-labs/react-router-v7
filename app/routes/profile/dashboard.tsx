@@ -11,7 +11,7 @@ import QuestionsCard, { QuestionsSkeleton } from "~/components/dashboard/Questio
 import { AvatarCard, AvatarSkeleton } from "~/components/dashboard/AvatarCard";
 import { SubscriptionCard, SubscriptionSkeleton } from "~/components/dashboard/SubscriptionCard";
 import { fetchAvatars } from "~/integrations/cloudinary/utils.server";
-import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe";
+import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import { getUserContext } from "~/utils/contexts.server";
 
 

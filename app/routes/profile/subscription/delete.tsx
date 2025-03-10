@@ -1,6 +1,6 @@
 import { Form, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/delete";
-import { cancelStripeSubscription } from "~/integrations/stripe";
+import { cancelStripeSubscription } from "~/integrations/stripe/index.server";
 import { formatDate } from "~/utils/format";
 import { useCallback } from "react";
 

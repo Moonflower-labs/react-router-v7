@@ -1,7 +1,7 @@
 import { Form } from 'react-router'
 import ActionError from '~/components/framer-motion/ActionError'
 import type { Route } from './+types/create';
-import { createWebhookEndpoint } from '~/integrations/stripe';
+import { createWebhookEndpoint } from '~/integrations/stripe/webhook.server';
 
 
 

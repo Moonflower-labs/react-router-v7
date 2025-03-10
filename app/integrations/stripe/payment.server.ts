@@ -20,13 +20,7 @@ export async function createPaymentIntent({
     // automatic_payment_methods: {
     //   enabled: true
     // },
-    payment_method_types: [
-      "card",
-      "afterpay_clearpay",
-      "klarna",
-      "link",
-      "wechat_pay"
-    ],
+    payment_method_types: ["card", "afterpay_clearpay", "klarna", "link", "wechat_pay"],
     metadata: {
       ...metadata,
       orderId
@@ -99,16 +93,16 @@ export async function retrievePaymentIntent(id: string) {
 }
 
 // Deduct customer balance used, handling negative balance
-export async function deductBalanceUsed(
-  customerId: string,
-  amountUsed: number
-) {
-  const customer = (await stripe.customers.retrieve(
-    customerId
-  )) as Stripe.Customer;
-  const currentBalance = customer.balance ?? 0; // Handle null balance
+// export async function deductBalanceUsed(
+//   customerId: string,
+//   amountUsed: number
+// ) {
+//   const customer = (await stripe.customers.retrieve(
+//     customerId
+//   )) as Stripe.Customer;
+//   const currentBalance = customer.balance ?? 0; // Handle null balance
 
-  // Deduct from balance (Note: balance is negative when customer has credits)
-  const newBalance = currentBalance + amountUsed;
-  await stripe.customers.update(customerId, { balance: newBalance });
-}
+//   // Deduct from balance (Note: balance is negative when customer has credits)
+//   const newBalance = currentBalance + amountUsed;
+//   await stripe.customers.update(customerId, { balance: newBalance });
+// }

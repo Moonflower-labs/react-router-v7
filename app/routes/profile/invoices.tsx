@@ -1,4 +1,4 @@
-import { getCustomerId } from "~/integrations/stripe";
+import { getCustomerId } from "~/integrations/stripe/index.server";
 import type { Route } from "./+types/invoices";
 import { requireUserId } from "~/utils/session.server";
 import { listInvoices } from "~/integrations/stripe/invoice.server";

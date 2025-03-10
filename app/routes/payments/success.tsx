@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { href, Link, useLocation, useRouteLoaderData } from "react-router";
 import type { PaymentIntent, SetupIntent } from "@stripe/stripe-js";
-import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe";
+import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { retrievePaymentIntent } from "~/integrations/stripe/payment.server";
 import type { Route } from "./+types/success";
 import { deleteCart } from "~/models/cart.server";

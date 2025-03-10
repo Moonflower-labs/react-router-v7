@@ -2,7 +2,7 @@ import { href, Link, Outlet, redirect } from "react-router";
 import type { Route } from "./+types/index";
 import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
-import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integrations/stripe";
+import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import type Stripe from "stripe";
 import { GoArrowRight } from "react-icons/go";
 import InfoAlert from "~/components/shared/info";

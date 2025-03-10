@@ -1,7 +1,7 @@
 import { Form, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/test-past_due";
 import type { User } from "~/models/user.server";
-import { stripe } from "~/integrations/stripe";
+import { stripe } from "~/integrations/stripe/stripe.server";
 
 
 export async function action({ request }: Route.ActionArgs) {

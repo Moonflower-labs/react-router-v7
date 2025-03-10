@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
-import { deductBalanceUsed, stripe, type SubscriptionPlan } from "~/integrations/stripe";
+import { type SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { createSubscriptionPlan, getSubscriptionPlan } from "~/models/plan.server";
 import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/models/user.server";
 import {
@@ -11,6 +11,8 @@ import {
   sendSubscriptionUpdatedEmail
 } from "../mailer/utils.server";
 import type { ExtendedOrder } from "~/models/order.server";
+import { stripe } from "./stripe.server";
+import { deductBalanceUsed } from "./customer.server";
 
 export async function getStripeEvent(request: Request) {
   invariant(process.env.WEBHOOK_SIGNING_SECRET, "Please set the WEBHOOK_SIGNING_SECRET env variable");

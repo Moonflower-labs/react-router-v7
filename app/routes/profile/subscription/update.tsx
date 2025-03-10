@@ -1,6 +1,6 @@
 import { data, Form, href, Link, redirect, useNavigation, useRouteLoaderData, useSubmit } from "react-router";
 import { useCallback, useState } from "react";
-import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeAndUserSubscription } from "~/integrations/stripe";
+import { PLANS, updateStripeAndUserSubscription } from "~/integrations/stripe/subscription.server";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
 import { formatUnixDate } from "~/utils/format";
@@ -8,6 +8,7 @@ import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
 import { getSessionContext } from "~/utils/contexts.server";
+import { isSubscriptionDefaultPaymentMethodValid } from "~/integrations/stripe/customer.server";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)

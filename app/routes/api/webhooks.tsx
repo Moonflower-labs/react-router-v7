@@ -1,4 +1,4 @@
-import { getStripeEvent, handleCustomerCreated, handleInvoicePaid, handlePaymentAttached, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
+import { getStripeEvent, handleCustomerCreated, handlePaymentAttached, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe/index.server";
 import type { Route } from "./+types/webhooks";
 import { prisma } from "~/db.server";
 

@@ -1,5 +1,5 @@
 import { prisma } from "~/db.server";
-import { stripe } from "~/integrations/stripe";
+import { stripe } from "~/integrations/stripe/stripe.server";
 import type { Route } from "./+types/update-guest-order";
 
 export async function action({ request }: Route.ActionArgs) {

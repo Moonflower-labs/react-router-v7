@@ -2,7 +2,7 @@ import { transporter } from "./mailer.server";
 import { renderWelcomeEmail } from "./html-templates/welcome";
 import { renderNewOrderEmail } from "./html-templates/new-order";
 import type { ExtendedOrder } from "~/models/order.server";
-import { getSubscriptionData, type SubscriptionPlan } from "../stripe";
+import { getSubscriptionData, type SubscriptionPlan } from "../stripe/subscription.server";
 import { renderNewSubscriptionEmail } from "./html-templates/new-subscription";
 import { renderMissedSubscriptionPaymentEmail } from "./html-templates/missed-payment";
 import { renderResetPasswordEmail } from "./html-templates/reset-password";

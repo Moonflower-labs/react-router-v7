@@ -13,7 +13,7 @@ import {
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
 import { href } from "react-router";
-import type { SubscriptionPlan } from "~/integrations/stripe";
+import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 
 
 interface UpdatedSubscriptionEmailProps {

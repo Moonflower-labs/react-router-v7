@@ -1,7 +1,8 @@
 import { Form, href, redirect } from 'react-router'
 import ActionError from '~/components/framer-motion/ActionError'
 import type { Route } from './+types/edit';
-import { editWebhookEndpoint, stripe } from '~/integrations/stripe';
+import { editWebhookEndpoint } from '~/integrations/stripe/webhook.server';
+import { stripe } from '~/integrations/stripe/stripe.server';
 
 export async function loader({ params }: Route.LoaderArgs) {
     const weebhookEndpoint = await stripe.webhookEndpoints.retrieve(params.id)

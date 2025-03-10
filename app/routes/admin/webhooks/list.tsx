@@ -1,6 +1,6 @@
 import type { Route } from "./+types/list";
 import { data, Form, Link } from "react-router";
-import { deleteWebhookEndpoint, listWebhookEndpoints } from "~/integrations/stripe";
+import { deleteWebhookEndpoint, listWebhookEndpoints } from "~/integrations/stripe/webhook.server";
 import { ImBin } from "react-icons/im";
 import { formatUnixDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";

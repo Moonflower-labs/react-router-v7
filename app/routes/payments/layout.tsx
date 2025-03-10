@@ -3,7 +3,7 @@ import { data, href, Outlet, redirect } from "react-router";
 import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
-import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe";
+import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import { getUser, getUserId } from "~/utils/session.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";

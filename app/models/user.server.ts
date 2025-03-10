@@ -2,7 +2,8 @@ import type { Password, Plan, User as PrismaUser, Profile, ShippingAddress, Subs
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
-import { createCustomer, type SubscriptionPlan } from "~/integrations/stripe";
+import { createCustomer } from "~/integrations/stripe/customer.server";
+import { type SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 
 export interface User extends PrismaUser {
   profile: Profile | null;
