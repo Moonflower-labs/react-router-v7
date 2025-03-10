@@ -1,16 +1,17 @@
-import { data, isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/root";
 import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
-import { sessionStorage, setGuestId } from "./utils/session.server";
+import { setGuestId } from "./utils/session.server";
 import { getCartItemsCount } from "./models/cart.server";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
 import { HoneypotProvider } from "remix-utils/honeypot/react"
 import "./app.css";
-import { userMiddleware, userContext, sessionMiddleware, sessionContext } from "./utils/contexts.server";
+import { userMiddleware, sessionMiddleware, getUserContext, getSessionContext } from "./utils/contexts.server";
+import { useEffect } from "react";
 
 
 export const unstable_middleware = [sessionMiddleware, userMiddleware]
@@ -36,25 +37,21 @@ export const links: Route.LinksFunction = () => [
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const honeypotInputProps = await honeypot.getInputProps()
-  const user = context.get(userContext);
-  const session = context.get(sessionContext);
+  const user = getUserContext(context);
+  const session = getSessionContext(context);
   const userId = session.get("userId");
+  const toastMessage = session.get("toastMessage")
 
   if (!userId) {
     // Ensure there's always a userId to assocciate the cart to
-    const guestSession = setGuestId(session);
-    return data({ honeypotInputProps }, {
-      headers: {
-        "Set-Cookie": await sessionStorage.commitSession(guestSession)
-      }
-    });
+    setGuestId(session);
   }
 
   const userPrefs = await getUserPrefs(request);
   const theme = userPrefs?.theme ?? "florBlanca";
   const totalItemCount = await getCartItemsCount(String(userId));
 
-  return { user, totalItemCount, theme, honeypotInputProps };
+  return { user, totalItemCount, theme, honeypotInputProps, toastMessage };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -97,6 +94,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App({ loaderData }: Route.ComponentProps) {
+  const { toastMessage } = loaderData
+  useEffect(() => {
+    if (toastMessage) {
+      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message)
+    }
+  }, [toastMessage])
 
   return (
     <HoneypotProvider {...loaderData?.honeypotInputProps}>

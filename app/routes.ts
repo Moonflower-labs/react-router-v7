@@ -39,19 +39,10 @@ export default [
     route("orders/", "routes/profile/orders/list.tsx"),
     route("orders/:orderId", "routes/profile/orders/detail.tsx"),
     route("questions/", "routes/profile/questions.tsx"),
-    route(
-      "subscription",
-      "routes/profile/subscription/index.tsx",
-      { id: "profile-subscription" },
-      [
-        route("update", "routes/profile/subscription/update.tsx"),
-        route("delete", "routes/profile/subscription/delete.tsx")
-      ]
-    ),
-    route(
-      "subscription/confirmation",
-      "routes/profile/subscription/confirmation.tsx"
-    ),
+    route("subscription", "routes/profile/subscription/index.tsx", { id: "profile-subscription" }, [
+      route("update", "routes/profile/subscription/update.tsx"),
+      route("delete", "routes/profile/subscription/delete.tsx")
+    ]),
     route("settings", "routes/profile/settings.tsx")
   ]),
 

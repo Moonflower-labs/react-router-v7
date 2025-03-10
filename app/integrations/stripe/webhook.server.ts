@@ -1,20 +1,9 @@
 import type Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
-import {
-  deductBalanceUsed,
-  stripe,
-  type SubscriptionPlan
-} from "~/integrations/stripe";
-import {
-  createSubscriptionPlan,
-  getSubscriptionPlan
-} from "~/models/plan.server";
-import {
-  getUserByCustomerId,
-  getUserByEmail,
-  updateUserCustomerId
-} from "~/models/user.server";
+import { deductBalanceUsed, stripe, type SubscriptionPlan } from "~/integrations/stripe";
+import { createSubscriptionPlan, getSubscriptionPlan } from "~/models/plan.server";
+import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/models/user.server";
 import {
   sendMissedSubscriptionPaymentEmail,
   sendOrderEmail,
@@ -24,10 +13,7 @@ import {
 import type { ExtendedOrder } from "~/models/order.server";
 
 export async function getStripeEvent(request: Request) {
-  invariant(
-    process.env.WEBHOOK_SIGNING_SECRET,
-    "Please set the WEBHOOK_SIGNING_SECRET env variable"
-  );
+  invariant(process.env.WEBHOOK_SIGNING_SECRET, "Please set the WEBHOOK_SIGNING_SECRET env variable");
   try {
     const signature = request.headers.get("Stripe-Signature");
     if (!signature) {
@@ -35,11 +21,7 @@ export async function getStripeEvent(request: Request) {
     }
     const payload = await request.text();
 
-    const event = stripe.webhooks.constructEvent(
-      payload,
-      signature,
-      process.env.WEBHOOK_SIGNING_SECRET
-    );
+    const event = stripe.webhooks.constructEvent(payload, signature, process.env.WEBHOOK_SIGNING_SECRET);
 
     return event;
   } catch (error) {
@@ -47,11 +29,7 @@ export async function getStripeEvent(request: Request) {
   }
 }
 
-export async function createWebhookEndpoint(
-  url: string | null,
-  endpoint: string,
-  description: string
-) {
+export async function createWebhookEndpoint(url: string | null, endpoint: string, description: string) {
   const webhookEndpoint = await stripe.webhookEndpoints.create({
     // enabled_events: [
     //   "customer.subscription.created",
@@ -68,18 +46,18 @@ export async function createWebhookEndpoint(
     //   "invoice.finalization_failed"
     // ],
     enabled_events: ["*"],
-    url: !url
-      ? `https://laflorblanca.vercel.app/${endpoint}`
-      : `${url}/${endpoint}`,
+    url: !url ? `https://laflorblanca.vercel.app/${endpoint}` : `${url}/${endpoint}`,
     description
   });
   return webhookEndpoint;
 }
 
-export async function editWebhookEndpoint(id: string) {
+export async function editWebhookEndpoint(id: string, status: "enabled" | "disabled") {
   const webhookEndpoint = await stripe.webhookEndpoints.update(id, {
-    enabled_events: ["*"]
+    enabled_events: ["*"],
+    disabled: status === "enabled" ? false : true
   });
+
   return webhookEndpoint;
 }
 
@@ -110,17 +88,13 @@ export async function handleCustomerCreated(event: Stripe.Event) {
   if (updateResponse) {
     console.info(`Customer ID ${customer.id} added to user ${user.id}.`);
   } else {
-    console.error(
-      `Failed to update user ${user.id} with customer ID ${customer.id}.`
-    );
+    console.error(`Failed to update user ${user.id} with customer ID ${customer.id}.`);
   }
 }
 
 export async function handleSubscriptionCreated(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
-  const plan = await stripe.products.retrieve(
-    subscription.items.data[0].plan.product as string
-  );
+  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
   // Check if plan exists in db or create it
   const existingPlan = await getSubscriptionPlan(plan.id);
   if (!existingPlan) {
@@ -128,7 +102,9 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
     await createSubscriptionPlan({
       id: plan.id,
       name: plan.name,
-      priceId: subscription.items.data[0].price.id
+      priceId: subscription.items.data[0].price.id,
+      amount: subscription.items.data[0].price.unit_amount as number,
+      thumbnail: plan.images[0]
     });
   }
   if (subscription.status !== "active") {
@@ -178,55 +154,50 @@ export async function handleSubscriptionCreated(event: Stripe.Event) {
 
 export async function handleSubscriptionUpdated(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
+  const previousAttributes = event.data.previous_attributes;
+  const updated = subscription.metadata?.updated === "true"; // Subscription already updated in db
+  // Retrieve the plan and price from stripe to compare changes
+  const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
 
-  const plan = await stripe.products.retrieve(
-    subscription.items.data[0].plan.product as string
-  );
   // Check if plan exists in db or create it
   const existingPlan = await getSubscriptionPlan(plan.id);
   if (!existingPlan) {
-    console.info(`Creating new PLAN ${plan.name}`);
+    console.info(`Creating PLAN ${plan.name} in db`);
     await createSubscriptionPlan({
       id: plan.id,
       name: plan.name,
-      priceId: subscription.items.data[0].price.id
+      priceId: subscription.items.data[0].price.id,
+      amount: subscription.items.data[0].price.unit_amount as number,
+      thumbnail: plan.images[0]
     });
   }
 
   const user = await getUserByCustomerId(String(subscription.customer));
   if (!user) {
-    console.error(
-      `Unable to update Subscription. No user with customerId: ${subscription.customer}!`
-    );
+    console.error(`Unable to update Subscription. No user with customerId: ${subscription.customer}!`);
     return;
   }
 
   // Retrieve the user subscription
-  const userSubscription = await prisma.subscription.findUnique({
-    where: { userId: user.id }
+  let userSubscription = await prisma.subscription.findUnique({
+    where: { userId: user.id },
+    include: { plan: true }
   });
 
   switch (subscription.status) {
     case "active": {
       // Handle subscriptions set to cancel
       if (subscription.cancel_at_period_end) {
-        console.info(`Subscription ${subscription.id} is pending cancelation`);
-        console.info(
-          `Subscription will end on ${new Date(
-            subscription.current_period_end * 1000
-          )}`
-        );
-        return prisma.subscription.update({
+        const date = new Date(subscription.current_period_end * 1000);
+        console.info(`Subscription ${subscription.id} is pending cancelation on ${date}`);
+        //  Update de user subscription
+        await prisma.subscription.update({
           where: { id: userSubscription?.id },
-          data: {
-            cancellationDate: new Date(subscription.current_period_end * 1000)
-          }
+          data: { cancellationDate: date }
         });
+        return;
       }
       if (!userSubscription) {
-        console.info(
-          `✅ Saving active subscription for user with Id ${user?.id}...`
-        );
         // Create a new subsbcription
         await prisma.subscription.create({
           data: {
@@ -234,36 +205,40 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
             user: { connect: { id: user.id } },
             status: subscription.status,
             plan: { connect: { id: plan.id } }
+          },
+          include: { plan: true }
+        });
+        console.info(`✅ Saved new active subscription for user: ${user?.username} ${user?.id}`);
+      } else if (!updated) {
+        // Udate Plan and Status for the user Subscription
+        const updatedUserSubscription = await prisma.subscription.update({
+          where: { id: userSubscription.id },
+          data: {
+            status: subscription.status,
+            plan: { connect: { id: plan.id } },
+            cancellationDate: null
           }
         });
-        // Send email confirmation
-        await sendSubscriptionEmail(
-          user?.email,
-          user?.username,
-          plan?.name as SubscriptionPlan["name"]
-        );
-        return;
       }
-      // Udate Plan and Status for the user Subscription
-      const updatedUserSubscription = await prisma.subscription.update({
-        where: { id: userSubscription.id },
-        data: {
-          status: subscription.status,
-          plan: { connect: { id: plan.id } },
-          cancellationDate: null
-        }
-      });
-      console.info("Subscription succesfully updated!");
-      // TODO: plan or status updated
+      console.info("✅ Subscription updated!");
+      // Determine update: NEW, UPGRADE, DOWNGRADE or RENEWAL
+      const updateType = getSubscriptionUpdateType(previousAttributes, subscription);
+      console.info("UPDATE TYPE: ", updateType);
+      // Send email according to update type
+      //  "upgrade" | "downgrade" | "renewal" | "new" | "unknown"
       await sendSubscriptionUpdatedEmail(
         user?.email,
         user?.username,
-        plan?.name as SubscriptionPlan["name"]
+        plan?.name as SubscriptionPlan["name"],
+        updateType
       );
       return;
     }
     case "past_due": {
-      if (!userSubscription) return;
+      if (!userSubscription) {
+        console.info("No user subscription found, unable to update to 'past_due' ");
+        return;
+      }
       // Udate Plan and Status for the user Subscription
       const updatedUserSubscription = await prisma.subscription.update({
         where: { id: userSubscription.id },
@@ -273,12 +248,9 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
         }
       });
 
-      console.info("Subscription updated to past_due ⛔️");
-      await sendMissedSubscriptionPaymentEmail(
-        user?.email,
-        user?.username,
-        plan?.name as SubscriptionPlan["name"]
-      );
+      console.warn(`Subscription updated to ${updatedUserSubscription.status} ⛔️`);
+
+      await sendMissedSubscriptionPaymentEmail(user?.email, user?.username, plan?.name as SubscriptionPlan["name"]);
       return;
     }
     case "unpaid":
@@ -289,12 +261,60 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       await prisma.subscription.delete({
         where: { id: userSubscription.id }
       });
-      console.info(
-        `Subscription with status: ${subscription?.status} deleted!`
-      );
+      console.info(`Subscription with status: ${subscription?.status} deleted!`);
       return;
     }
   }
+}
+
+export async function handleInvoicePaid(event: Stripe.Event) {
+  const invoice = event.data.object as Stripe.Invoice;
+  if (invoice.subscription) {
+    const amount = invoice.lines.data[0].amount;
+    const planName = amount <= 0 ? "Personalidad" : amount === 995 ? "Alma" : "Espíritu";
+
+    console.info(`${planName} invoice of £${invoice.amount_paid / 100} has been paid`);
+    //  We DON"t send email here,
+    // for free subscription -> handleSetupIntetSucccessful
+    // for paid or updated subscriptions -> handleSubscriptionUpdated
+  }
+  return;
+}
+
+function getSubscriptionUpdateType(previousAttributes: any, subscription: Stripe.Subscription) {
+  // No previous attributes or first billing cycle -> New subscription
+  if (!previousAttributes || Object.keys(previousAttributes).length === 0) {
+    return "new";
+  }
+  if (subscription.created === subscription.current_period_start) {
+    return "new";
+  }
+  // Item price changes -> Upgrade or Downgrade
+  if (previousAttributes?.items?.data) {
+    const oldItem = previousAttributes.items.data[0];
+    const newItem =
+      subscription.items.data.find((item: { id: any }) => item.id === oldItem.id) || subscription.items.data[0];
+    const oldPrice = oldItem.price.unit_amount;
+    const newPrice = newItem.price.unit_amount;
+
+    if (newPrice && oldPrice !== newPrice) {
+      return newPrice > oldPrice ? "upgrade" : "downgrade";
+    }
+  }
+  // Period changes without item changes -> Renewal
+  if (
+    (previousAttributes.current_period_start &&
+      previousAttributes.current_period_start !== subscription.current_period_start) ||
+    (previousAttributes.current_period_end && previousAttributes.current_period_end !== subscription.current_period_end)
+  ) {
+    return "renewal";
+  }
+  // Other changes (e.g., metadata) -> Metadata update
+  if (Object.keys(previousAttributes).length > 0 && !previousAttributes.items) {
+    // return "metadata_update"; // No needed
+  }
+  // Fallback
+  return "unknown";
 }
 
 export async function handleSubscriptionDeleted(event: Stripe.Event) {
@@ -302,9 +322,7 @@ export async function handleSubscriptionDeleted(event: Stripe.Event) {
 
   const user = await getUserByCustomerId(String(subscription.customer));
   if (!user) {
-    console.error(
-      `Subscription can't be deleted as no user found with customerId: ${subscription.customer}!`
-    );
+    console.error(`Subscription can't be deleted as no user found with customerId: ${subscription.customer}!`);
     return;
   }
   // Retrieve the user subscription
@@ -391,8 +409,8 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
       }
     });
     let addressId = existingShippingAddress?.id;
+    // Create a new shipping address if it doesn't exist
     if (!existingShippingAddress) {
-      // Create a new shipping address if it doesn't exist
       const newAddress = await prisma.shippingAddress.create({
         data: {
           userId, // Link to the user
@@ -422,29 +440,42 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event) {
       }
     });
 
-    console.info(`Order ${orderId} status updated to succeeded`);
+    console.info(`✅ Order ${orderId} status updated to succeeded`);
 
     // Deduct customer balance if used
     if (usedBalance && Number(usedBalance) > 0) {
-      await deductBalanceUsed(
-        String(paymentIntent.customer),
-        Number(usedBalance)
-      );
-      console.warn(
-        `Deducted ${usedBalance} from customer ${paymentIntent.customer}`
-      );
+      await deductBalanceUsed(String(paymentIntent.customer), Number(usedBalance));
+      console.warn(`Deducted ${usedBalance} from customer ${paymentIntent.customer}`);
     }
 
     // Send email with invoice details
-    await sendOrderEmail(
-      String(user?.email),
-      String(user?.username),
-      order as ExtendedOrder
-    );
+    await sendOrderEmail(String(user?.email), String(user?.username), order as ExtendedOrder);
   } catch (e) {
     console.log(e);
     return;
   }
+}
+
+export async function handlePaymentIntentFailed(event: Stripe.Event) {
+  const paymentIntent = event.data.object as Stripe.SetupIntent;
+  const customerId = paymentIntent.customer as string;
+  const priceId = paymentIntent.metadata?.priceId;
+  // If has order id in meta it must be an Order!
+  const orderId = paymentIntent.metadata?.orderId;
+
+  // fetch the user
+  const user = await getUserByCustomerId(customerId);
+
+  if (!user) {
+    console.error("No user found");
+    throw new Error("No user found can't process setup intent");
+  }
+  const userId = user.id;
+  if (!paymentIntent.payment_method) return;
+
+  // Notify the user about the failed payment
+
+  console.info(`Failed payment Intent for ${orderId}`);
 }
 
 export async function handleSetupIntentSucceeded(event: Stripe.Event) {
@@ -452,18 +483,18 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
   const customerId = setupIntent.customer as string;
   const freeSubscription = !!setupIntent.metadata?.free_subscription;
   const priceId = setupIntent.metadata?.priceId;
-  // If has order id in meta it must be a free Order!
-  const orderId = setupIntent.metadata?.orderId;
 
   // fetch the user
-  const user = await getUserByCustomerId(String(setupIntent.customer));
+  const user = await getUserByCustomerId(customerId);
 
   if (!user) {
-    console.error("No user found");
-    throw new Error("No user found can't process setup intent");
+    console.error("No user found can't process setup intent");
+    return;
   }
-  const userId = user.id;
-  if (!setupIntent.payment_method) return;
+  if (!setupIntent.payment_method) {
+    console.error("No payment_method found");
+    return;
+  }
   if (freeSubscription && priceId) {
     try {
       // Create a free subscription with the default payment method attached
@@ -479,7 +510,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
         expand: ["latest_invoice.payment_intent"]
       });
       console.info(`Free subscription created for ${customerId}`);
-      // TODO: send email with invoice details plan Personalidad
+      //  Send email with invoice details plan Personalidad
       await sendSubscriptionEmail(user?.email, user?.username, "Personalidad");
       return;
     } catch (e) {
@@ -496,9 +527,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
     await stripe.subscriptions.update(userSubscription.data[0].id, {
       default_payment_method: setupIntent.payment_method as string
     });
-    console.info(
-      `Default payment method attached to Subscription ${userSubscription.data[0].id}`
-    );
+    console.info(`Default payment method attached to Subscription ${userSubscription.data[0].id}`);
   }
 }
 
@@ -511,7 +540,5 @@ export async function handlePaymentAttached(event: Stripe.Event) {
     }
   });
 
-  console.info(
-    `Default payment method attached to customer for: ${paymentMethod.customer}`
-  );
+  console.info(`Default payment method attached to customer for: ${paymentMethod.customer}`);
 }

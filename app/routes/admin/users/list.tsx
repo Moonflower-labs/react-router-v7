@@ -6,10 +6,11 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
 import { requireUserId } from "~/utils/session.server";
+import { formatDate } from "~/utils/format";
 
 export async function loader({ }: Route.LoaderArgs) {
-  const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } } } });
-  return users;
+  const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } }, profile: { select: { avatar: true } } } });
+  return { users };
 }
 export async function action({ request }: Route.ActionArgs) {
   const [formData, currentUserId] = await Promise.all([
@@ -32,7 +33,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function UserList({ loaderData, actionData }: Route.ComponentProps) {
-  const users = loaderData;
+  const { users } = loaderData;
 
   useEffect(() => {
     if (actionData?.success && actionData?.username) {
@@ -44,23 +45,34 @@ export default function UserList({ loaderData, actionData }: Route.ComponentProp
   }, [actionData]);
 
   return (
-    <div>
+    <div className="mb-3">
       <h2 className="text-2xl text-primary text-center font-bold my-4">Usuarios</h2>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {users &&
           users.map(user => (
-            <div key={user.id} className="p-8 mb-6 border rounded-lg shadow">
-              <div className="mb-4">
-                <p>Nombre de usuario: {user.username}</p>
-                <p>Stripe customerId: {user.customerId}</p>
-                <p>Email: {user.email}</p>
-                <p>ID: {user.id}</p>
+            <div key={user.id} className="card bg-base-100 shadow-sm">
+              <div className="card-body relative">
+                <p className="absolute top-2.5 right-2.5 badge badge-xl">{user.subscription?.plan.name ?? "No member"}</p>
+                <div className="avatar">
+                  <div className="w-18 rounded-full">
+                    <img src={user.profile?.avatar || "/logo.svg"} />
+                  </div>
+                </div>
+                <h2 className="card-title">{user.username}</h2>
+                <div className="mb-4">
+                  <p>Creado: {formatDate(user.createdAt)}</p>
+                  <p>Email: {user.email}</p>
+                  <p>ID: {user.id}</p>
+                  <p>Stripe customerId: {user.customerId}</p>
+                </div>
+                <div className="justify-end card-actions">
+                  <Form method="delete">
+                    <button type="submit" name="userId" value={user.id} className="btn btn- btn-circle btn-ghost shadow">
+                      <ImBin className="text-error" size={24} />
+                    </button>
+                  </Form>
+                </div>
               </div>
-              <Form method="delete">
-                <button type="submit" name="userId" value={user.id} className=" btn btn-sm btn-outline btn-error">
-                  <ImBin size={24} />
-                </button>
-              </Form>
             </div>
           ))}
       </div>

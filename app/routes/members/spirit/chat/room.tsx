@@ -155,7 +155,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
                         <span>Mensaje</span>
                         <input type="text" name="text" className="input input-lg w-full input-primary" placeholder="Mensaje" required />
                     </label>
-                    <button type="submit" className="btn btn-primary btn-lg">
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={fetcher.state === "submitting"}>
                         <IoMdSend size={24} />
                     </button>
                     {fetcher.data?.error &&

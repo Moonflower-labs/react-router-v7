@@ -9,42 +9,27 @@ import { GoArrowRight } from "react-icons/go";
 import FavoritesCard, { FavoritesSkeleton } from "~/components/dashboard/FavoritesCard";
 import QuestionsCard, { QuestionsSkeleton } from "~/components/dashboard/QuestionsCard";
 import { AvatarCard, AvatarSkeleton } from "~/components/dashboard/AvatarCard";
-import { SubscriptionCard, SubscriptionSkeleton } from "~/components/dashboard/subscriptionCard";
-import { userContext } from "~/utils/contexts.server";
+import { SubscriptionCard, SubscriptionSkeleton } from "~/components/dashboard/SubscriptionCard";
 import { fetchAvatars } from "~/integrations/cloudinary/utils.server";
 import { getSubscriptionData, type SubscriptionPlan } from "~/integrations/stripe";
+import { getUserContext } from "~/utils/contexts.server";
 
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const user = context.get(userContext)
+  const user = getUserContext(context)
   const profile = getUserProfile(String(user?.id))
   const subscription = getUserSubscription(String(user?.id))
   const orderCount = getUserOrderCount(String(user?.id))
   const avatars = fetchAvatars()
   const planName = user?.subscription?.plan?.name
   const planData = planName ? getSubscriptionData(planName as SubscriptionPlan["name"]) : null
-  // try {
-  //   const [userProfile, orderCount] = await Promise.all([
-  //     getUserProfile(String(userId)), getUserOrderCount(String(userId))
-  //   ])
-  //   const avatars = await cloudinary.api.resources({
-  //     type: "upload",
-  //     prefix: "avatars",
-  //   })
 
-  //   const planName = userProfile?.subscription?.plan?.name
-  //   return { userProfile, orderCount, avatars: avatars.resources, planData: planName ? getSubscriptionData(planName as SubscriptionPlan["name"]) : null };
-  // } catch (error) {
-  //   console.error(error);
-  //   return {};
-  // }
-  // todo add plan data
   return { profile, orderCount, avatars, userAvatar: user?.profile?.avatar, planData, subscription };
 
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
-  const user = context.get(userContext)
+  const user = getUserContext(context)
   const formData = await request.formData();
   const avatar = formData.get("avatar");
   await updateUserAvatar(String(user?.id), String(avatar));

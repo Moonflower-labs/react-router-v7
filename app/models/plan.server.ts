@@ -8,23 +8,15 @@ interface CreateSubscriptionPlanArgs {
   id: string;
   name: string;
   priceId: string;
+  amount: number;
   subscriptionId?: string;
+  thumbnail?: string;
 }
 
-export async function createSubscriptionPlan({
-  id,
-  name,
-  priceId
-}: CreateSubscriptionPlanArgs) {
-  return await prisma.plan.create({ data: { id, name, priceId } });
+export async function createSubscriptionPlan({ id, name, priceId, amount, thumbnail }: CreateSubscriptionPlanArgs) {
+  return await prisma.plan.create({ data: { id, name, priceId, amount, thumbnail } });
 }
 
-// model Plan {
-//   id      String @id @default(cuid())
-//   name    String
-//   priceId String
-
-//   createdAt    DateTime       @default(now())
-//   updatedAt    DateTime       @updatedAt
-//   subscription Subscription[]
-// }
+export async function getAllPlans() {
+  return prisma.plan.findMany({});
+}

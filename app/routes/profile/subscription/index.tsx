@@ -34,8 +34,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   const { subscription, paymentMethod, planData } = loaderData;
   const isPastDue = subscription.status === "past_due"
 
-  console.log(loaderData.stripeSubscription)
-  console.log(subscription)
+  // console.log(loaderData.stripeSubscription)
+  // console.log(subscription)
 
 
 

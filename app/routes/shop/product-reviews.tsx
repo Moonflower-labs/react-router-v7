@@ -88,11 +88,20 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
         <main className='min-h-screen p-4'>
             <Link to={href("/store")} className='btn btn-primary'><FaArrowLeft />Atrás</Link>
             <h1 className='text-3xl my-4 text-center'>Producto</h1>
-            <div className='mb-4 text-center'>
-                <img src={product?.thumbnail || ""} alt={product?.name} className='rounded-box w-56 mx-auto' />
+            <div className='mb-8 px-4 py-3 text-center'>
+                <div className='mb-6'>
+                    <img src={product?.thumbnail || ""} alt={product?.name} className='rounded-box w-56 mx-auto' />
+                </div>
                 <div className='flex flex-col gap-2 mt-2 max-w-lg mx-auto'>
                     <p className='font-bold text-lg'>{product?.name}</p>
                     <p>{product?.description}</p>
+                </div>
+                <div className='text-left w-fit mx-auto p-8 border rounded-lg my-4 shadow'>
+                    {product?.prices && (
+                        product.prices.map(price => (
+                            <div key={price.id}>{price.info}</div>
+                        ))
+                    )}
                 </div>
             </div>
             <section className='text-center'>

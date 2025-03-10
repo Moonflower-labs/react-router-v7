@@ -1,11 +1,4 @@
-import type {
-  Password,
-  Plan,
-  User as PrismaUser,
-  Profile,
-  ShippingAddress,
-  Subscription
-} from "@prisma/client";
+import type { Password, Plan, User as PrismaUser, Profile, ShippingAddress, Subscription } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -14,7 +7,7 @@ import { createCustomer, type SubscriptionPlan } from "~/integrations/stripe";
 export interface User extends PrismaUser {
   profile: Profile | null;
   shippingAddress?: ShippingAddress[];
-  subscription: UserSubscription | null;
+  subscription?: UserSubscription | null;
 }
 
 export interface UserSubscription extends Subscription {
@@ -41,11 +34,7 @@ export async function getUserByCustomerId(customerId: User["customerId"]) {
   return prisma.user.findFirst({ where: { customerId } });
 }
 
-export async function createUser(
-  email: User["email"],
-  password: string,
-  username: User["username"]
-) {
+export async function createUser(email: User["email"], password: string, username: User["username"]) {
   const hashedPassword = await bcrypt.hash(password, 10);
   // create a Stripe customer
   await createCustomer(email, username);
@@ -67,10 +56,7 @@ export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
 }
 
-export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"]
-) {
+export async function verifyLogin(email: User["email"], password: Password["hash"]) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
     include: {
@@ -82,10 +68,7 @@ export async function verifyLogin(
     return null;
   }
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash
-  );
+  const isValid = await bcrypt.compare(password, userWithPassword.password.hash);
 
   if (!isValid) {
     return null;
@@ -107,13 +90,7 @@ export async function updateUserCustomerId(userId: string, customerId: string) {
 
 export function getUserDiscount(plan: SubscriptionPlan["name"] | undefined) {
   if (!plan) return 0;
-  return plan === "Espíritu"
-    ? 15
-    : plan === "Alma"
-      ? 10
-      : plan === "Personalidad"
-        ? 5
-        : 0;
+  return plan === "Espíritu" ? 15 : plan === "Alma" ? 10 : plan === "Personalidad" ? 5 : 0;
 }
 
 export async function getUsersCount() {

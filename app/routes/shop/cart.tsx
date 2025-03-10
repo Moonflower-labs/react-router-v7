@@ -7,11 +7,11 @@ import { motion } from "motion/react";
 import { getShippinRates } from "~/models/shippingRate";
 import { getUserDiscount } from "~/models/user.server";
 import { getCustomerBalance, type SubscriptionPlan } from "~/integrations/stripe";
-import { sessionContext, userContext } from "~/utils/contexts.server";
+import { getSessionContext, getUserContext } from "~/utils/contexts.server";
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const session = context.get(sessionContext)
-  const user = context.get(userContext)
+  const session = getSessionContext(context)
+  const user = getUserContext(context)
   const userId = session.get("userId")
   const [cart, shippingRates] = await Promise.all([getShoppingCart(userId as string), getShippinRates()])
 
@@ -32,7 +32,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const action = formData.get("action");
   const priceId = formData.get("priceId");
-  const session = context.get(sessionContext)
+  const session = getSessionContext(context)
   const userId = session.get("userId");
 
   switch (action) {

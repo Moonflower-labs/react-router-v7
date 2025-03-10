@@ -6,6 +6,7 @@ import { getSubscriptionData, type SubscriptionPlan } from "../stripe";
 import { renderNewSubscriptionEmail } from "./html-templates/new-subscription";
 import { renderMissedSubscriptionPaymentEmail } from "./html-templates/missed-payment";
 import { renderResetPasswordEmail } from "./html-templates/reset-password";
+import { renderUpdatedSubscriptionEmail } from "./html-templates/updated-subscription";
 
 export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
@@ -17,11 +18,7 @@ export async function sendWelcomeEmail(email: string, username: string) {
   });
 }
 
-export async function sendSubscriptionEmail(
-  email: string,
-  username: string,
-  plan: SubscriptionPlan["name"]
-) {
+export async function sendSubscriptionEmail(email: string, username: string, plan: SubscriptionPlan["name"]) {
   const planData = getSubscriptionData(plan);
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
@@ -35,7 +32,8 @@ export async function sendSubscriptionEmail(
 export async function sendSubscriptionUpdatedEmail(
   email: string,
   username: string,
-  plan: SubscriptionPlan["name"]
+  plan: SubscriptionPlan["name"],
+  updateType: "upgrade" | "downgrade" | "renewal" | "new" | "unknown"
 ) {
   // todo: construct this email remarking changes
   const planData = getSubscriptionData(plan);
@@ -44,7 +42,10 @@ export async function sendSubscriptionUpdatedEmail(
     to: email,
     subject: `Tu suscripción a ${planData.name}`,
     text: `Tu suscripción a La Flor Blanca`,
-    html: await renderNewSubscriptionEmail({ planData, username })
+    html:
+      updateType === "new"
+        ? await renderNewSubscriptionEmail({ planData, username })
+        : await renderUpdatedSubscriptionEmail({ planData, username, updateType })
   });
 }
 
@@ -63,11 +64,7 @@ export async function sendMissedSubscriptionPaymentEmail(
   });
 }
 
-export async function sendOrderEmail(
-  email: string,
-  username: string,
-  order: ExtendedOrder
-) {
+export async function sendOrderEmail(email: string, username: string, order: ExtendedOrder) {
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,

@@ -1,4 +1,3 @@
-import { requireUserId } from "~/utils/session.server";
 import type { Route } from "./+types/list";
 import { getAllProducts } from "~/models/product.server";
 import { Form, Link, Outlet } from "react-router";
@@ -8,6 +7,8 @@ import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { syncStripeProducts } from "~/models/cart.server";
 import { syncStripeShippingRates } from "~/models/utils.server";
+import { getAllPlans } from "~/models/plan.server";
+import { prisma } from "~/db.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -16,26 +17,36 @@ export async function loader({ request }: Route.LoaderArgs) {
   // const pageSize = Number((url.searchParams.get('pageSize')) || 3);
 
   const products = await getAllProducts();
+  const plans = await getAllPlans();
 
-  return { products, q: title };
+  return { products, plans, q: title };
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const userId = await requireUserId(request);
-  if (request.method === "POST") {
-    await syncStripeProducts();
-    await syncStripeShippingRates()
-    return { success: true };
+  switch (request.method) {
+    case "POST": {
+      await syncStripeProducts();
+      await syncStripeShippingRates()
+      return { success: true };
+    }
+    case "DELETE": {
+      const formData = await request.formData()
+      const planId = formData.get("planId")
+      if (planId) {
+        await prisma.plan.delete({ where: { id: planId as string } })
+      }
+    }
+
   }
 
-  return null;
+  return {};
 }
 
 export default function ListProducts({ loaderData }: Route.ComponentProps) {
-  const products = loaderData?.products;
+  const { products, plans } = loaderData;
 
   return (
-    <div>
+    <div className="p-6">
       <h1 className="text-3xl text-primary flex justify-center items-center gap-4 my-5">Productos</h1>
       {products?.length ? (
         products.map((product, index) => (
@@ -53,19 +64,19 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
               </span>
             </div>
             <div className="flex gap-3 items-center">
-              <Link to={`${product.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
+              <Link to={`${product.id}/detail`} className="btn btn-circle btn-ghost shadow" viewTransition>
                 <FaEye size={24} />
               </Link>
 
-              <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
-                <IoMdAdd size={24} />
+              <Link to={"create"} className="btn btn-circle btn-ghost shadow" viewTransition>
+                <IoMdAdd size={24} className="text-success" />
               </Link>
-              <Link to={`${product.id}/edit`} className="btn btn-sm btn-outline btn-info" viewTransition>
-                <CiEdit size={24} />
+              <Link to={`${product.id}/edit`} className="btn btn-circle btn-ghost shadow" viewTransition>
+                <CiEdit size={24} className="text-info" />
               </Link>
               <Form method="post">
-                <button type="submit" name="orderId" value={product.id} className=" btn btn-sm btn-outline btn-error">
-                  <ImBin size={24} />
+                <button type="submit" name="orderId" value={product.id} className="btn btn-circle btn-ghost shadow">
+                  <ImBin size={24} className="text-error" />
                 </button>
               </Form>
             </div>
@@ -81,6 +92,35 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
           </Form>
         </div>
       )}
+      <h2 className="text-2xl text-primary text-center font-bold my-4">Usuarios</h2>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        {plans.length > 0 && plans.map(plan =>
+        (
+          <div key={plan.id} className="card shadow">
+            <div className="card-body">
+              <div className="text-center">
+                <h2 className="card-title w-fit mx-auto mb-2">{plan.name}</h2>
+                <div className="avatar">
+                  <div className="w-20 rounded-xl">
+                    <img src={plan.thumbnail || "/logo.svg"} />
+                  </div>
+                </div>
+              </div>
+              <p>{plan.amount / 100}</p>
+              <p>{plan.priceId}</p>
+              <div className="justify-end card-actions">
+                <Form method="delete">
+                  <button type="submit" name="planId" value={plan.id} className="btn btn-circle btn-ghost shadow">
+                    <ImBin className="text-error" size={24} />
+                  </button>
+                </Form>
+              </div>
+            </div>
+          </div>
+        )
+        )}
+      </div>
+
       {/* <div className="text-center">
                 <Paginator pagination={loaderData?.pagination} />
             </div> */}

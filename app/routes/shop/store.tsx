@@ -7,6 +7,7 @@ import { getUserId } from "~/utils/session.server";
 import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
+import { getSessionContext } from "~/utils/contexts.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -16,7 +17,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { products, baseUrl };
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
+  const session = getSessionContext(context)
   const userId = await getUserId(request);
   const formData = await request.formData();
   const productId = formData.get("productId");

@@ -1,17 +1,18 @@
-import { data, Form, href, Link, redirect, useNavigation, useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
+import { data, Form, href, Link, redirect, useNavigation, useRouteLoaderData, useSubmit } from "react-router";
 import { useCallback, useState } from "react";
-import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeSubscription } from "~/integrations/stripe";
+import { isSubscriptionDefaultPaymentMethodValid, PLANS, updateStripeAndUserSubscription } from "~/integrations/stripe";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
-import { getUserId, requireUserId } from "~/utils/session.server";
 import { formatUnixDate } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
+import { getSessionContext } from "~/utils/contexts.server";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
-  const userSubscription = await getUserSubscription(userId as string)
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = getSessionContext(context)
+  const userId = session.get("userId")
+  const userSubscription = await getUserSubscription(userId)
   let error = null
   if (userSubscription?.status === "past_due") {
     throw redirect(href("/profile/subscription"))
@@ -22,10 +23,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { PLANS, error };
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
+  const session = getSessionContext(context)
   switch (request.method) {
     case "POST": {
-      const userId = await requireUserId(request);
+      const userId = session.get("userId")
       const user = await getUserById(userId);
       const customerId = user?.customerId;
       const jsonData = await request.json();
@@ -53,24 +55,22 @@ export async function action({ request }: Route.ActionArgs) {
       }
       const subscription = await getSubscription(String(subscriptionId))
       try {
-        await updateStripeSubscription(String(subscriptionId), newPriceId)
-
+        await updateStripeAndUserSubscription(String(subscriptionId), newPriceId)
 
       } catch (e) {
         console.error(e);
         // todo: allow for expired payment_method :)
-        // const {updatedSubscription,error}  =  await updateStripeSubscription(String(subscriptionId), newPriceId)
+        // const {updatedSubscription,error}  =  await updateStripeSubscription
         if (e instanceof Error) {
           if (e.message === "requires_payment_method") {
             // todo: add query search params
             throw redirect(`${href("/payments/subscribe")}?missed=true&subscriptionId=${subscriptionId}&plan=${subscription?.plan?.name}`)
-          } else if (e.message === "something_else") {
-            // fix something else :)
           }
         }
         return { success: false, message: "Ha ocurrido un error" };
       }
-      return redirect("/profile/subscription/confirmation");
+      session.flash("toastMessage", { type: "success", message: "Plan acualizado" })
+      return redirect(href("/profile/subscription"));
     }
     default: {
       throw data(null, { status: 400 });
