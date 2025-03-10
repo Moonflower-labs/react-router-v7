@@ -103,7 +103,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
         return () => {
             leaveChat();
         };
-    }, [isSessionActive]); // Empty dependency array—runs once on mount, cleanup on unmount
+    }, [isSessionActive]);
 
     if (!room) return <div>Room not found</div>
 
