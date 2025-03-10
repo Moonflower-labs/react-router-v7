@@ -152,7 +152,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         }
         return {
           subscriptionId, paymentIntentStatus: paymentIntent?.status, clientSecret: paymentIntent?.client_secret,
-          isMissedPayment, amount: paymentIntent?.amount, priceId, img
+          isMissedPayment, amount: paymentIntent?.amount, priceId, img, planName
         };
       } else {
         if (!customerId) {

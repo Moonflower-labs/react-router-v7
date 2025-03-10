@@ -21,9 +21,9 @@ export async function action({ request }: Route.ActionArgs) {
     const removed = await redisPublisher.sRem(participantKey, userId);
     const count = await redisPublisher.sCard(participantKey);
 
-    console.log(`[${new Date().toISOString()}] Left ${userId} via /chat/leave. Removed: ${removed}, New Count: ${count}`);
 
     if (removed > 0) {
+        console.info(`[${new Date().toISOString()}] Left ${userId} via /chat/leave. Removed: ${removed}, New Count: ${count}`);
         // Publish updated count to all clients
         await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
     } else {

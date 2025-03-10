@@ -100,14 +100,16 @@ function CheckoutForm() {
     mode: "shipping",
     defaultValues: {
       name: user?.username,
-      address: {
-        line1: user?.shippingAddress[0]?.line1,
-        line2: user?.shippingAddress[0]?.line2,
-        city: user?.shippingAddress[0]?.city,
-        state: user?.shippingAddress[0]?.state,
-        postal_code: user?.shippingAddress[0]?.postalCode,
-        country: user?.shippingAddress[0]?.country
-      }
+      ...(user?.shippingAddress && {
+        address: {
+          line1: user?.shippingAddress[0]?.line1,
+          line2: user?.shippingAddress[0]?.line2,
+          city: user?.shippingAddress[0]?.city,
+          state: user?.shippingAddress[0]?.state,
+          postal_code: user?.shippingAddress[0]?.postalCode,
+          country: user?.shippingAddress[0]?.country
+        }
+      })
     }
   }
 

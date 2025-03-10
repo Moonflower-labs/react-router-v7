@@ -72,7 +72,7 @@ export default [
     ])
   ]),
   // Live Stream Chat
-  route("chat/subscribe", "routes/members/spirit/chat/subscribe.tsx"),
+  route("chat/stream", "routes/members/spirit/chat/stream.tsx"),
   // API Routes
   ...prefix("api", [
     route("/comments", "routes/api/comments.tsx"),

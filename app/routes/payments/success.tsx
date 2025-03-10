@@ -14,9 +14,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   const cartId = url.searchParams.get("cartId");
   const paymentIntentId = url.searchParams.get("paymentIntentId");
   const setupIntentId = url.searchParams.get("setupIntentId");
+  const missed = url.searchParams.get("missed");
   const orderId = url.searchParams.get("orderId");
   const success = url.searchParams.get("success");
-  const mode = plan ? "subscription" : paymentIntentId ? "payment" : "setup"
+  const mode = plan ? "subscription" : paymentIntentId ? "payment" : "setup";
+  const isMissedPayment = missed?.toString() === "true"
   // Clear the cart
   if (cartId) {
     await deleteCart(cartId);
@@ -24,7 +26,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (plan && ["Personalidad", "Alma", "Espíritu"].includes(plan)) {
     const planData = getSubscriptionData(plan as SubscriptionPlan["name"]);
-    return { planData, mode };
+    return { planData, mode, isMissedPayment };
   }
   let intent;
 
@@ -41,7 +43,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Success({ loaderData }: Route.ComponentProps) {
-  const { planData, orderId, intent, mode } = loaderData;
+  const { planData, orderId, intent, mode, isMissedPayment } = loaderData;
   const { user } = useRouteLoaderData("root")
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -73,15 +75,29 @@ export default function Success({ loaderData }: Route.ComponentProps) {
     <div className="min-h-[80vh] flex flex-col gap-6 justify-center items-center text-center">
       {message && <div className="text-xl">{message}</div>}
       {mode === "subscription" && planData ? (
-        <div>
-          <h1 className="text-3xl mb-4">Bienvenido a {planData.name}!</h1>
-          <div className="avatar mb-4">
-            <div className="w-14 rounded">
-              <img src={planData.img} alt="logo" className="transform scale-110" />
+        <>
+          {isMissedPayment ? (
+            <div>
+              <h1 className="text-3xl mb-4">Suscripción a {planData.name} reanudada!</h1>
+              <div className="avatar mb-4">
+                <div className="w-14 rounded">
+                  <img src={planData.img} alt="logo" className="transform scale-110" />
+                </div>
+              </div>
+              <p>Comprueba el estado de tu suscripción en tu <Link to={href("/profile/subscription")} className="link link-primary">perfil</Link></p>
             </div>
-          </div>
-          <p>Visita la <Link to={"/members"} className="link link-primary">sección de miembros</Link></p>
-        </div>
+          ) : (
+            <div>
+              <h1 className="text-3xl mb-4">Bienvenido a {planData.name}!</h1>
+              <div className="avatar mb-4">
+                <div className="w-14 rounded">
+                  <img src={planData.img} alt="logo" className="transform scale-110" />
+                </div>
+              </div>
+              <p>Visita la <Link to={"/members"} className="link link-primary">sección de miembros</Link></p>
+            </div>
+          )}
+        </>
       ) : mode === "setup" ? (
         <div className="p-10">
           <p>Gracias por actualizar tu método de pago!.</p>

@@ -60,11 +60,12 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room, status, statusMsg } = loaderData;
+    const isSessionActive = Boolean(status === "active");
     const { user } = useRouteLoaderData("root");
     const currentUserId = user?.id;
     const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages, user.id);
     const fetcher = useFetcher()
-    const isSessionActive = Boolean(status === "active");
+
     // Combine initial and live messages
     const allMessages = [...initialMessages, ...liveMessages].filter((mdg, index, self) =>
         index === self.findIndex(m => m.id === mdg.id)).sort((a, b) =>
@@ -95,13 +96,14 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     };
 
     useEffect(() => {
+        if (!isSessionActive) return;
         const leaveChat = async () => {
             await handleLeave();
         };
         return () => {
             leaveChat();
         };
-    }, []); // Empty dependency array—runs once on mount, cleanup on unmount
+    }, [isSessionActive]); // Empty dependency array—runs once on mount, cleanup on unmount
 
     if (!room) return <div>Room not found</div>
 
@@ -134,7 +136,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             <Form method="DELETE" className="mb-4">
                 <button className="btn btn-error btn-outline" type="submit">Clear chat</button>
             </Form>
-            <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>
+            {isSessionActive && <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>}
             {allMessages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                     {allMessages.map((message) => (
