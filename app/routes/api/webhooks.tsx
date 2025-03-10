@@ -1,4 +1,4 @@
-import { getStripeEvent, handleCustomerCreated, handlePaymentAttached, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
+import { getStripeEvent, handleCustomerCreated, handleInvoicePaid, handlePaymentAttached, handlePaymentIntentSucceeded, handleSetupIntentSucceeded, handleSubscriptionCreated, handleSubscriptionDeleted, handleSubscriptionUpdated } from "~/integrations/stripe";
 import type { Route } from "./+types/webhooks";
 import { prisma } from "~/db.server";
 
@@ -29,6 +29,9 @@ export async function action({ request }: Route.ActionArgs) {
     case "payment_intent.succeeded":
       await handlePaymentIntentSucceeded(event);
       break;
+    case "payment_intent.payment_failed":
+      // await handlePaymentIntentFailed(event);
+      break;
     case "payment_method.attached":
       await handlePaymentAttached(event)
       break;
@@ -50,6 +53,10 @@ export async function action({ request }: Route.ActionArgs) {
     case "customer.subscription.resumed":
       // await handleSubscriptionResumed(event);
       break;
+    // case "invoice.paid":
+    //   await handleInvoicePaid(event)
+    //   break;
+
     default:
       // Unexpected event type
       console.info(`Unhandled event type: ${event?.type}.`);
