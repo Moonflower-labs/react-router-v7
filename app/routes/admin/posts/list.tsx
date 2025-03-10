@@ -81,32 +81,30 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
         Posts de <span className="font-bold">Personalidad</span> <span className="badge badge-primary badge-outline">{loaderData?.pagination?.totalCount}</span>{" "}
       </h2>
       {posts?.length ? (
-        posts.map((post, index) => (
-          <div
-            key={post.id}
-            className="flex flex-col xl:flex-row justify-between items-center gap-6 p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
-            <div className="w-full">
-              {index + 1}. {post.title}
-            </div>
-            <div className="m-auto flex gap-6">
-              <div className="m-auto w-full">{formatDate(post.createdAt)}</div>
-              <div className="flex gap-3 items-center">
-                {post?.published ? <div className="badge badge-primary">Publicado</div> : <div className="badge badge-secondary">Borrador</div>}
-                <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
-                  <IoMdAdd size={24} />
-                </Link>
-                <Link to={`${post.id}/edit`} className="btn btn-sm btn-outline btn-info" viewTransition>
-                  <CiEdit size={24} />
-                </Link>
-                <Form method="post" onSubmit={handleSbubmit}>
-                  <button type="submit" name="postId" value={post.id} className=" btn btn-sm btn-outline btn-error">
-                    <ImBin size={24} />
-                  </button>
-                </Form>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post, index) => (
+            <div key={post.id} className="card bg-base-100 card-md shadow-sm">
+              <div className="card-body">
+                <h2 className="card-title">{index + 1}. {post.title}</h2>
+                <p>{formatDate(post.createdAt)}</p>
+                <div className="justify-end card-actions items-center">
+                  {post?.published ? <div className="badge badge-primary">Publicado</div> : <div className="badge badge-secondary">Borrador</div>}
+                  <Link to={"create"} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                    <IoMdAdd size={24} className="text-success" />
+                  </Link>
+                  <Link to={`${post.id}/edit`} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                    <CiEdit size={24} className="text-info" />
+                  </Link>
+                  <Form method="post" onSubmit={handleSbubmit}>
+                    <button type="submit" name="postId" value={post.id} className="btn btn-sm btn-circle btn-ghost shadow">
+                      <ImBin size={20} className="text-error" />
+                    </button>
+                  </Form>
+                </div>
               </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       ) : (
         <div className="flex gap-4 justify-center items-center">
           <span>No hay ningún post, ponte a escribir ✍🏽 </span>
