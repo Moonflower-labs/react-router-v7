@@ -13,7 +13,7 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
   context.set(sessionContext, session);
 
   let response = await next();
-  const excludedUrls = [href("/register"), href("/login"), href("/login"), /^\/api(\/|$)/, href("/chat/subscribe")];
+  const excludedUrls = [href("/register"), href("/login"), href("/logout"), /^\/api(\/|$)/, href("/chat/subscribe")];
   const url = new URL(request.url);
   if (!excludedUrls.includes(url.pathname)) {
     response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
