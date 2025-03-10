@@ -16,7 +16,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 3);
   const { questions, pagination } = await getQuestions({ section, page, pageSize });
-  console.log(questions)
+
   return { questions, pagination, q: title, section };
 }
 
