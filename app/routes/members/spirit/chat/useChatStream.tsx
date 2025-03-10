@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useTransition } from "react";
+import { href } from "react-router";
 import { useEventSource } from "remix-utils/sse/react";
 import type { ChatMessage } from "~/utils/chat.server";
 
@@ -18,7 +19,7 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
     const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastHeartbeatRef = useRef<number>(0); // Tracks last heartbeat for disconnection and visibility checks
 
-    const path = `/chat/subscribe?roomId=${roomId}&userId=${encodeURIComponent(userId)}`;
+    const path = `${href("/chat/stream")}roomId=${roomId}&userId=${encodeURIComponent(userId)}`;
 
     const newMessage = useEventSource(path, { event: "new-message" });
     const heartbeat = useEventSource(path, { event: "heartbeat" });
