@@ -1,6 +1,6 @@
 model Session {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String?
   room        Room?
   createdAt   DateTime @default(now())
@@ -11,7 +11,7 @@ model Session {
 
 model Room {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @unique
   messages  Message[]
   createdAt DateTime  @default(now())
   session   Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
