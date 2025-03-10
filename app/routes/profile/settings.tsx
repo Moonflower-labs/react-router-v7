@@ -1,6 +1,6 @@
 import { setUserPrefs } from '~/cookies/userPref.server';
 import type { Route } from './+types/settings';
-import { Form, useRouteLoaderData, useSubmit } from 'react-router';
+import { useRouteLoaderData, useSubmit } from 'react-router';
 import { IoColorPalette } from 'react-icons/io5';
 import { MdNotificationImportant } from 'react-icons/md';
 import { FaMessage } from 'react-icons/fa6';

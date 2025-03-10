@@ -6,7 +6,6 @@ import { PostListCard } from "../PostListCard";
 import { FilterComponent } from "~/components/members/FilterComponent";
 import { fetchCategories } from "~/models/category.server";
 
-// todo: make middleware function to check for the user subscription
 
 export async function loader({ request }: Route.LoaderArgs) {
 

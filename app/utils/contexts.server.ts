@@ -13,11 +13,10 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
   context.set(sessionContext, session);
 
   let response = await next();
-  const excludedUrls = [href("/register"), href("/login"), href("/logout"), /^\/api(\/|$)/, href("/chat/subscribe")];
+  const excludedUrls = [href("/register"), href("/login"), href("/logout"), /^\/api(\/|$)/, href("/chat/stream")];
   const url = new URL(request.url);
   if (!excludedUrls.includes(url.pathname)) {
     response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
-    console.log("session commited by middleware");
   }
 
   return response;
@@ -32,7 +31,6 @@ export const userMiddleware: Route.unstable_MiddlewareFunction = async ({ reques
   const user = await getUserById(userId);
   //   If user is logged in pass it through the context
   context.set(userContext, user);
-  console.info("User set");
 };
 
 export function getUserContext(context: unstable_RouterContextProvider) {

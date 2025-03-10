@@ -54,7 +54,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
     }
   }, [fetcher.state, fetcher.data?.message]);
 
-  console.log(fetcher.data)
+
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data?.success && fetcher.data?.message) {

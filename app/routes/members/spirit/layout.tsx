@@ -8,10 +8,8 @@ const links = [{ to: "/members/spirit#videos", name: "Videos" }, { to: "/members
 const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
     console.log("spirit middleware")
     const { isAdmin, userId } = await getUserIdWithRole(request)
-    if (isAdmin) {
-        console.log("user is ADMIN")
-        return;
-    }
+    if (isAdmin) return;
+
     if (!userId || userId.startsWith("guest-")) {
         console.log("Please Log in")
         throw redirect(href("/login"), 302);
