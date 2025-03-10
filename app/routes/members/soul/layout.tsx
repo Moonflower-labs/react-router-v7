@@ -7,12 +7,8 @@ const links = [{ to: "/members/soul#videos", name: "Videos" }, { to: "/members/s
 
 
 const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
-    console.log("soul middleware")
     const { isAdmin, userId } = await getUserIdWithRole(request)
-    if (isAdmin) {
-        console.log("user is ADMIN")
-        return;
-    }
+    if (isAdmin) return; // Admins have access
     if (!userId || userId.startsWith("guest-")) {
         console.log("Please Log in")
         throw redirect(href("/login"), 302);

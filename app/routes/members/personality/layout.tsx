@@ -6,12 +6,9 @@ import type { Route } from './+types';
 const links = [{ to: "/members/personality#blogs", name: "Blogs" }, { to: "/members/personality#podcasts", name: "Podcasts" }, { to: "/members/personality/question", name: "Pregunta" }]
 
 const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
-    console.log("Personality middleware")
     const { isAdmin, userId } = await getUserIdWithRole(request)
-    if (isAdmin) {
-        console.log("user is ADMIN")
-        return;
-    }
+
+    if (isAdmin) return;
 
     if (!userId || userId.startsWith("guest-")) {
         console.log("Please Log in")

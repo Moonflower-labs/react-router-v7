@@ -6,8 +6,8 @@ import { getUserIdWithRole } from '~/utils/session.server';
 const links = [{ to: "/members/spirit#videos", name: "Videos" }, { to: "/members/spirit#podcasts", name: "Podcasts" }, { to: "/members/spirit/question", name: "Pregunta" }, { to: "/members/spirit/live", name: "Sesión en directo" }]
 
 const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
-    console.log("spirit middleware")
     const { isAdmin, userId } = await getUserIdWithRole(request)
+
     if (isAdmin) return;
 
     if (!userId || userId.startsWith("guest-")) {
