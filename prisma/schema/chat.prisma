@@ -1,31 +1,31 @@
 model Session {
-  id        String   @id @default(uuid())
-  name      String   @unique
+  id          String   @id @default(uuid())
+  name        String
   description String?
-  room      Room?    
-  createdAt DateTime @default(now())
-  startDate DateTime
-  endDate   DateTime
-  link      String 
+  room        Room?
+  createdAt   DateTime @default(now())
+  startDate   DateTime
+  endDate     DateTime
+  link        String
 }
 
 model Room {
-  id        String   @id @default(uuid())
-  name      String   @unique
+  id        String    @id @default(uuid())
+  name      String
   messages  Message[]
-  createdAt DateTime @default(now())
-  session   Session @relation(fields: [sessionId], references: [id],onDelete: Cascade)
-  sessionId String @unique
+  createdAt DateTime  @default(now())
+  session   Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String    @unique
 }
 
 model Message {
-  id        String   @id @default(uuid())
-  text      String
-  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
-  userId    String
+  id     String @id @default(uuid())
+  text   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
-  Room      Room @relation(fields: [roomId], references: [id],onDelete: Cascade,onUpdate: Cascade)
-  roomId    String
+  Room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roomId String
 
   createdAt DateTime @default(now())
 }
