@@ -16,6 +16,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const page = Number(url.searchParams.get("page") || 1);
   const pageSize = Number(url.searchParams.get("pageSize") || 3);
   const { questions, pagination } = await getQuestions({ section, page, pageSize });
+  console.log(questions)
   return { questions, pagination, q: title, section };
 }
 
@@ -24,7 +25,8 @@ export async function action({ request }: Route.ActionArgs) {
   const questionId = formData.get("questionId");
   const section = formData.get("section");
 
-  const isPremium = typeof section === "string" && section.trim() !== "";
+  // const isPremium = typeof section === "string" && section.trim() !== "";
+  const isPremium = typeof section === "string" && (section.trim() !== "" || section.trim() !== "basic");
 
   if (!questionId) {
     throw data({ message: "No question ID provided" }, { status: 400 });
@@ -111,13 +113,13 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
               <span className="me-5">{formatDate(question.createdAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
-              <Link to={`${question.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
+              <Link to={`${question.id}/detail`} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
                 <FaEye size={24} />
               </Link>
               <Form method="delete" onSubmit={handleSbubmit}>
                 {"section" in question && <input type="hidden" name="section" value={question.section} />}
-                <button type="submit" name="questionId" value={question.id} className="btn btn-sm btn-outline btn-error">
-                  <ImBin size={24} />
+                <button type="submit" name="questionId" value={question.id} className="btn btn-sm btn-circle btn-ghost shadow">
+                  <ImBin size={24} className="text-error" />
                 </button>
               </Form>
             </div>
