@@ -66,58 +66,62 @@ export default function EditVideoBlog({ loaderData, actionData }: Route.Componen
     <div className="text-center">
       <h2 className="text-2xl text-primary my-5">Editar Vídeo</h2>
       <Form ref={formRef} method="post" className="w-full md:w-3/5 lg:w-2/5 mx-auto pb-4 flex flex-col">
-        <fieldset className="fieldset w-full bg-base-200 border border-base-300 p-4 rounded-box">
-          <label className="select select-lg mb-3 w-full">
-            <span className="label">Sección</span>
-            <select name="section" defaultValue={video?.section}>
-              <option disabled>Elige una sección</option>
-              <option value="Soul">Alma</option>
-              <option value="Spirit">Espíritu</option>
-            </select>
-            {errors?.section && <ActionError actionData={{ error: errors?.section }} />}
-          </label>
-          <label className="input input-lg mb-3 w-full">
-            <span className="label">Título</span>
-            <input type="text" name={"title"} placeholder="Título" defaultValue={video?.title} />
-          </label>
-          {errors?.title && <ActionError actionData={{ error: errors.title }} />}
-          <label className="input input-lg mb-3 w-full">
-            <span className="label">Vídeo ID</span>
-            <input type="text" name={"url"} placeholder="Vídeo ID" defaultValue={video?.url} />
-          </label>
-          {errors?.url && <ActionError actionData={{ error: errors.url }} />}
+        <label className="select select-lg mb-3 w-full">
+          <span className="label">Sección</span>
+          <select name="section" defaultValue={video?.section}>
+            <option disabled>Elige una sección</option>
+            <option value="Soul">Alma</option>
+            <option value="Spirit">Espíritu</option>
+          </select>
+          {errors?.section && <ActionError actionData={{ error: errors?.section }} />}
+        </label>
+        <label className="input input-lg mb-3 w-full">
+          <span className="label">Título</span>
+          <input type="text" name={"title"} placeholder="Título" defaultValue={video?.title} />
+        </label>
+        {errors?.title && <ActionError actionData={{ error: errors.title }} />}
+        <label className="input input-lg mb-3 w-full">
+          <span className="label">Vídeo ID</span>
+          <input type="text" name={"url"} placeholder="Vídeo ID" defaultValue={video?.url} />
+        </label>
+        {errors?.url && <ActionError actionData={{ error: errors.url }} />}
+        <label>
+          <span className="label mb-2">Descripción</span>
           <textarea
             className="w-full textarea mb-4"
-            placeholder="Descripción..."
+            placeholder="Escribe la descripción..."
             name="description"
             rows={5}
-            defaultValue={video?.description}>
+          >
           </textarea>
           {errors?.description && <ActionError actionData={{ error: errors.description }} />}
-          <>
-            {categories?.length ? (
-              <>
-                <label className="fieldset-label">Categorías</label>
+        </label>
+        <>
+          {categories?.length ? (
+            <>
+              <label>
+                <span className="label mb-2">Categorías</span>
                 <MultiSelectId name={"categories"} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} options={categories} />
-              </>) : (
-              <div className="flex justify-center items-center gap-4">
-                <div>No hay ninguna categoria todavía</div>
-                <Link to={href("/admin/categories/create")} className="text-primary btn btn-ghost btn-sm">
-                  <IoMdAdd size={24} />
-                </Link>
-              </div>
-            )}
-            {errors?.categories && <ActionError actionData={{ error: errors?.categories }} />}
-          </>
-          <div className="flex justify-end gap-3 mt-8">
-            <button type="submit" className="btn btn-accent btn-sm">
-              Borrador
-            </button>
-            <button type="submit" className="btn btn-primary btn-sm" name="published" value={"true"}>
-              Publicar cambios
-            </button>
-          </div>
-        </fieldset>
+              </label>
+            </>
+          ) : (
+            <div className="flex justify-center items-center gap-4">
+              <div>No hay ninguna categoria todavía</div>
+              <Link to={href("/admin/categories/create")} className="text-primary btn btn-ghost btn-sm">
+                <IoMdAdd size={24} />
+              </Link>
+            </div>
+          )}
+          {errors?.categories && <ActionError actionData={{ error: errors?.categories }} />}
+        </>
+        <div className="flex justify-end gap-3 mt-8">
+          <button type="submit" className="btn btn-accent btn-sm">
+            Borrador
+          </button>
+          <button type="submit" className="btn btn-primary btn-sm" name="published" value={"true"}>
+            Publicar cambios
+          </button>
+        </div>
       </Form>
     </div>
   );
