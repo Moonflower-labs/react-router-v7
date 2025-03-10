@@ -63,8 +63,13 @@ export async function action({ request }: Route.ActionArgs) {
     const user = await createUser(email, password, username);
 
     await sendWelcomeEmail(user.email, user.username)
+    const allowedAdmins = process.env.ADMIN_LIST
+      ? process.env.ADMIN_LIST.split(",").map((email) => email.trim())
+      : [];
+    const isAdmin = !!allowedAdmins?.includes(user.email)
 
     return createUserSession({
+      isAdmin,
       redirectTo,
       remember: false,
       request,

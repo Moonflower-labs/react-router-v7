@@ -313,8 +313,8 @@ function getSubscriptionUpdateType(previousAttributes: any, subscription: Stripe
   if (Object.keys(previousAttributes).length > 0 && !previousAttributes.items) {
     // return "metadata_update"; // No needed
   }
-  // Fallback
-  return "unknown";
+
+  return "unknown"; // Fallback
 }
 
 export async function handleSubscriptionDeleted(event: Stripe.Event) {
@@ -473,7 +473,7 @@ export async function handlePaymentIntentFailed(event: Stripe.Event) {
   const userId = user.id;
   if (!paymentIntent.payment_method) return;
 
-  // Notify the user about the failed payment
+  // todo: Notify the user about the failed payment
 
   console.info(`Failed payment Intent for ${orderId}`);
 }
