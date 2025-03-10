@@ -11,6 +11,9 @@ import { requireUserId } from "~/utils/session.server";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdOutlineClose } from "react-icons/md";
+import { adminAuth } from "./middleware.server";
+
+export const unstable_middleware = [adminAuth];
 
 export async function loader({ request }: Route.LoaderArgs) {
   return await requireUserId(request);
@@ -91,5 +94,6 @@ const LINKS = [
   { href: href("/admin/gallery"), icon: <FaRegImages size={20} />, text: "Imágenes" },
   { href: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
   { href: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },
+  // { href: href("/admin/stripe"), icon: <RiWebhookFill size={20} />, text: "Stripe" },
   { href: href("/admin/emails"), icon: <RiWebhookFill size={20} />, text: "Emails" },
 ]
