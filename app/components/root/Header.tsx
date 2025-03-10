@@ -13,7 +13,7 @@ import { RiAdminFill } from "react-icons/ri";
 export function Header() {
   const { pathname } = useLocation()
   const isHomePage = pathname === "/"
-  const user = useRouteLoaderData("root")?.user as User;
+  const { user, isAdmin } = useRouteLoaderData("root") as { user: User, isAdmin: boolean };
   const theme = useRouteLoaderData("root")?.theme as string;
   const totalItemCount = useRouteLoaderData("root")?.totalItemCount;
   const fetcher = useFetcher({ key: "add-to-cart" });
@@ -63,12 +63,13 @@ export function Header() {
                       <AiFillSetting size={18} />
                     </Link>
                   </li>
-                  <li>
-                    <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold flex justify-between items-center"} viewTransition>
-                      Admin
-                      <RiAdminFill size={18} />
-                    </Link>
-                  </li>
+                  {isAdmin &&
+                    <li>
+                      <Link to={href("/admin")} onClick={handleDropdown} className={"min-w-40 font-bold flex justify-between items-center"} viewTransition>
+                        Admin
+                        <RiAdminFill size={18} />
+                      </Link>
+                    </li>}
                   <li onClick={handleDropdown}>
                     <LogoutBtn />
                   </li>

@@ -41,6 +41,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const session = getSessionContext(context);
   const userId = session.get("userId");
   const toastMessage = session.get("toastMessage")
+  const isAdmin = session.get("isAdmin")
 
   if (!userId) {
     // Ensure there's always a userId to assocciate the cart to
@@ -51,7 +52,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const theme = userPrefs?.theme ?? "florBlanca";
   const totalItemCount = await getCartItemsCount(String(userId));
 
-  return { user, totalItemCount, theme, honeypotInputProps, toastMessage };
+  return { user, totalItemCount, theme, honeypotInputProps, toastMessage, isAdmin };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
