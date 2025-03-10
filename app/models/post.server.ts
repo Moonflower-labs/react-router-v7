@@ -64,13 +64,14 @@ export async function fetchPosts({
     };
   }
   // Add pagination
-  const take = pageSize; // The number of items to return
+  const take = pageSize; // Number of items to return
   const skip = (Number(page) - 1) * pageSize; // Number of items to skip for pagination
 
   const posts = await prisma.post.findMany({
     where,
     take, // Limit results
-    skip
+    skip,
+    orderBy: { createdAt: "desc" }
   });
   const totalCount = await prisma.post.count({
     where
@@ -248,9 +249,7 @@ export async function createPost(
       title,
       description,
       user: { connect: { id: userId } },
-      categories: categoriesToConnect
-        ? { connect: categoriesToConnect }
-        : undefined,
+      categories: categoriesToConnect ? { connect: categoriesToConnect } : undefined,
       published
     }
   });

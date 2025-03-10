@@ -142,7 +142,7 @@ export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, o
   return (
     <div className="flex flex-col gap-4 mb-3">
       <div
-        className={`flex flex-wrap border border-gray-300 rounded-lg p-2 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : ""}`}
+        className={`flex flex-wrap border border-gray-300 rounded-lg p-2 bg-base-100 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : ""}`}
         onClick={toggleDropdown}
         tabIndex={0}>
         {selectedOptions.map(option => (

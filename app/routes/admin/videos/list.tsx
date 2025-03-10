@@ -1,4 +1,4 @@
-import { data, Form, Link, useSubmit } from "react-router";
+import { data, Form, href, Link, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
 import { formatDate } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
@@ -81,37 +81,35 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
         Videos de <span className="font-bold">Alma y Espíritu</span>
       </h2>
       {videos?.length ? (
-        videos.map(video => (
-          <div key={video.id} className="flex flex-col gap-3 justify-center p-3 border border-primary/20 rounded-lg shadow-sm mb-3 lg:w-2/3 mx-auto">
-            <div className="w-full">{video.title}</div>
-            <div className="flex gap-6 m-auto">
-              <div className="m-auto">
-                <div className="m-auto w-fit">
-                  <span className="badge badge-primary">{video.section}</span>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {videos.map(video => (
+            <div key={video.id} className="card bg-base-100 card-md shadow-sm">
+              <div className="card-body">
+                <h2 className="card-title">{video.title}</h2>
+                <span className="badge badge-primary">{video.section}</span>
+                <p>{formatDate(video.createdAt)}</p>
+                <div className="justify-end card-actions items-center">
+                  {video?.published ? <div className="badge badge-primary">Publicado</div> : <div className="badge badge-secondary">Borrador</div>}
+                  <Link to={"create"} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                    <IoMdAdd size={24} className="text-success" />
+                  </Link>
+                  <Link to={`${video.id}/edit`} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                    <CiEdit size={24} className="text-info" />
+                  </Link>
+                  <Form method="post" onSubmit={handleSbubmit}>
+                    <button type="submit" name="postId" value={video.id} className="btn btn-sm btn-circle btn-ghost shadow">
+                      <ImBin size={20} className="text-error" />
+                    </button>
+                  </Form>
                 </div>
-                <div className="m-auto w-full">{formatDate(video.createdAt)}</div>
-              </div>
-              <div className="flex flex-row gap-3 justify-center items-center">
-                {video?.published ? <div className="badge badge-primary">Publicado</div> : <div className="badge badge-secondary">Borrador</div>}
-                <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
-                  <IoMdAdd size={24} />
-                </Link>
-                <Link to={`${video.id}/edit`} className="btn btn-sm btn-outline btn-info" viewTransition>
-                  <CiEdit size={24} />
-                </Link>
-                <Form method="post" onSubmit={handleSbubmit}>
-                  <button type="submit" name="videoId" value={video.id} className=" btn btn-sm btn-outline btn-error">
-                    <ImBin size={24} />
-                  </button>
-                </Form>
               </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       ) : (
         <div className="flex gap-4 justify-center items-center">
-          <span>No hay ningún video todavía, ponte a escribir ✍🏽 </span>
-          <Link to={"create"} className="shadow-sm btn btn-outline btn-primary btn-sm">
+          <span>No hay ningún video todavía, ponte a grabar 🎥</span>
+          <Link to={href("/admin/videos/create")} className="shadow-sm btn btn-outline btn-primary btn-sm">
             <IoMdAdd size={24} />
           </Link>
         </div>
