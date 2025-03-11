@@ -76,7 +76,6 @@ export default function Component({ loaderData, actionData }: Route.ComponentPro
                     <p className="fieldset-label">⚠️ En céntimos, £1 = 100</p>
                 </fieldset>
 
-
                 <div className="flex justify-end gap-3 mt-8">
                     <button type="reset" className="btn btn-primary btn-outline btn-sm">
                         Cancelar
