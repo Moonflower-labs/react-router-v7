@@ -1,14 +1,12 @@
-import { Form, Link } from "react-router";
+import { Form, href, Link, redirect } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/create";
-import { getUserId } from "~/utils/session.server";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useRef } from "react";
 import { createPost } from "~/models/post.server";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import type { Category } from "@prisma/client";
+import { getSessionContext } from "~/utils/contexts.server";
 
 export async function loader() {
   const categories = await prisma.category.findMany();
@@ -16,9 +14,10 @@ export async function loader() {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = (await getUserId(request)) as string;
+  const session = getSessionContext(context)
+  const userId = session.get("userId");
   const title = formData.get("title") as string;
   const description = formData.get("description");
   const categories = formData.getAll("categories") as string[];
@@ -37,48 +36,57 @@ export async function action({ request }: Route.ActionArgs) {
     return { errors };
   }
 
+
   try {
     await createPost(userId, title, String(description), categories, published);
+    session.flash("toastMessage", { type: "success", message: "Post creado 👏🏽" })
 
-    return { success: true, published };
+    return redirect(href("/admin/posts"))
+
   } catch (error) {
-    return { success: false, message: "Ha ocurrido un error" };
+    console.error(error)
+    session.flash("toastMessage", { type: "error", message: "Ha ocurrido un error" })
   }
+  return { success: false }
 }
 
 export default function CreatePost({ loaderData, actionData }: Route.ComponentProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const errors = actionData?.errors;
-  const [selectedOptions, setSelectedOptions] = useState<Category[]>([]);
 
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success(`Post ${actionData?.published ? "pubicado" : "editado"} 👏🏽`);
-      formRef.current.reset();
-      setSelectedOptions([]);
-    } else if (!actionData?.success && actionData?.message) {
-      toast.error(actionData?.message);
-    }
-  }, [actionData]);
 
   return (
     <div className="text-center">
       <h2 className="text-2xl text-primary my-5">
         Crea un Post de <span className="font-bold">Personalidad</span>{" "}
       </h2>
-      <Form ref={formRef} method="post" className="w-full md:w-1/2 mx-auto pb-4 flex flex-col">
-        <input type="text" name={"title"} className="input input-bordered input-primary w-full mb-4" placeholder="Título" />
+      <Form ref={formRef} method="post" className="w-full md:w-[65%] lg:w-1/3  mx-auto pb-4 flex flex-col">
+        <label className="input input-lg mb-3 w-full">
+          <span className="label">Título</span>
+          <input type="text" name={"title"} placeholder="..." />
+        </label>
         {errors?.title && <ActionError actionData={{ error: errors.title }} />}
-        <textarea className="w-full textarea textarea-primary mb-4" placeholder="Escribe el post..." name="description" rows={5}></textarea>
-        {errors?.description && <ActionError actionData={{ error: errors.description }} />}
-
+        <label>
+          <span className="label mb-2">Descripción</span>
+          <textarea
+            className="w-full textarea mb-4"
+            placeholder="Escribe el post..."
+            name="description"
+            rows={5}
+          >
+          </textarea>
+          {errors?.description && <ActionError actionData={{ error: errors.description }} />}
+        </label>
         <div>
           {loaderData?.length ? (
-            <MultiSelectId name={"categories"} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} options={loaderData} />
+            <>
+              <span className="label mb-2">Categorías</span>
+              <MultiSelectId name={"categories"} defaultOptions={undefined} options={loaderData} />
+            </>
           ) : (
             <div className="flex justify-center items-center gap-4">
               <div>No hay ninguna categoria todavía</div>
-              <Link to={"/admin/categories/create"} className="text-primary btn btn-ghost btn-sm">
+              <Link to={href("/admin/categories/create")} className="text-primary btn btn-ghost btn-sm">
                 <IoMdAdd size={24} />
               </Link>
             </div>

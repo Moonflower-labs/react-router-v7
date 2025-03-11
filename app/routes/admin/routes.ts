@@ -23,7 +23,7 @@ export const adminRoutes = [
     //  Orders
     ...prefix("orders", [index("routes/admin/orders/list.tsx"), route(":id/detail", "routes/admin/orders/detail.tsx")]),
     //  Posts
-    ...prefix("post", [
+    ...prefix("posts", [
       index("routes/admin/posts/list.tsx"),
       route("create", "routes/admin/posts/create.tsx"),
       route(":id/edit", "routes/admin/posts/edit.tsx")

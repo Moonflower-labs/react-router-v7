@@ -1,13 +1,13 @@
-import { Form, href, Link } from "react-router";
+import { Form, href, Link, redirect } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/create";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useRef } from "react";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { createVideo } from "~/models/video.server";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import type { Category, Section } from "@prisma/client";
+import type { Section } from "@prisma/client";
+import { getSessionContext } from "~/utils/contexts.server";
 
 export async function loader() {
   const categories = await prisma.category.findMany();
@@ -15,8 +15,9 @@ export async function loader() {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = getSessionContext(context)
   const title = formData.get("title") as string;
   const description = formData.get("description");
   const url = formData.get("url");
@@ -43,30 +44,25 @@ export async function action({ request }: Route.ActionArgs) {
   if (Object.keys(errors).length > 0) {
     return { errors };
   }
-
   try {
-    // Create the video blog
     await createVideo(String(section) as Section, title, String(description), String(url).trim(), categories, published);
+    session.flash("toastMessage", { type: "success", message: "Vídeo creado 👏🏽" })
 
-    return { success: true, published };
+    return redirect(href("/admin/videos"))
+
   } catch (error) {
-    console.log(error);
-    return { success: false, published };
+    console.error(error)
+    session.flash("toastMessage", { type: "error", message: "Ha ocurrido un error" })
   }
+  return { success: false };
 }
 
 export default function CreateVideoBlog({ loaderData, actionData }: Route.ComponentProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [selectedOptions, setSelectedOptions] = useState<Category[]>([]);
   const { categories } = loaderData
   const errors = actionData?.errors;
 
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success(`Video ${actionData?.published ? "pubicado" : "editado"} 👏🏽`);
-      formRef.current.reset();
-    }
-  }, [actionData]);
+
 
   return (
     <div className="text-center p-3">
@@ -107,10 +103,8 @@ export default function CreateVideoBlog({ loaderData, actionData }: Route.Compon
         <>
           {categories?.length ? (
             <>
-              <label>
-                <span className="label mb-2">Categorías</span>
-                <MultiSelectId name={"categories"} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} options={categories} />
-              </label>
+              <span className="label mb-2">Categorías</span>
+              <MultiSelectId name={"categories"} defaultOptions={undefined} options={categories} />
             </>
           ) : (
             <div className="flex justify-center items-center gap-4">

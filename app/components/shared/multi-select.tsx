@@ -10,6 +10,7 @@ interface MultiSelectProps {
   setSelectedOptions: (options: string[]) => void;
   onOptionsChange?: () => void;
 }
+//  todo: USED in FILTER Component try to refactor this and MultiSelectId into 1
 
 export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, options, selectedOptions, setSelectedOptions, onOptionsChange }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -109,13 +110,13 @@ export const MultiSelect: React.FC<MultiSelectProps> = React.memo(({ name, optio
 interface MultiSelectIdProps {
   options: Category[];
   name: string;
-  selectedOptions: Category[];
-  setSelectedOptions: (options: Category[]) => void;
+  defaultOptions: Category[] | undefined;
   onOptionsChange?: () => void;
 }
 
-export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, options, selectedOptions, setSelectedOptions, onOptionsChange }) => {
+export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, options, defaultOptions, onOptionsChange }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<Category[]>(defaultOptions || []);
   const [filterText, setFilterText] = useState("");
   // const isSelected = selectedOptions.some(option => (option.id === id))
 
@@ -134,7 +135,7 @@ export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, o
 
   const handleRemoveOption = (optionId: string) => {
     setSelectedOptions(selectedOptions.filter(o => o.id !== optionId)); // Remove selected option
-    onOptionsChange ? onOptionsChange() : null;
+    onOptionsChange?.();
   };
 
   const filteredOptions = options.filter(option => option.name.toLowerCase().includes(filterText.toLowerCase()));
@@ -142,7 +143,7 @@ export const MultiSelectId: React.FC<MultiSelectIdProps> = React.memo(({ name, o
   return (
     <div className="flex flex-col gap-4 mb-3">
       <div
-        className={`flex flex-wrap border border-gray-300 rounded-lg p-2 bg-base-100 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : ""}`}
+        className={`flex flex-wrap border border-gray-300 rounded-lg p-2 cursor-pointer shadow-sm ${isDropdownOpen ? "border-primary" : ""}`}
         onClick={toggleDropdown}
         tabIndex={0}>
         {selectedOptions.map(option => (

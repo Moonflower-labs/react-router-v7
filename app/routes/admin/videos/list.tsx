@@ -15,7 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let categories = url.searchParams.getAll("categories");
 
   const page = Number(url.searchParams.get("page") || 1);
-  const pageSize = Number(url.searchParams.get("pageSize") || 2);
+  const pageSize = Number(url.searchParams.get("pageSize") || 6);
   const { videos, pagination } = await fetchVideos({ section: undefined, title, categories, page, pageSize });
 
   return { videos, pagination, q: title };
@@ -97,7 +97,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
                     <CiEdit size={24} className="text-info" />
                   </Link>
                   <Form method="post" onSubmit={handleSbubmit}>
-                    <button type="submit" name="postId" value={video.id} className="btn btn-sm btn-circle btn-ghost shadow">
+                    <button type="submit" name="videoId" value={video.id} className="btn btn-sm btn-circle btn-ghost shadow">
                       <ImBin size={20} className="text-error" />
                     </button>
                   </Form>
@@ -114,7 +114,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
           </Link>
         </div>
       )}
-      <div className="text-center">
+      <div className="text-center pt-5">
         <Paginator pagination={loaderData?.pagination} />
       </div>
     </div>

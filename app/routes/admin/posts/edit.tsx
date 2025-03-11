@@ -1,18 +1,19 @@
-import { Form, Link, useNavigate } from "react-router";
+import { Form, href, Link, redirect } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/edit";
-import { getUserId } from "~/utils/session.server";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useRef } from "react";
 import { editPost, fetchPost } from "~/models/post.server";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import type { Category } from "@prisma/client";
+import { getSessionContext } from "~/utils/contexts.server";
+
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const post = await fetchPost(params.id);
-  const categories = await prisma.category.findMany();
+  const [post, categories] = await Promise.all([
+    fetchPost(params.id), prisma.category.findMany()
+  ]);
+
   return { post, categories };
 }
 
@@ -21,9 +22,10 @@ interface Errors {
   description?: string;
   categories?: string; // You can adjust this based on how you want to manage categories
 }
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = (await getUserId(request)) as string;
+  const session = getSessionContext(context)
+  const userId = session.get("userId");
   const title = formData.get("title") as string;
   const description = formData.get("description");
   const categories = formData.getAll("categories") as string[];
@@ -43,9 +45,17 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { errors };
   }
 
-  await editPost(params.id, userId, title, String(description), categories, published);
+  try {
+    await editPost(params.id, userId, title, String(description), categories, published);
+    session.flash("toastMessage", { type: "success", message: "Post editado 👏🏽" })
 
-  return { success: true, published };
+    return redirect(href("/admin/posts"))
+
+  } catch (error) {
+    console.error(error)
+    session.flash("toastMessage", { type: "error", message: "Ha ocurrido un error" })
+  }
+  return { success: false };
 }
 
 export default function EditPost({ loaderData, actionData }: Route.ComponentProps) {
@@ -53,38 +63,40 @@ export default function EditPost({ loaderData, actionData }: Route.ComponentProp
   const errors = actionData?.errors;
   const post = loaderData?.post;
   const categories = loaderData?.categories;
-  const [selectedOptions, setSelectedOptions] = useState<Category[]>(post?.categories || []);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success(`Post ${actionData?.published ? "pubicado" : "editado"} 👏🏽`);
-      navigate("/admin/post");
-    }
-  }, [actionData]);
 
   return (
     <div className="text-center">
       <h2 className="text-2xl text-primary my-5">
         Editar Post de <span className="font-bold">Personalidad</span>{" "}
       </h2>
-      <Form ref={formRef} method="post" className="w-full md:w-1/2 mx-auto pb-4 flex flex-col">
-        <input type="text" name={"title"} className="input input-bordered w-full mb-4" placeholder="Título" defaultValue={post?.title} />
+      <Form ref={formRef} method="post" className="w-full md:w-[65%] lg:w-1/3  mx-auto pb-4 flex flex-col">
+        <label className="input input-lg mb-3 w-full">
+          <span className="label">Título</span>
+          <input type="text" name={"title"} placeholder="..." defaultValue={post?.title} />
+        </label>
         {errors?.title && <ActionError actionData={{ error: errors.title }} />}
-        <textarea
-          className="w-full textarea textarea-bordered mb-4"
-          placeholder="Escribe el post..."
-          name="description"
-          rows={5}
-          defaultValue={post?.description}></textarea>
-        {errors?.description && <ActionError actionData={{ error: errors.description }} />}
+        <label>
+          <span className="label mb-2">Descripción</span>
+          <textarea
+            className="w-full textarea mb-4"
+            placeholder="Escribe el post..."
+            name="description"
+            rows={5}
+            defaultValue={post?.description}
+          >
+          </textarea>
+          {errors?.description && <ActionError actionData={{ error: errors.description }} />}
+        </label>
         <div>
           {categories?.length ? (
-            <MultiSelectId name={"categories"} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} options={categories} />
+            <>
+              <span className="label mb-2">Categorías</span>
+              <MultiSelectId name={"categories"} defaultOptions={post?.categories} options={categories} />
+            </>
           ) : (
             <div className="flex justify-center items-center gap-4">
               <div>No hay ninguna categoria todavía</div>
-              <Link to={""} className="text-primary btn btn-ghost btn-sm">
+              <Link to={"/admin/categories/create"} className="text-primary btn btn-ghost btn-sm">
                 <IoMdAdd size={24} />
               </Link>
             </div>
@@ -99,7 +111,7 @@ export default function EditPost({ loaderData, actionData }: Route.ComponentProp
             Borrador
           </button>
           <button type="submit" className="btn btn-primary btn-sm" name="published" value={"true"}>
-            Publicar cambios
+            Publicar
           </button>
         </div>
       </Form>

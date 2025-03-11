@@ -15,7 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let pickedCategories = url.searchParams.getAll("categories") || [];
 
   const page = Number(url.searchParams.get("page") || 1);
-  const pageSize = Number(url.searchParams.get("pageSize") || 3);
+  const pageSize = Number(url.searchParams.get("pageSize") || 6);
   const { posts, pagination } = await fetchPosts({ title, categories: pickedCategories, page, pageSize });
 
   return { posts, pagination, q: title };

@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function AdminLayout() {
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   // Ref callback to capture the sidebar element
   const setSidebarRef = useCallback((node: HTMLDivElement | null) => {
     if (node && !collapsed) {
@@ -84,7 +84,7 @@ export default function AdminLayout() {
 
 const LINKS = [
   { href: href("/admin"), icon: <FaHome size={24} /> },
-  { href: href("/admin/post"), icon: <GiQuillInk size={20} />, text: "Posts" },
+  { href: href("/admin/posts"), icon: <GiQuillInk size={20} />, text: "Posts" },
   { href: href("/admin/videos"), icon: <BiSolidVideos size={20} />, text: "Videos" },
   { href: href("/admin/categories"), icon: <BiCategoryAlt size={20} />, text: "Categorías" },
   { href: href("/admin/questions"), icon: <FaQuestion size={20} />, text: "Preguntas" },

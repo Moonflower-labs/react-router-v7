@@ -1,13 +1,13 @@
-import { Form, href, Link, useNavigate } from "react-router";
+import { Form, href, Link, redirect } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/edit";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useRef, useState } from "react";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
 import type { Category, Section } from "@prisma/client";
 import { fetchVideo, updateVideo } from "~/models/video.server";
+import { getSessionContext } from "~/utils/contexts.server";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const video = await fetchVideo(params.id);
@@ -16,8 +16,9 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = getSessionContext(context)
   const title = formData.get("title") as string;
   const url = formData.get("url") as string;
   const section = formData.get("section");
@@ -42,25 +43,23 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { errors };
   }
 
-  await updateVideo(section as Section, params.id, title, String(description), url.trim(), categories, published);
+  try {
+    await updateVideo(section as Section, params.id, title, String(description), url.trim(), categories, published);
+    session.flash("toastMessage", { type: "success", message: "Vídeo editado 👏🏽" })
 
-  return { success: true, published };
+    return redirect(href("/admin/videos"))
+
+  } catch (error) {
+    console.error(error)
+    session.flash("toastMessage", { type: "error", message: "Ha ocurrido un error" })
+  }
+  return { success: false };
 }
 
 export default function EditVideoBlog({ loaderData, actionData }: Route.ComponentProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const errors = actionData?.errors;
-  const video = loaderData?.video;
-  const categories = loaderData?.categories;
-  const [selectedOptions, setSelectedOptions] = useState<Category[]>(video?.categories || []);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success(`Video ${actionData?.published ? "pubicado" : "editado"} 👏🏽`);
-      navigate("/admin/videos");
-    }
-  }, [actionData]);
+  const { video, categories } = loaderData;
 
   return (
     <div className="text-center">
@@ -92,6 +91,7 @@ export default function EditVideoBlog({ loaderData, actionData }: Route.Componen
             placeholder="Escribe la descripción..."
             name="description"
             rows={5}
+            defaultValue={video.description}
           >
           </textarea>
           {errors?.description && <ActionError actionData={{ error: errors.description }} />}
@@ -99,10 +99,8 @@ export default function EditVideoBlog({ loaderData, actionData }: Route.Componen
         <>
           {categories?.length ? (
             <>
-              <label>
-                <span className="label mb-2">Categorías</span>
-                <MultiSelectId name={"categories"} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} options={categories} />
-              </label>
+              <span className="label mb-2">Categorías</span>
+              <MultiSelectId name={"categories"} defaultOptions={video.categories} options={categories} />
             </>
           ) : (
             <div className="flex justify-center items-center gap-4">
