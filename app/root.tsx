@@ -10,8 +10,9 @@ import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
 import { HoneypotProvider } from "remix-utils/honeypot/react"
 import "./app.css";
-import { userMiddleware, sessionMiddleware, getUserContext, getSessionContext } from "./utils/contexts.server";
 import { useEffect } from "react";
+import { getSessionContext, sessionMiddleware } from "./middleware/sessionMiddleware";
+import { getUserContext, userMiddleware } from "./middleware/userMiddleware";
 
 
 export const unstable_middleware = [sessionMiddleware, userMiddleware]
