@@ -27,8 +27,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     if (!displayName) {
         errors.displayName = "Escribe una descripción";
     }
-    console.log(amount)
-    console.log(amountString)
+
     if (!amountString || amount < 0) {
         errors.amount = "Precio debe de ser un número";
     }
