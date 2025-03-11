@@ -6,7 +6,7 @@ import { editPost, fetchPost } from "~/models/post.server";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import { getSessionContext } from "~/utils/contexts.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
 export async function loader({ params }: Route.LoaderArgs) {

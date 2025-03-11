@@ -7,7 +7,7 @@ import { IoMdAdd } from "react-icons/io";
 import { createVideo } from "~/models/video.server";
 import { MultiSelectId } from "~/components/shared/multi-select";
 import type { Section } from "@prisma/client";
-import { getSessionContext } from "~/utils/contexts.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 export async function loader() {
   const categories = await prisma.category.findMany();

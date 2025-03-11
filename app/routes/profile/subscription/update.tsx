@@ -7,8 +7,8 @@ import { formatUnixDate } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
-import { getSessionContext } from "~/utils/contexts.server";
 import { isSubscriptionDefaultPaymentMethodValid } from "~/integrations/stripe/customer.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)

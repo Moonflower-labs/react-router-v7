@@ -7,8 +7,9 @@ import { motion } from "motion/react";
 import { getShippinRates } from "~/models/shippingRate";
 import { getUserDiscount } from "~/models/user.server";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
-import { getSessionContext, getUserContext } from "~/utils/contexts.server";
 import { getCustomerBalance } from "~/integrations/stripe/customer.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserContext } from "~/middleware/userMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)

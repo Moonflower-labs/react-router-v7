@@ -1,7 +1,7 @@
 import { createSession } from "~/utils/chat.server";
 import type { Route } from "./+types/create";
 import { Form, href, redirect, useNavigation } from "react-router";
-import { getSessionContext } from "~/utils/contexts.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
 export async function action({ request, context }: Route.ActionArgs) {

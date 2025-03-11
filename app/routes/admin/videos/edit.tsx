@@ -1,13 +1,13 @@
 import { Form, href, Link, redirect } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/edit";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { prisma } from "~/db.server";
 import { IoMdAdd } from "react-icons/io";
 import { MultiSelectId } from "~/components/shared/multi-select";
-import type { Category, Section } from "@prisma/client";
+import type { Section } from "@prisma/client";
 import { fetchVideo, updateVideo } from "~/models/video.server";
-import { getSessionContext } from "~/utils/contexts.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const video = await fetchVideo(params.id);

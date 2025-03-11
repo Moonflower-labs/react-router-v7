@@ -1,7 +1,7 @@
 import { editSession, getSession } from "~/utils/chat.server";
 import type { Route } from "./+types/edit";
 import { Form, href, redirect, useNavigation } from "react-router";
-import { getSessionContext } from "~/utils/contexts.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 export async function loader({ params }: Route.LoaderArgs) {
     const session = await getSession(params.sessionId)
