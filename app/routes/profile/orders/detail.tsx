@@ -4,7 +4,7 @@ import { formatDate } from "~/utils/format";
 import { href } from "react-router";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request, params, context }: Route.LoaderArgs) {
+export async function loader({ params, context }: Route.LoaderArgs) {
     const userId = getSessionContext(context).get("userId");
     const order = await fetchUserOrder(params.orderId, userId);
     return { order };
