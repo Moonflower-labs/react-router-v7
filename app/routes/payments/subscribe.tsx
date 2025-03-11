@@ -3,11 +3,11 @@ import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useCallback, useState } from "react";
 import type { Route } from "./+types/subscribe";
-import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getSessionContext(context).get("userId");
   const userSubscription = await getUserSubscription(userId);
   if (userSubscription?.status === "active") {
     return redirect(href("/profile/subscription/update"));

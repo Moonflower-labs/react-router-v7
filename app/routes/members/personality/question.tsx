@@ -1,15 +1,15 @@
 import { useEffect, useRef } from "react";
 import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/question";
-import { requireUserId } from "~/utils/session.server";
 import { createBasicQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
 import ActionError from "~/components/framer-motion/ActionError";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
   try {
-    const userId = await requireUserId(request);
+    const userId = getSessionContext(context).get("userId");
 
     const { basicQuestionCount } = (await getQuestionCount({ userId, section: "basic" })) as { basicQuestionCount: number };
 
@@ -22,9 +22,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = await requireUserId(request);
+  const userId = getSessionContext(context).get("userId");
 
   const questionCount = Number(formData?.get("questionCount")) ?? 3;
 

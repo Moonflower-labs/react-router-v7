@@ -2,13 +2,13 @@ import { data, useFetcher } from "react-router";
 import { useCallback, useEffect } from "react";
 import type { Route } from "./+types/question";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
-import { requireUserId } from "~/utils/session.server";
 import { toast } from "react-toastify";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
   try {
-    const userId = await requireUserId(request);
+    const userId = getSessionContext(context).get("userId");
 
     const { liveQuestionCount } = (await getQuestionCount({ userId, section: "live" })) as { liveQuestionCount: number };
 
@@ -21,9 +21,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = await requireUserId(request);
+  const userId = getSessionContext(context).get("userId");
 
   const text = formData.get("text");
   const questionCount = Number(formData?.get("questionCount")) ?? 1;

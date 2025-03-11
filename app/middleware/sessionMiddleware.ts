@@ -31,12 +31,16 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
 
 // Only commit the session if data changed and the path is not in the excluded list
 function shouldCommitSession(prev: Partial<SessionData>, next: Partial<SessionData>, path: string) {
-  if (!EXCLUDED_URLS.includes(path)) {
+  if (isExcludedPath(path, EXCLUDED_URLS)) {
     // compare the initial data with next data
     return JSON.stringify(prev) !== JSON.stringify(next) ? true : false;
   }
 
   return false;
+}
+
+function isExcludedPath(path: string, excludedUrls: (string | RegExp)[]): boolean {
+  return excludedUrls.some(url => (url instanceof RegExp ? url.test(path) : url === path));
 }
 
 export function getSessionContext(context: unstable_RouterContextProvider) {

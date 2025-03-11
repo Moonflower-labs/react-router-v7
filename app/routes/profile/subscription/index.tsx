@@ -1,6 +1,5 @@
 import { href, Link, Outlet, redirect } from "react-router";
 import type { Route } from "./+types/index";
-import { requireUserId } from "~/utils/session.server";
 import { getUserSubscription } from "~/models/subscription.server";
 import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import type Stripe from "stripe";
@@ -12,9 +11,10 @@ import { translateSubscriptionStatus } from "~/utils/translations";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
 import { BiErrorCircle } from "react-icons/bi";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getSessionContext(context).get("userId");
   const subscription = await getUserSubscription(userId)
   if (!subscription) {
     throw redirect(href("/profile"))

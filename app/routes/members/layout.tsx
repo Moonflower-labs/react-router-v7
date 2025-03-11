@@ -3,13 +3,13 @@ import personalityImg from "~/icons/plan-personality.svg"
 import soulImg from "~/icons/plan-soul.svg"
 import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
-import { requireUserId } from "~/utils/session.server";
 import ScrollToHash from "~/components/shared/ScrollToHash";
 import { getUserSubscription } from "~/models/subscription.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getSessionContext(context).get("userId");
   const subscription = await getUserSubscription(userId)
   if (!subscription) {
     throw redirect(href("/profile"))

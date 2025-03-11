@@ -13,9 +13,10 @@ import "./app.css";
 import { useEffect } from "react";
 import { getSessionContext, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { getUserContext, userMiddleware } from "./middleware/userMiddleware";
+import { protectedRouteMiddleware } from "./middleware/protectedRoutesMiddleware";
 
 
-export const unstable_middleware = [sessionMiddleware, userMiddleware]
+export const unstable_middleware = [sessionMiddleware, userMiddleware, protectedRouteMiddleware]
 
 
 export const links: Route.LinksFunction = () => [

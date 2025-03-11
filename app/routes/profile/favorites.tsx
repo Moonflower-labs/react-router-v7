@@ -1,12 +1,13 @@
 import { Link, useFetcher } from "react-router";
 import { TbTrash } from "react-icons/tb";
 import type { Route } from "./+types/favorites";
-import { requireUserId } from "~/utils/session.server";
 import { getUserFavorites } from "~/models/profile.server";
 import InfoAlert from "~/components/shared/info";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getSessionContext(context).get("userId");
+
   try {
     const favorites = await getUserFavorites(userId);
     return { favorites };

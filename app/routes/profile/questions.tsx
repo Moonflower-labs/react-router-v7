@@ -1,10 +1,10 @@
+import { getSessionContext } from '~/middleware/sessionMiddleware';
 import type { Route } from './+types/questions'
-import { requireUserId } from '~/utils/session.server'
 import { getUserQuestions } from '~/models/question.server'
 import { formatDate } from '~/utils/format'
 
-export async function loader({ request }: Route.LoaderArgs) {
-    const userId = await requireUserId(request)
+export async function loader({ context }: Route.LoaderArgs) {
+    const userId = getSessionContext(context).get("userId");
     return getUserQuestions(userId)
 
 }

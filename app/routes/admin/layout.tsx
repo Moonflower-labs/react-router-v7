@@ -6,18 +6,12 @@ import { HiMiniShoppingBag } from "react-icons/hi2";
 import { PiUsersThreeFill } from "react-icons/pi";
 import { RiLiveLine, RiWebhookFill } from "react-icons/ri";
 import { href, NavLink, Outlet } from "react-router";
-import type { Route } from "./+types/layout";
-import { requireUserId } from "~/utils/session.server";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdLocalShipping, MdOutlineClose } from "react-icons/md";
 import { adminAuth } from "./middleware.server";
 
 export const unstable_middleware = [adminAuth];
-
-export async function loader({ request }: Route.LoaderArgs) {
-  return await requireUserId(request);
-}
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);

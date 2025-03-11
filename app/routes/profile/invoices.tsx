@@ -1,14 +1,15 @@
 import { getCustomerId } from "~/integrations/stripe/index.server";
 import type { Route } from "./+types/invoices";
-import { requireUserId } from "~/utils/session.server";
 import { listInvoices } from "~/integrations/stripe/invoice.server";
 import { href, Link, redirect } from "react-router";
 import { formatUnixDate } from "~/utils/format";
 import { FaFilePdf } from "react-icons/fa";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 
-export async function loader({ request }: Route.LoaderArgs) {
-    const userId = await requireUserId(request)
+export async function loader({ context }: Route.LoaderArgs) {
+    const userId = getSessionContext(context).get("userId");
+
     const customerId = await getCustomerId(userId)
     if (!customerId) {
         throw redirect("/")

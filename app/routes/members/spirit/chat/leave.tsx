@@ -1,9 +1,9 @@
 import { redisPublisher } from "~/integrations/redis/service.server";
-import { requireUserId } from "~/utils/session.server";
 import type { Route } from "./+types/leave";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function action({ request }: Route.ActionArgs) {
-    const userId = await requireUserId(request);
+export async function action({ request, context }: Route.ActionArgs) {
+    const userId = getSessionContext(context).get("userId");
     // Parse URL-encoded body directly from request
     const text = await request.text();
     const body = new URLSearchParams(text);

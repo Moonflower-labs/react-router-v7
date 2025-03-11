@@ -1,11 +1,11 @@
 import { fetchUserOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
 import { formatDate } from "~/utils/format";
-import { requireUserId } from "~/utils/session.server";
 import { href } from "react-router";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-    const userId = await requireUserId(request)
+export async function loader({ request, params, context }: Route.LoaderArgs) {
+    const userId = getSessionContext(context).get("userId");
     const order = await fetchUserOrder(params.orderId, userId);
     return { order };
 }
