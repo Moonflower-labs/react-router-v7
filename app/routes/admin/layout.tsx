@@ -44,11 +44,11 @@ export default function AdminLayout() {
       >
         {!collapsed && (
           <>
-            {LINKS.map(({ href, icon, text }) => (
+            {LINKS.map(({ to, icon, text }) => (
               <NavLink
-                key={href}
-                to={href}
-                end
+                key={to}
+                to={to}
+                end={to === href("/admin")}
                 className={({ isActive }) =>
                   `flex items-center gap-3 p-2 rounded-md transition-all ${isActive ? "bg-primary text-primary-content" : ""
                   }`
@@ -83,17 +83,17 @@ export default function AdminLayout() {
 }
 
 const LINKS = [
-  { href: href("/admin"), icon: <FaHome size={24} /> },
-  { href: href("/admin/posts"), icon: <GiQuillInk size={20} />, text: "Posts" },
-  { href: href("/admin/videos"), icon: <BiSolidVideos size={20} />, text: "Videos" },
-  { href: href("/admin/categories"), icon: <BiCategoryAlt size={20} />, text: "Categorías" },
-  { href: href("/admin/questions"), icon: <FaQuestion size={20} />, text: "Preguntas" },
-  { href: href("/admin/orders"), icon: <HiMiniShoppingBag size={20} />, text: "Pedidos" },
-  { href: href("/admin/products"), icon: <AiFillProduct size={20} />, text: "Productos" },
-  { href: href("/admin/live-sessions"), icon: <RiLiveLine size={20} />, text: "Sessiones" },
-  { href: href("/admin/gallery"), icon: <FaRegImages size={20} />, text: "Imágenes" },
-  { href: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
-  { href: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },
-  // { href: href("/admin/stripe"), icon: <RiWebhookFill size={20} />, text: "Stripe" },
-  { href: href("/admin/emails"), icon: <RiWebhookFill size={20} />, text: "Emails" },
+  { to: href("/admin"), icon: <FaHome size={24} /> },
+  { to: href("/admin/posts"), icon: <GiQuillInk size={20} />, text: "Posts" },
+  { to: href("/admin/videos"), icon: <BiSolidVideos size={20} />, text: "Videos" },
+  { to: href("/admin/categories"), icon: <BiCategoryAlt size={20} />, text: "Categorías" },
+  { to: href("/admin/questions"), icon: <FaQuestion size={20} />, text: "Preguntas" },
+  { to: href("/admin/orders"), icon: <HiMiniShoppingBag size={20} />, text: "Pedidos" },
+  { to: href("/admin/products"), icon: <AiFillProduct size={20} />, text: "Productos" },
+  { to: href("/admin/live-sessions"), icon: <RiLiveLine size={20} />, text: "Sessiones" },
+  { to: href("/admin/gallery"), icon: <FaRegImages size={20} />, text: "Imágenes" },
+  { to: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
+  { to: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },
+  // { to: href("/admin/stripe"), icon: <RiWebhookFill size={20} />, text: "Stripe" },
+  { to: href("/admin/emails"), icon: <RiWebhookFill size={20} />, text: "Emails" },
 ]
