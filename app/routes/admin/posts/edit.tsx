@@ -69,16 +69,15 @@ export default function EditPost({ loaderData, actionData }: Route.ComponentProp
       <h2 className="text-2xl text-primary my-5">
         Editar Post de <span className="font-bold">Personalidad</span>{" "}
       </h2>
-      <Form ref={formRef} method="post" className="w-full md:w-[65%] lg:w-1/3  mx-auto pb-4 flex flex-col">
+      <Form ref={formRef} method="post" className="card max-w-xs items-center mx-auto pb-4 flex flex-col">
         <label className="input input-lg mb-3 w-full">
           <span className="label">Título</span>
           <input type="text" name={"title"} placeholder="..." defaultValue={post?.title} />
         </label>
         {errors?.title && <ActionError actionData={{ error: errors.title }} />}
-        <label>
-          <span className="label mb-2">Descripción</span>
+        <label className="textarea textarea-lg mb-4">
+          <span className="label">Descripción</span>
           <textarea
-            className="w-full textarea mb-4"
             placeholder="Escribe el post..."
             name="description"
             rows={5}
@@ -87,7 +86,7 @@ export default function EditPost({ loaderData, actionData }: Route.ComponentProp
           </textarea>
           {errors?.description && <ActionError actionData={{ error: errors.description }} />}
         </label>
-        <div>
+        <div className="w-full">
           {categories?.length ? (
             <>
               <span className="label mb-2">Categorías</span>
