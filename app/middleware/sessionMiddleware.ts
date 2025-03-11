@@ -6,6 +6,7 @@ import {
   type SessionData
 } from "react-router";
 import type { Route } from "../+types/root";
+import { sessionStorage } from "~/utils/session.server";
 
 const sessionContext = unstable_createContext<Session>();
 
