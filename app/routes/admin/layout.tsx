@@ -10,7 +10,7 @@ import type { Route } from "./+types/layout";
 import { requireUserId } from "~/utils/session.server";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
-import { MdOutlineClose } from "react-icons/md";
+import { MdLocalShipping, MdOutlineClose } from "react-icons/md";
 import { adminAuth } from "./middleware.server";
 
 export const unstable_middleware = [adminAuth];
@@ -91,6 +91,7 @@ const LINKS = [
   { to: href("/admin/orders"), icon: <HiMiniShoppingBag size={20} />, text: "Pedidos" },
   { to: href("/admin/products"), icon: <AiFillProduct size={20} />, text: "Productos" },
   { to: href("/admin/live-sessions"), icon: <RiLiveLine size={20} />, text: "Sessiones" },
+  { to: href("/admin/shippingRates"), icon: <MdLocalShipping size={20} />, text: "Shipping Rates" },
   { to: href("/admin/gallery"), icon: <FaRegImages size={20} />, text: "Imágenes" },
   { to: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
   { to: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },

@@ -37,6 +37,12 @@ export const adminRoutes = [
     ]),
     // Reset Tokens
     route("tokens", "routes/admin/resetToken/reset-token.tsx"),
+    // Products
+    ...prefix("shippingRates", [
+      index("routes/admin/shippingRates/list.tsx"),
+      route("create", "routes/admin/shippingRates/create.tsx"),
+      route(":id/edit", "routes/admin/shippingRates/edit.tsx")
+    ]),
     //  Questions
     ...prefix("questions", [
       index("routes/admin/questions/list.tsx"),
