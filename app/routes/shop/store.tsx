@@ -3,7 +3,6 @@ import StoreSkeleton from "~/components/skeletons/StoreSkeleton";
 import type { Route } from "./+types/store";
 import { Suspense, use } from "react";
 import { addToCart } from "~/models/cart.server";
-import { getUserId } from "~/utils/session.server";
 import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
