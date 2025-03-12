@@ -1,10 +1,10 @@
-import { Form, useNavigate } from "react-router";
+import { Form, href, redirect, useNavigation } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/edit";
-import { useEffect, useRef } from "react";
-import { toast } from "react-toastify";
+import { useRef } from "react";
 import { prisma } from "~/db.server";
 import { editCategory } from "~/models/category.server";
+import { getSessionContext } from "~/middleware/sessionMiddleware";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const category = await prisma.category.findUnique({ where: { id: params.id } });
@@ -16,8 +16,9 @@ interface Errors {
   description?: string;
   categories?: string; // You can adjust this based on how you want to manage categories
 }
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = getSessionContext(context);
   const name = formData.get("name") as string;
 
   let errors: Errors = {};
@@ -28,23 +29,26 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { errors };
   }
 
-  await editCategory(params.id, name);
-
-  return { success: true };
+  try {
+    await editCategory(params.id, name);
+  } catch (error) {
+    console.error(error)
+    const successMsg = { type: "error", message: "Ha ocurrido un error" }
+    session.flash("toastMessage", successMsg)
+    return { success: false };
+  }
+  const successMsg = { type: "success", message: "Categoría editada 👏🏽" }
+  session.flash("toastMessage", successMsg)
+  return redirect(href("/admin/categories"))
 }
 
 export default function EditCategory({ loaderData, actionData }: Route.ComponentProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const navigation = useNavigation()
   const errors = actionData?.errors;
   const category = loaderData?.category;
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success("Categoría editada 👏🏽");
-      navigate(-1);
-    }
-  }, [actionData]);
+
 
   return (
     <div className="min-h-screen text-center w-full">
@@ -56,7 +60,7 @@ export default function EditCategory({ loaderData, actionData }: Route.Component
           <button type="reset" className="btn btn-primary btn-outline btn-sm">
             Cancelar
           </button>
-          <button type="submit" className="btn btn-primary btn-sm" name="published" value={"true"}>
+          <button type="submit" className="btn btn-primary btn-sm" name="published" value={"true"} disabled={navigation.state !== "idle"}>
             Guardar cambios
           </button>
         </div>

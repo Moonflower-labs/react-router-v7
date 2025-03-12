@@ -1,8 +1,8 @@
 import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, startTransition } from "react";
 import { FaRegCommentAlt, FaReply } from "react-icons/fa";
 import { AnimatePresence, motion } from "motion/react";
-import { formatDate } from "~/utils/format";
+import { formatDate, formatDistanceToNowEs } from "~/utils/format";
 import type { User } from "~/models/user.server";
 import type { Comment, Reply } from "~/models/post.server";
 import { Paginator } from "./Pagination";
@@ -74,7 +74,6 @@ export function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ opacity: { duration: 0.9 }, height: { duration: 0.8 } }}
       className="overflow-hidden">
       <fetcher.Form ref={formRef} method="post" action="/api/comments" className="w-full mx-auto pb-4 flex flex-col mt-4">
         <input type="hidden" name={fieldName} value={objectId} />
@@ -85,10 +84,10 @@ export function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
           name="text"
           rows={5}></textarea>
         <div className="flex justify-end gap-3 mt-2">
-          <button type="reset" className="btn btn-primary btn-outline btn-sm">
+          <button type="reset" className="btn btn-primary btn-outline btn-sm" disabled={fetcher.state !== "idle"}>
             Cancelar
           </button>
-          <button type="submit" className="btn btn-primary btn-sm">
+          <button type="submit" className="btn btn-primary btn-sm" disabled={fetcher.state !== "idle"}>
             Publicar
           </button>
         </div>
@@ -124,7 +123,7 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
         </div>
         <div className="badge badge-outline">
           <span className="me-3 font-bold">{comment?.user?.username}</span>
-          <time className="text-xs opacity-50">{formatDate(comment.createdAt)}</time>
+          <time className="text-xs opacity-50" title={formatDate(comment.createdAt)}>{formatDistanceToNowEs(comment.createdAt)}</time>
         </div>
       </div>
       <div className="w-[90%] mx-auto mb-4">
@@ -132,14 +131,16 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
         <div className="flex gap-4">
           {comment.user?.id === userId && deleteButton}
           {comment.replies !== undefined && (
-            <button onClick={() => setIsopen(!isOpen)} title="Responder" className="text-primary">
+            <button onClick={() => { startTransition(() => setIsopen(!isOpen)) }} title="Responder" className="text-primary cursor-pointer">
               <FaReply size={24} />
             </button>
           )}
           {likeButton && likeButton}
           <span className="text-primary font-bold">{comment?.likes?.length || 0}</span>
         </div>
-        <AnimatePresence mode="wait">{isOpen && commentForm}</AnimatePresence>
+        <AnimatePresence mode="wait">
+          {isOpen && commentForm}
+        </AnimatePresence>
         <Replies replies={comment.replies} userId={userId} />
       </div>
     </motion.div>
@@ -180,7 +181,7 @@ function DeleteButton({ object, id }: { object: string; id: string }) {
     <div>
       <fetcher.Form method="delete">
         <input type="hidden" name="object" value={object} />
-        <button type="submit" name="id" value={id} className="cursor-pointer text-error">
+        <button type="submit" name="id" value={id} className="cursor-pointer text-error" disabled={fetcher.state !== "idle"}>
           <ImBin size={24} title="Borrar mensage" />
         </button>
       </fetcher.Form>

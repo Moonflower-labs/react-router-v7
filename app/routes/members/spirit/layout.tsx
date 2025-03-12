@@ -1,12 +1,12 @@
 import { href, Link, Outlet, redirect, useLocation } from 'react-router'
 import type { Route } from './+types/layout';
 import { getUserSubscription } from '~/models/subscription.server';
-import { getUserIdWithRole } from '~/utils/session.server';
+import { getUserIdWithRole } from '~/middleware/sessionMiddleware';
 
 const links = [{ to: "/members/spirit#videos", name: "Videos" }, { to: "/members/spirit#podcasts", name: "Podcasts" }, { to: "/members/spirit/question", name: "Pregunta" }, { to: "/members/spirit/live", name: "Sesión en directo" }]
 
-const membersAuth: Route.unstable_MiddlewareFunction = async ({ request }) => {
-    const { isAdmin, userId } = await getUserIdWithRole(request)
+const membersAuth: Route.unstable_MiddlewareFunction = async ({ context }) => {
+    const { isAdmin, userId } = getUserIdWithRole(context)
 
     if (isAdmin) return;
 

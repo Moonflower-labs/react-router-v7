@@ -8,8 +8,12 @@ import {
 } from "react-router";
 import type { Route } from "../+types/root";
 import { sessionStorage } from "~/utils/session.server";
+import { randomUUID } from "crypto";
+import type { User } from "~/models/user.server";
 
 const sessionContext = unstable_createContext<Session>();
+
+const USER_SESSION_KEY = "userId";
 
 const EXCLUDED_URLS = [
   href("/logout"), // Exclude to avoid commiting the destroyed session
@@ -72,7 +76,22 @@ export function getSessionContext(context: unstable_RouterContextProvider) {
 
 // Util to only get the id from the context
 export function getUserId(context: unstable_RouterContextProvider) {
-  return context.get(sessionContext).get("userId");
+  return context.get(sessionContext).get("USER_SESSION_KEY");
+}
+export function setGuestId(session: Session) {
+  const guestId = `guest-${randomUUID()}`;
+  session.set(USER_SESSION_KEY, guestId);
+  return session;
+}
+
+export function getUserIdWithRole(context: unstable_RouterContextProvider): {
+  userId: User["id"] | undefined;
+  isAdmin: Boolean;
+} {
+  const session = getSessionContext(context);
+  const userId = session.get(USER_SESSION_KEY);
+  const isAdmin = session.get("isAdmin") ?? false;
+  return { userId, isAdmin };
 }
 
 export async function logout(context: unstable_RouterContextProvider) {

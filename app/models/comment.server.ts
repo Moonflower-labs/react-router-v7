@@ -14,11 +14,11 @@ export async function fetchPostComments(postId: string, page: number, pageSize: 
               }
             }
           },
-          user: { select: { id: true, profile: { select: { avatar: true } } } }
+          user: { select: { id: true, username: true, profile: { select: { avatar: true } } } }
         },
         orderBy: { createdAt: "desc" }
       },
-      user: { select: { id: true, profile: { select: { avatar: true } } } }
+      user: { select: { id: true, username: true, profile: { select: { avatar: true } } } }
     },
     orderBy: { createdAt: "desc" },
     // Add pagination

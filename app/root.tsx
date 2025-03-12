@@ -2,7 +2,7 @@ import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestora
 import type { Route } from "./+types/root";
 import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
-import { setGuestId } from "./utils/session.server";
+import { setGuestId } from "~/middleware/sessionMiddleware";
 import { getCartItemsCount } from "./models/cart.server";
 import { toast, ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";

@@ -4,7 +4,6 @@ import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-j
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
 import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe/index.server";
-import { getUser, getUserId } from "~/utils/session.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
 import { updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
@@ -14,16 +13,16 @@ import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
 import { differenceInDays } from "date-fns"
 import { getUserDiscount } from "~/models/user.server";
+import { getUserContext } from "~/middleware/userMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
 const stripePromise = loadStripe("pk_test_51LIRtEAEZk4zaxmw2ngsEkzDCYygcLkU5uL4m2ba01aQ6zXkWFXboTVdNH71GBZzvHNmiRU13qtQyjjCvTzVizlX00yXeplNgV");
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const [user, userId] = await Promise.all([
-    getUser(request),
-    getUserId(request)
-  ])
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const user = getUserContext(context)
+  const userId = getUserId(context)
   const url = new URL(request.url);
   const mode = url.pathname.includes("subscribe") ? "subscription" : url.pathname.includes("setup") ? "setup" : "payment"
   const customerSessionSecret = user?.customerId && mode === "payment" ? await createCustomerSession(user?.customerId) : null;

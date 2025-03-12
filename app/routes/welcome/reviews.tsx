@@ -4,8 +4,9 @@ import { Suspense, use, useCallback, useState } from "react";
 import { FaStar } from "react-icons/fa6";
 import { useFetcher, useRouteLoaderData } from "react-router";
 import ReviewsSkeleton from "~/components/skeletons/ReviewsSkeleton";
-import { formatDate } from "~/utils/format";
 import { AnimatePresence, motion } from "motion/react";
+import { formatDistanceToNowEs } from "~/utils/format";
+
 
 const ReviewsSection = ({ reviews }: { reviews: Promise<Review[]> }) => {
   const user = useRouteLoaderData("root")?.user as User;
@@ -104,7 +105,7 @@ const ReviewsCarousel = ({ reviewsPromise }: { reviewsPromise: Promise<Review[]>
                   <div className="pt-4 flex justify-center">{renderStars(slide.score)}</div>
                   <div className="w-full p-8 text-center">{slide.text}</div>
                   <div className="flex justify-center text-sm opacity-80 pb-3 font-bold">
-                    {slide?.user?.username} {formatDate(slide.createdAt)}
+                    {slide?.user?.username} {formatDistanceToNowEs(slide.createdAt)}
                   </div>
                 </motion.div>
                 : null
