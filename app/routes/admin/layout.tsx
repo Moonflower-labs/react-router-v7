@@ -9,9 +9,9 @@ import { href, NavLink, Outlet } from "react-router";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdLocalShipping, MdOutlineClose } from "react-icons/md";
-import { adminAuth } from "./middleware.server";
+import { adminAuthMiddleware } from "~/middleware/adminMiddleware";
 
-export const unstable_middleware = [adminAuth];
+export const unstable_middleware = [adminAuthMiddleware];
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
