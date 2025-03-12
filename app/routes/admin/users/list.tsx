@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
 import { formatDate } from "~/utils/format";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ }: Route.LoaderArgs) {
   const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } }, profile: { select: { avatar: true } } } });
@@ -14,7 +14,7 @@ export async function loader({ }: Route.LoaderArgs) {
 }
 export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData()
-  const currentUserId = getSessionContext(context).get("userId")
+  const currentUserId = getUserId(context);
   const userId = formData.get("userId");
   if (currentUserId && currentUserId === userId) {
     return { success: false, message: "No te puedes borrar a ti mismo" };

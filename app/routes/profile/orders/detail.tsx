@@ -2,10 +2,10 @@ import { fetchUserOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
 import { formatDate } from "~/utils/format";
 import { href } from "react-router";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ params, context }: Route.LoaderArgs) {
-    const userId = getSessionContext(context).get("userId");
+    const userId = getUserId(context);
     const order = await fetchUserOrder(params.orderId, userId);
     return { order };
 }

@@ -1,5 +1,4 @@
 import { Form, Link, useNavigation, redirect } from "react-router";
-import { createUserSession, getUserId } from "~/utils/session.server";
 import type { Route } from "./+types/register";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail, validateUsername } from "~/utils/helpers";
@@ -7,9 +6,10 @@ import { sendWelcomeEmail } from "~/integrations/mailer/utils.server";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { honeypot } from "~/utils/honeypot.server";
 import { SpamError } from "remix-utils/honeypot/server";
+import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getUserId(context);
   if (userId && !userId.startsWith("guest-")) {
     return redirect("/");
   }
@@ -17,8 +17,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = getSessionContext(context);
   const username = formData.get("username");
   const email = formData.get("email");
   const password = formData.get("password");
@@ -68,13 +69,15 @@ export async function action({ request }: Route.ActionArgs) {
       : [];
     const isAdmin = !!allowedAdmins?.includes(user.email)
 
-    return createUserSession({
-      isAdmin,
-      redirectTo,
-      remember: false,
-      request,
-      userId: user.id
-    });
+    const toastMessage = { message: "Sesión iniciada!", type: "info" };
+
+    // Start a user session
+    session.set("userId", user.id)
+    session.set("isAdmin", isAdmin)
+    session.flash("toastMessage", toastMessage)
+
+    return redirect(redirectTo)
+
   } catch (e) {
     console.log(e)
     return { errors: { username: "This username already exists", password: null } }

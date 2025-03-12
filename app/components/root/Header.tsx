@@ -13,7 +13,7 @@ import { RiAdminFill } from "react-icons/ri";
 export function Header() {
   const { pathname } = useLocation()
   const isHomePage = pathname === "/"
-  const { user, isAdmin } = useRouteLoaderData("root") as { user: User, isAdmin: boolean };
+  const { user, isAdmin } = (useRouteLoaderData("root") as { user: User, isAdmin: boolean }) ?? {};
   const theme = useRouteLoaderData("root")?.theme as string;
   const totalItemCount = useRouteLoaderData("root")?.totalItemCount;
   const fetcher = useFetcher({ key: "add-to-cart" });

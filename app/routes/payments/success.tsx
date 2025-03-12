@@ -44,7 +44,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Success({ loaderData }: Route.ComponentProps) {
   const { planData, orderId, intent, mode, isMissedPayment } = loaderData;
-  const { user } = useRouteLoaderData("root")
+  const user = useRouteLoaderData("root")?.user;
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const clientSecret = searchParams.get("clientSecret");

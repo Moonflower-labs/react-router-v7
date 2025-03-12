@@ -8,11 +8,10 @@ import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
 import { isSubscriptionDefaultPaymentMethodValid } from "~/integrations/stripe/customer.server";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const session = getSessionContext(context)
-  const userId = session.get("userId")
+  const userId = getUserId(context);
   const userSubscription = await getUserSubscription(userId)
   let error = null
   if (userSubscription?.status === "past_due") {

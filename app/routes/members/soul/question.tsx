@@ -4,12 +4,12 @@ import type { Route } from "./+types/question";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
-export async function loader({ request, context }: Route.LoaderArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
   try {
-    const userId = getSessionContext(context).get("userId")
+    const userId = getUserId(context);
     const { tarotQuestionCount } = (await getQuestionCount({ userId, section: "tarot" })) as { tarotQuestionCount: number };
 
     return tarotQuestionCount;
@@ -23,7 +23,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
 export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
-  const userId = getSessionContext(context).get("userId");
+  const userId = getUserId(context);
   const text = formData.get("text");
   const info = formData.get("info");
   const questionCount = Number(formData?.get("questionCount")) ?? 1;

@@ -1,11 +1,11 @@
 import { Form, Link } from "react-router";
 import type { Route } from "./+types/plans";
 import InfoAlert from "~/components/shared/info";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 export async function loader({ context }: Route.LoaderArgs) {
-    const userId = getSessionContext(context).get("userId");
+    const userId = getUserId(context);
     return { isLoggedIn: !!(userId && !userId.toString().startsWith("guest")) }
 }
 

@@ -1,11 +1,12 @@
 import { redirect } from "react-router";
-import { logout } from "~/utils/session.server";
 import type { Route } from "./+types/logout";
+import { logout } from "~/middleware/sessionMiddleware";
 
-export function loader() {
+export function loader({ }: Route.LoaderArgs) {
   return redirect("/");
 }
 
-export async function action({ request }: Route.LoaderArgs) {
-  return logout(request);
+export async function action({ context }: Route.ActionArgs) {
+
+  return logout(context);
 }

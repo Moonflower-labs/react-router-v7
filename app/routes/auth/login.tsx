@@ -1,5 +1,4 @@
-import { Form, Link, redirect, useLocation, useNavigation } from "react-router";
-import { createUserSession, getUserId } from "~/utils/session.server";
+import { Form, href, Link, redirect, useLocation, useNavigation } from "react-router";
 import type { Route } from "./+types/login";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils/helpers";
@@ -8,21 +7,24 @@ import { mergeGuestCart } from "~/models/cart.server";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { SpamError } from "remix-utils/honeypot/server";
 import { honeypot } from "~/utils/honeypot.server";
+import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await getUserId(request);
-  if (userId && !userId.startsWith("guest-")) {
+export async function loader({ context }: Route.LoaderArgs) {
+  const userId = getUserId(context);
+  if (userId && !userId.startsWith("guest")) {
     return redirect("/");
   }
   return {};
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = getSessionContext(context);
   const email = formData.get("email");
   const password = formData.get("password");
   const remember = formData.get("remember");
-  const redirectTo = (formData.get("redirectTo") as string) ?? "/profile";
+  const redirectTo = formData.get("redirectTo") ?? "/profile";
+  console.log(redirectTo)
 
   try {
     await honeypot.check(formData)
@@ -54,26 +56,26 @@ export async function action({ request }: Route.ActionArgs) {
     ? process.env.ADMIN_LIST.split(",").map((email) => email.trim())
     : [];
   const isAdmin = !!allowedAdmins?.includes(user.email)
-  console.log("IS ADMIN: ", isAdmin)
+
   // Manage cart merging
-  const guestId = (await getUserId(request)) as string;
+  const guestId = getUserId(context);
   await mergeGuestCart(guestId, user?.id);
   const toastMessage = { message: "Sesión iniciada!", type: "info" };
-  // create user session
-  return createUserSession({
-    redirectTo,
-    isAdmin,
-    remember: Boolean(remember === "on") ? true : false,
-    request,
-    userId: user.id
-  });
+
+  // Set the data in the session
+  session.set("userId", user.id)
+  session.set("isAdmin", isAdmin)
+  if (remember) session.set("remember", remember)
+  session.flash("toastMessage", toastMessage)
+
+  return redirect(redirectTo as string)
 }
 
 
 export default function Login({ actionData }: Route.ComponentProps) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const from = params.get("redirectTo") ?? "/";
+  const from = params.get("redirectTo") ?? href("/profile");
   const actionErrors = actionData;
   const navigation = useNavigation();
   const emailRef = React.useRef<HTMLInputElement>(null);

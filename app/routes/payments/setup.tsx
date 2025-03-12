@@ -21,7 +21,7 @@ function SetupForm() {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
-    const { user } = useRouteLoaderData("root") as { user: User }
+    const user = useRouteLoaderData("root")?.user as User;
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState(false);
 

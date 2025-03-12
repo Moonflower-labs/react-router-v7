@@ -61,7 +61,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room, status, statusMsg } = loaderData;
     const isSessionActive = Boolean(status === "active");
-    const { user } = useRouteLoaderData("root");
+    const user = useRouteLoaderData("root")?.user;
     const currentUserId = user?.id;
     const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages, user.id);
     const fetcher = useFetcher()

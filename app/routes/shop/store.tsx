@@ -6,7 +6,7 @@ import { addToCart } from "~/models/cart.server";
 import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -17,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
-  const userId = getSessionContext(context).get("userId");
+  const userId = getUserId(context);
   const formData = await request.formData();
   const productId = formData.get("productId");
   const priceId = formData.get("priceId");
@@ -37,7 +37,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function Store({ loaderData }: Route.ComponentProps) {
-  const { user } = useRouteLoaderData("root") as { user: User };
+  const user = useRouteLoaderData("root")?.user as User;
 
 
   return (

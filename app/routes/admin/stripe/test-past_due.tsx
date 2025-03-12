@@ -136,7 +136,7 @@ export async function action({ request }: Route.ActionArgs) {
 };
 
 export default function TestPastDue({ actionData }: Route.ComponentProps) {
-    const { user } = useRouteLoaderData("root") as { user: User }
+    const user = useRouteLoaderData("root")?.user as User;
 
     return (
         <div className="p-10 text-center">

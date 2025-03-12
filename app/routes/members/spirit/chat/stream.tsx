@@ -2,7 +2,7 @@ import { eventStream } from "remix-utils/sse/server";
 import { getRoomStatus, subscribeToMessages } from "~/utils/chat.server";
 import type { Route } from "./+types/stream";
 import { redisPublisher } from "~/integrations/redis/service.server";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ request, context }: Route.LoaderArgs) {
     const url = new URL(request.url);
@@ -10,7 +10,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     if (!roomId) {
         throw new Response("roomId is required", { status: 400 });
     }
-    const userId = getSessionContext(context).get("userId");
+    const userId = getUserId(context);
     const userIdFromUrl = url.searchParams.get("userId");
     if (userIdFromUrl && userIdFromUrl !== userId) {
         throw new Response("User ID mismatch", { status: 403 });

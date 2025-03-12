@@ -1,18 +1,18 @@
 import type { Route } from "./+types/comments";
-import { getUserId } from "~/utils/session.server";
 import { addVideoComment } from "~/models/video.server";
 import { data } from "react-router";
 import { addCommentReply, addPostComment, addReplytoReply } from "~/models/comment.server";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const text = formData.get("text") as string;
   const action = formData.get("action");
   if (text.trim() === "") {
     return { error: "Escribe algo" };
   }
-  const userId = await getUserId(request);
-  if (!userId) {
+  const userId = getUserId(context);
+  if (!userId || userId.startsWith("guest")) {
     throw data({ message: "User ID is required" }, { status: 400 });
   }
 

@@ -65,7 +65,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { theme } = useRouteLoaderData("root") // Load the theme
+  const { theme } = useRouteLoaderData("root") ?? {} // Load the theme
   // console.log("THEEEEME", theme)
 
   return (

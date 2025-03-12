@@ -3,17 +3,17 @@ import { TbTrash } from "react-icons/tb";
 import type { Route } from "./+types/favorites";
 import { getUserFavorites } from "~/models/profile.server";
 import InfoAlert from "~/components/shared/info";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const userId = getSessionContext(context).get("userId");
+  const userId = getUserId(context);
 
   try {
     const favorites = await getUserFavorites(userId);
     return { favorites };
   } catch (error) {
     console.log(error);
-    return null;
+    return {};
   }
 }
 

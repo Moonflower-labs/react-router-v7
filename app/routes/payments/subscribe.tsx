@@ -4,10 +4,10 @@ import type { PaymentIntent, SetupIntent, StripeError, StripePaymentElementOptio
 import { useCallback, useState } from "react";
 import type { Route } from "./+types/subscribe";
 import { getUserSubscription } from "~/models/subscription.server";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const userId = getSessionContext(context).get("userId");
+  const userId = getUserId(context);
   const userSubscription = await getUserSubscription(userId);
   if (userSubscription?.status === "active") {
     return redirect(href("/profile/subscription/update"));

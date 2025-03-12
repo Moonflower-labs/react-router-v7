@@ -3,12 +3,12 @@ import { Link, Outlet } from "react-router";
 import { formatDate } from "~/utils/format";
 import { fetchUserOrders, getUserOrderCount } from "~/models/order.server";
 import { FaEye } from "react-icons/fa";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ request, context }: Route.LoaderArgs) {
     const url = new URL(request.url);
     const title = url.searchParams.get("search");
-    const userId = getSessionContext(context).get("userId");
+    const userId = getUserId(context);
 
     // const page = Number((url.searchParams.get('page')) || 1);
     // const pageSize = Number((url.searchParams.get('pageSize')) || 3);

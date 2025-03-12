@@ -5,11 +5,11 @@ import spiritImg from "~/icons/plan-spirit.svg"
 import type { Route } from "./+types/layout";
 import ScrollToHash from "~/components/shared/ScrollToHash";
 import { getUserSubscription } from "~/models/subscription.server";
-import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 export async function loader({ context }: Route.LoaderArgs) {
-  const userId = getSessionContext(context).get("userId");
+  const userId = getUserId(context);
   const subscription = await getUserSubscription(userId)
   if (!subscription) {
     throw redirect(href("/profile"))

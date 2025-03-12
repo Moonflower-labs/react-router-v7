@@ -1,5 +1,6 @@
 import {
   href,
+  redirect,
   unstable_createContext,
   unstable_RouterContextProvider,
   type Session,
@@ -10,7 +11,11 @@ import { sessionStorage } from "~/utils/session.server";
 
 const sessionContext = unstable_createContext<Session>();
 
-const EXCLUDED_URLS = [href("/register"), href("/login"), href("/logout"), /^\/api(\/|$)/, href("/chat/stream")];
+const EXCLUDED_URLS = [
+  href("/logout"), // Exclude to avoid commiting the destroyed session
+  /^\/api(\/|$)/,
+  href("/chat/stream")
+];
 
 export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
   let session = await sessionStorage.getSession(request.headers.get("Cookie"));
@@ -18,20 +23,37 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
   let initialData = structuredClone(session.data);
 
   context.set(sessionContext, session);
+  const url = new URL(request.url);
+
+  // // Handle logout
+  // if (url.pathname === href("/logout")) {
+  //   return redirect("/", {
+  //     headers: {
+  //       "Set-Cookie": await sessionStorage.destroySession(session)
+  //     }
+  //   });
+  // }
 
   let response = await next();
 
-  const url = new URL(request.url);
-
   if (shouldCommitSession(initialData, structuredClone(session.data), url.pathname)) {
-    response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
+    const remember = context.get(sessionContext).get("remember");
+
+    response.headers.append(
+      "Set-Cookie",
+      await sessionStorage.commitSession(session, {
+        maxAge: Boolean(remember === "on")
+          ? 60 * 60 * 24 * 7 // 7 days
+          : undefined
+      })
+    );
   }
   return response;
 };
 
 // Only commit the session if data changed and the path is not in the excluded list
 function shouldCommitSession(prev: Partial<SessionData>, next: Partial<SessionData>, path: string) {
-  if (isExcludedPath(path, EXCLUDED_URLS)) {
+  if (!isExcludedPath(path, EXCLUDED_URLS)) {
     // compare the initial data with next data
     return JSON.stringify(prev) !== JSON.stringify(next) ? true : false;
   }
@@ -43,6 +65,22 @@ function isExcludedPath(path: string, excludedUrls: (string | RegExp)[]): boolea
   return excludedUrls.some(url => (url instanceof RegExp ? url.test(path) : url === path));
 }
 
+// Util to get the session from the context
 export function getSessionContext(context: unstable_RouterContextProvider) {
   return context.get(sessionContext);
+}
+
+// Util to only get the id from the context
+export function getUserId(context: unstable_RouterContextProvider) {
+  return context.get(sessionContext).get("userId");
+}
+
+export async function logout(context: unstable_RouterContextProvider) {
+  const session = getSessionContext(context);
+
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await sessionStorage.destroySession(session)
+    }
+  });
 }
