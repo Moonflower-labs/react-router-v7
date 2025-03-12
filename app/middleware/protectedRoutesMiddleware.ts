@@ -4,7 +4,7 @@ import { getUserId } from "./sessionMiddleware";
 
 const PROTECTED_URLS = [
   // href("/logout"),
-  /^\/(api|admin|members)(\/|$)/,
+  /^\/(api(?!\/webhooks)|admin|members)(\/|$)/, // Exclude webhooks as must be public !
   href("/chat/stream")
 ];
 
