@@ -8,7 +8,7 @@ const PROTECTED_URLS = [
   href("/chat/stream")
 ];
 
-export const protectedRouteMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
+export const authMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
   const currentPath = new URL(request.url).pathname;
 
   if (isProtectedPath(currentPath, PROTECTED_URLS)) {
