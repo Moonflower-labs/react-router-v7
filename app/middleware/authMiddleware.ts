@@ -3,13 +3,16 @@ import type { Route } from "../+types/root";
 import { getUserId } from "./sessionMiddleware";
 
 const PROTECTED_URLS = [
-  // href("/logout"),
-  /^\/(api(?!\/webhook)|admin|members)(\/|$)/, // Exclude webhook as must be public !
+  /^\/(api(?!\/webhook)|admin|members)(\/|$)/, // Exclude webhook as must be public!
   href("/chat/stream")
 ];
 
 /**
- * Auth unstable_MiddlewareFunction that protects routes by adding them to the PROTECTED_URLS array
+ * Middleware that provides user protected routes.
+ *
+ * Configurable by adding routes to the PROTECTED_URLS array
+ *
+ * Checks for the userId in the context.
  */
 export const authMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
   const currentPath = new URL(request.url).pathname;
@@ -22,6 +25,7 @@ export const authMiddleware: Route.unstable_MiddlewareFunction = async ({ reques
       throw redirect(`${href("/login")}?${searchParams}`, 302);
     }
   }
+  return next();
 };
 
 function isProtectedPath(path: string, protectedUrls: (string | RegExp)[]): boolean {

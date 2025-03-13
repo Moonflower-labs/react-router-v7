@@ -2,15 +2,11 @@ import { formatDistanceToNow, formatRelative } from "date-fns";
 import { es } from "date-fns/locale/es";
 
 /**
+ * Returns the formatRelative with the es locale
  *
- *  Returns the formatRelative with the es locale
- *
- * @param date  a Date
- * @returns  a string - "el lunes pasado a las 17:43"
- *
- *
+ * @param date
+ * @returns {string}  a string - "el lunes pasado a las 17:43"
  */
-
 export const formatDayTimeEs = (date: Date): string => {
   // el lunes pasado a las 17:43
   return formatRelative(date, new Date(), { locale: es });
