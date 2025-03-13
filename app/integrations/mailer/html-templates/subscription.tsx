@@ -38,7 +38,7 @@ const SubscriptionEmail = ({ planData, username, updateType }: SubscriptionEmail
                             {updateType === "downgrade" || updateType === "upgrade" ?
                                 (
                                     <Text className="text-center text-black text-2xl leading-[24px]">
-                                        Cambio de Plan procesado. Bienvenido a <strong>{planData.name}</strong>
+                                        Bienvenido a <strong>{planData.name}</strong>
                                     </Text>
                                 ) : updateType === "renewal" ? (
                                     <Text className="text-center text-black text-2xl leading-[24px]">
@@ -61,9 +61,14 @@ const SubscriptionEmail = ({ planData, username, updateType }: SubscriptionEmail
                             Hola {username},
                         </Text>
                         {updateType === "downgrade" || updateType === "upgrade" ? (
-                            <Text className="text-black text-[14px] leading-[24px]">
-                                gracias por tu suscripción, nos alegramos de que sigas con nosotros.
-                            </Text>
+                            <>
+                                <Text className="text-black text-[14px] leading-[24px]">
+                                    gracias por tu suscripción, nos alegramos de que sigas con nosotros.
+                                </Text>
+                                <Text className="text-black text-[14px] leading-[24px]">
+                                    Tu cambio de Plan ha sido procesado y te hemos dado acceso a las secciones incluidas en {planData.name}.
+                                </Text>
+                            </>
                         ) : (
                             <>
                                 <Text className="text-black text-[14px] leading-[24px]">
