@@ -4,6 +4,7 @@ import soulImg from "../../icons/plan-soul.svg";
 import spiritImg from "../../icons/plan-spirit.svg";
 import type Stripe from "stripe";
 import { prisma } from "~/db.server";
+import type { Subscription } from "@prisma/client";
 
 export interface SubscriptionPlan {
   name: "Personalidad" | "Alma" | "Espíritu";
@@ -131,15 +132,24 @@ export async function createSubscription({
   }
 }
 
-export async function retrieveSubscription(subscriptionId: string) {
+export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
     expand: ["latest_invoice.payment_intent"]
   });
   return subscription as Stripe.Subscription;
 }
 
-// this function would  handles the user plan update directly without relying in the webhook
-export async function updateStripeAndUserSubscription(subscriptionId: string, priceId: string) {
+/**
+ * this function would  handles the user plan update directly without relying in the webhook
+ *
+ * @param subscriptionId the id of the subscription to update
+ * @param priceId the id of the new plan price
+ * @returns the updated user subsccription from the db or if the user subscription status is not 'active' it creates one in stripe, so our webhook handler will store it in the db.
+ */
+export async function updateStripeAndUserSubscription(
+  subscriptionId: string,
+  priceId: string
+): Promise<Subscription | Awaited<ReturnType<typeof createSubscription>>> {
   const subscription = await retrieveSubscription(String(subscriptionId));
   if (subscription.status !== "active") {
     //! Allow for inactive subscription scenario by creating a new one and confirm it
