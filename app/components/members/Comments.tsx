@@ -11,6 +11,7 @@ import ActionError from "../framer-motion/ActionError";
 import type { Pagination } from "~/models/post.server";
 import type { Like } from "@prisma/client";
 import { ImBin } from "react-icons/im";
+import { IoSend } from "react-icons/io5";
 
 interface CommentSectionProps {
   objectId: string;
@@ -75,22 +76,15 @@ export function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
       className="overflow-hidden">
-      <fetcher.Form ref={formRef} method="post" action="/api/comments" className="w-full mx-auto pb-4 flex flex-col mt-4">
+      <fetcher.Form ref={formRef} method="post" action="/api/comments" className="w-[96%] mx-auto pb-4 flex flex-col mt-4">
         <input type="hidden" name={fieldName} value={objectId} />
         <input type="hidden" name="action" value={action} />
-        <textarea
-          className="w-full textarea textarea-primary textarea-lg mb-4"
-          placeholder={action === "reply" ? "Escribe tu respuesta al comentario" : "Escribe un comentario..."}
-          name="text"
-          rows={5}></textarea>
-        <div className="flex justify-end gap-3 mt-2">
-          <button type="reset" className="btn btn-primary btn-outline btn-sm" disabled={fetcher.state !== "idle"}>
-            Cancelar
+        <label className="input input-lg w-full mb-2">
+          <input type="text" name="text" className="grow" placeholder={action === "reply" ? "Responde al comentario" : "Escribe un comentario..."} />
+          <button type="submit" className="rounded-full p-1 disabled:bg-base-200 cursor-pointer shadow" disabled={fetcher.state !== "idle"}>
+            <IoSend size={24} className="text-primary" />
           </button>
-          <button type="submit" className="btn btn-primary btn-sm" disabled={fetcher.state !== "idle"}>
-            Publicar
-          </button>
-        </div>
+        </label>
         <ActionError actionData={fetcher?.data} />
       </fetcher.Form>
     </motion.div>
@@ -121,8 +115,8 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
             <img alt="user avatar" src={`${avatar || "/avatars/dark-valentine.jpg"}`} />
           </div>
         </div>
-        <div className="badge badge-outline">
-          <span className="me-3 font-bold">{comment?.user?.username}</span>
+        <div className="">
+          <span className="badge badge-outline me-3 font-bold">{comment?.user?.username}</span>
           <time className="text-xs opacity-50" title={formatDayTimeEs(comment.createdAt)}>{formatDistanceToNowEs(comment.createdAt)}</time>
         </div>
       </div>
@@ -131,17 +125,24 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
         <div className="flex gap-4">
           {comment.user?.id === userId && deleteButton}
           {comment.replies !== undefined && (
-            <button onClick={() => { startTransition(() => setIsopen(!isOpen)) }} title="Responder" className="text-primary cursor-pointer">
+            <button onClick={() => { startTransition(() => setIsopen(!isOpen)) }} title="Responder" className="flex items-center gap-2 text-primary cursor-pointer">
               <FaReply size={24} />
+              {comment.replies.length}
             </button>
           )}
-          {likeButton && likeButton}
-          <span className="text-primary font-bold">{comment?.likes?.length || 0}</span>
+          <div className="flex justify-center items-center gap-2 text-primary cursor-pointer">
+            {likeButton && likeButton}
+            <span className="text-primary font-bold">{comment?.likes?.length || 0}</span>
+          </div>
         </div>
         <AnimatePresence mode="wait">
-          {isOpen && commentForm}
+          {isOpen && (
+            <>
+              {commentForm}
+              <Replies replies={comment.replies} userId={userId} />
+            </>
+          )}
         </AnimatePresence>
-        <Replies replies={comment.replies} userId={userId} />
       </div>
     </motion.div>
   );
@@ -157,7 +158,12 @@ function Replies({ replies, userId }: CommentRepliesProps) {
   const isReplyLiked = (reply: Reply, userId: string) => reply?.likes?.some((like: Like) => like?.userId === userId);
 
   return (
-    <>
+    <motion.div
+      key={`replies-${replies[0]?.commentId}`}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="overflow-hidden">
       {replies &&
         replies.map(reply => (
           <CommentItem
@@ -170,7 +176,7 @@ function Replies({ replies, userId }: CommentRepliesProps) {
             deleteButton={<DeleteButton object="reply" id={reply.id} />}
           />
         ))}
-    </>
+    </motion.div>
   );
 }
 
