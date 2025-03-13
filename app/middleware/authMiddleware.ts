@@ -8,6 +8,9 @@ const PROTECTED_URLS = [
   href("/chat/stream")
 ];
 
+/**
+ * Auth unstable_MiddlewareFunction that protects routes by adding them to the PROTECTED_URLS array
+ */
 export const authMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
   const currentPath = new URL(request.url).pathname;
 

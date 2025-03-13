@@ -46,6 +46,15 @@ export async function getMissedMessages(roomId: string, since: string) {
   });
 }
 
+/**
+ *
+ *  Saves the chat message to the db and publish it to the `chat:${roomId}` channel.
+ *
+ * @param roomId  The roomId route param
+ * @param text  The string with the message
+ * @param userId The user id
+ * @returns the new created message
+ */
 export async function addMessage(roomId: string, text: string, userId: string = DEMO_USER_ID) {
   const message = await prisma.message.create({
     data: {
@@ -84,51 +93,6 @@ export function subscribeToMessages(roomId: string, callback: (message: any) => 
   };
 }
 
-export function subscribeToMessagesgood(roomId: string, callback: (message: any) => void) {
-  const channel = `chat:${roomId}`;
-  const participantKey = `room:${roomId}:participants`;
-  const clientId = crypto.randomUUID(); // Unique identifier for this client
-
-  const handleMessage = (message: string, ch: string) => {
-    if (ch === channel) {
-      callback(JSON.parse(message));
-    }
-  };
-
-  // Add client to participants set with a 30-second expiration
-  const updateParticipants = async () => {
-    await redisPublisher.sAdd(participantKey, clientId);
-    await redisPublisher.expire(participantKey, 30); // Set expiration to clean up stale entries
-    const count = await redisPublisher.sCard(participantKey);
-    await redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-  };
-
-  // Initial subscription and participant update
-  redisSubscriber.subscribe(channel, handleMessage);
-  updateParticipants();
-
-  // Heartbeat to keep participant active
-  const heartbeatInterval = setInterval(updateParticipants, 20000); // Refresh every 20s
-  return () => {
-    clearInterval(heartbeatInterval);
-    redisSubscriber.unsubscribe(channel, handleMessage);
-    redisPublisher.sRem(participantKey, clientId).then(async () => {
-      const count = await redisPublisher.sCard(participantKey);
-      redisPublisher.publish(channel, JSON.stringify({ event: "participants", data: count }));
-    });
-  };
-}
-
-export async function ensureDemoUser() {
-  const user = await prisma.user.findUnique({ where: { username: "demo" } });
-  if (!user) {
-    await prisma.user.create({
-      data: { username: "demo", email: "demo@demo.es" }
-    });
-  }
-  return prisma.user.findUnique({ where: { username: "demo" } });
-}
-
 interface CreateSessionProps {
   id?: string;
   name: string;
@@ -138,7 +102,7 @@ interface CreateSessionProps {
   link: string;
 }
 
-export async function createSession(data: CreateSessionProps) {
+export async function createLiveSession(data: CreateSessionProps) {
   if (data.endDate <= data.startDate) {
     throw new Error("End date must be after start date");
   }

@@ -1,4 +1,4 @@
-import { createSession } from "~/utils/chat.server";
+import { createLiveSession } from "~/utils/chat.server";
 import type { Route } from "./+types/create";
 import { Form, href, redirect, useNavigation } from "react-router";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
@@ -15,7 +15,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
 
     try {
-        await createSession({
+        await createLiveSession({
             name: name as string,
             startDate: new Date(startDate as string),
             endDate: new Date(endDate as string),

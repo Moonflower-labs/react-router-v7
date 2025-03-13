@@ -3,6 +3,9 @@ import invariant from "tiny-invariant";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
+/**
+ *  The cookie session storage for the app
+ */
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__lfb_session",

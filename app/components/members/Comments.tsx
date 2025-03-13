@@ -2,7 +2,7 @@ import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { useRef, useEffect, useState, startTransition } from "react";
 import { FaRegCommentAlt, FaReply } from "react-icons/fa";
 import { AnimatePresence, motion } from "motion/react";
-import { formatDayTime, formatDistanceToNowEs } from "~/utils/format";
+import { formatDayTimeEs, formatDistanceToNowEs } from "~/utils/format";
 import type { User } from "~/models/user.server";
 import type { Comment, Reply } from "~/models/post.server";
 import { Paginator } from "./Pagination";
@@ -123,7 +123,7 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
         </div>
         <div className="badge badge-outline">
           <span className="me-3 font-bold">{comment?.user?.username}</span>
-          <time className="text-xs opacity-50" title={formatDayTime(comment.createdAt)}>{formatDistanceToNowEs(comment.createdAt)}</time>
+          <time className="text-xs opacity-50" title={formatDayTimeEs(comment.createdAt)}>{formatDistanceToNowEs(comment.createdAt)}</time>
         </div>
       </div>
       <div className="w-[90%] mx-auto mb-4">
