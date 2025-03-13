@@ -4,14 +4,13 @@ import type { Route } from "./+types/detail";
 import { addToFavoriteVideo, fetchVideo, fetchVideoComments, type Video } from "~/models/video.server";
 import Comments from "~/components/members/Comments";
 import VideoComponent from "~/components/members/VideoComponent";
-import { formatDate } from "~/utils/format";
 import type { User } from "~/models/user.server";
 import { Favorite } from "~/components/members/Favorite";
 import { LikeButton } from "~/components/members/LikeButton";
 import { DeleteReply, DeleteComment } from "~/models/comment.server";
 import { handleLike } from "~/models/like.server";
-import { getUserId } from "~/utils/session.server";
 import type { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -26,10 +25,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { video, comments, pagination };
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  const userId = await getUserId(request);
+  const userId = getUserId(context);
   if (!params.id) {
     throw new Error("No post ID provided!");
   }
@@ -89,9 +88,9 @@ export default function SpiritDetail({ loaderData }: Route.ComponentProps) {
                 {category.name}
               </div>
             ))}
-        </div>
-        <p className="mb-4">La Flor Blanca el {formatDate(video?.createdAt as Date)}</p>
 
+        </div>
+        <p>{video.description}uuu</p>
         <div className="divider divider-primary md:w-2/3 mx-auto">
           <span className="text-primary">
             <PiFlowerLotus size={34} />

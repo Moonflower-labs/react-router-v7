@@ -1,6 +1,5 @@
 import { href, Link } from "react-router";
 import type { Route } from "./+types/index";
-import { getUserId } from "~/utils/session.server";
 import { createReview } from "~/models/review.server";
 import { motion } from "motion/react";
 import logo from "./logo.svg"
@@ -8,6 +7,7 @@ import ShiningLogo from "./logo";
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 import { getMembersCount, getUsersCount } from "~/models/user.server";
 import { getOrderCount } from "~/models/order.server";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 export const meta: Route.MetaFunction = () => {
@@ -25,9 +25,9 @@ export async function loader({ }: Route.LoaderArgs) {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     // Handle review creation
-    const userId = await getUserId(request);
+    const userId = getUserId(context);
     const formData = await request.formData();
     const text = formData.get("text") as string;
     const score = Number(formData.get("score"));

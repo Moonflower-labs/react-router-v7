@@ -1,4 +1,4 @@
-import { Form, href, Link, redirect, useLocation, useNavigation } from "react-router";
+import { Form, Link, redirect, useLocation, useNavigation } from "react-router";
 import type { Route } from "./+types/login";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils/helpers";
@@ -75,7 +75,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 export default function Login({ actionData }: Route.ComponentProps) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const from = params.get("redirectTo") ?? href("/profile");
+  const from = params.get("redirectTo") ?? "/";
   const actionErrors = actionData;
   const navigation = useNavigation();
   const emailRef = React.useRef<HTMLInputElement>(null);

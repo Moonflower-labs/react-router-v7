@@ -1,5 +1,5 @@
 import type { Video } from "~/models/video.server";
-import { formatDate } from "../../utils/format";
+import { formatDayTime } from "../../utils/format";
 
 const VideoComponent = ({ video }: { video: Video }) => {
   return (
@@ -12,9 +12,7 @@ const VideoComponent = ({ video }: { video: Video }) => {
         allowFullScreen
         loading="lazy"
       />
-      <p className="text-xl mb-4">La Flor Blanca el {formatDate(video.createdAt)}</p>
-
-      <p>{video.description}</p>
+      <p className="text-xl mb-4">La Flor Blanca {formatDayTime(video.createdAt).split(" a las ")[0]}</p>
     </div>
   );
 };

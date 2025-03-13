@@ -76,7 +76,8 @@ export function getSessionContext(context: unstable_RouterContextProvider) {
 
 // Util to only get the id from the context
 export function getUserId(context: unstable_RouterContextProvider) {
-  return context.get(sessionContext).get("USER_SESSION_KEY");
+  console.log(context.get(sessionContext).get(USER_SESSION_KEY));
+  return context.get(sessionContext).get(USER_SESSION_KEY);
 }
 export function setGuestId(session: Session) {
   const guestId = `guest-${randomUUID()}`;

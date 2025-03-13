@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format, formatRelative } from "date-fns";
 import { es } from "date-fns/locale";
 
 export const formatDate = (date: Date | string | number | undefined) => {
@@ -8,6 +8,12 @@ export const formatDate = (date: Date | string | number | undefined) => {
 
   return dateObj.toLocaleString("en-GB");
 };
+
+export const formatDayTime = (date: Date): string => {
+  // el lunes pasado a las 17:43
+  return formatRelative(date, new Date(), { locale: es });
+};
+
 export const formatDistanceToNowEs = (date: Date | string | number | undefined) => {
   if (!date) return;
 

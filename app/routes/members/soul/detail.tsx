@@ -3,14 +3,14 @@ import { PiFlowerLotus } from "react-icons/pi";
 import type { Route } from "./+types/detail";
 import { addToFavoriteVideo, fetchVideo, fetchVideoComments, type Video } from "~/models/video.server";
 import VideoComponent from "~/components/members/VideoComponent";
-import { formatDate } from "~/utils/format";
+import { formatDate, formatDayTime } from "~/utils/format";
 import Comments from "~/components/members/Comments";
-import { getUserId } from "~/utils/session.server";
 import type { User } from "~/models/user.server";
 import { Favorite } from "~/components/members/Favorite";
 import { LikeButton } from "~/components/members/LikeButton";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply } from "~/models/comment.server";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 
@@ -27,10 +27,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { video, id: params.id, comments, pagination };
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  const userId = await getUserId(request);
+  const userId = getUserId(context);
   if (!params.id) {
     throw new Error("No post ID provided!");
   }
@@ -95,8 +95,7 @@ export default function SoulDetail({ loaderData }: Route.ComponentProps) {
               </div>
             ))}
         </div>
-        <p className="mb-4">La Flor Blanca el {formatDate(video?.createdAt as Date)}</p>
-
+        <p className="p-8 max-w-4xl mx-auto">{video.description}</p>
         <div className="divider divider-primary md:w-2/3 mx-auto">
           <span className="text-primary">
             <PiFlowerLotus size={34} />

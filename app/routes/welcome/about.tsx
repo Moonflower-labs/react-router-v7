@@ -1,12 +1,12 @@
 import { useFetcher } from "react-router";
 import { useEffect } from "react";
 import type { Route } from "./+types/about";
-import { getUserId } from "~/utils/session.server";
 import { FadeInComponent } from "~/components/framer-motion/FadeInComponent";
 import { createReview, getReviews, type Review } from "~/models/review.server";
 import { toast } from "react-toastify";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import ReviewsSection from "./reviews";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "La Flor Blanca: About" }, { name: "description", content: "Health and wellbeing" }];
@@ -19,9 +19,9 @@ export async function loader({ }: Route.LoaderArgs) {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   // Handle review creation
-  const userId = await getUserId(request);
+  const userId = getUserId(context);
   const formData = await request.formData();
   const text = formData.get("text") as string;
   const score = Number(formData.get("score"));

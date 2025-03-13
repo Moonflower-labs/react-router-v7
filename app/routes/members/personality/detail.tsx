@@ -4,13 +4,13 @@ import { addToFavoritePost, getPostWithAverageRating, type Post, ratePost } from
 import { formatDate } from "~/utils/format";
 import { data, useRouteLoaderData } from "react-router";
 import Comments from "~/components/members/Comments";
-import { getUserId } from "~/utils/session.server";
 import type { User } from "~/models/user.server";
 import { LikeButton } from "~/components/members/LikeButton";
 import { Favorite } from "~/components/members/Favorite";
 import RatingForm from "~/components/members/Rating";
 import { handleLike } from "~/models/like.server";
 import { DeleteComment, DeleteReply, fetchPostComments } from "~/models/comment.server";
+import { getUserId } from "~/middleware/sessionMiddleware";
 
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -30,8 +30,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return { post, comments, page, pagination };
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const userId = await getUserId(request);
+export async function action({ request, params, context }: Route.ActionArgs) {
+  const userId = getUserId(context);
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (!params.id) {

@@ -5,9 +5,9 @@ import { getMessages, addMessage, getRoom, type ChatMessage, getRoomStatus } fro
 import { Form } from "react-router";
 import type { Route } from "./+types/room";
 import { IoMdSend } from "react-icons/io";
-import { getUserId } from "~/utils/session.server";
 import { prisma } from "~/db.server";
 import { useChatSubscription } from "./useChatStream";
+import { getUserId } from "~/middleware/sessionMiddleware";
 // import { redisPublisher } from "~/integrations/redis/service.server";
 
 export function headers(_: Route.HeadersArgs) {
@@ -36,7 +36,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 };
 
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
 
     const formData = await request.formData();
     // todo: Tempoprarily clear chat 
@@ -48,7 +48,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
     const text = formData.get("text") as string;
     const roomId = params.roomId as string;
-    const userId = await getUserId(request);
+    const userId = getUserId(context);
     if (!text || !roomId) {
         return { error: "Text and roomId are required" };
     }

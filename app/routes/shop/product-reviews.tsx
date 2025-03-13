@@ -3,9 +3,9 @@ import type { Route } from './+types/product-reviews'
 import { Form, href, Link } from 'react-router';
 import { useCallback } from 'react';
 import { FaArrowLeft, FaStar } from 'react-icons/fa';
-import { getUserId } from '~/utils/session.server';
 import { formatDate } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
+import { getUserId } from '~/middleware/sessionMiddleware';
 
 
 export function meta({ data, location }: Route.MetaArgs) {
@@ -42,13 +42,14 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     return { product, reviews, page, totalReviews, baseUrl };
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
     const formData = await request.formData()
     const productId = params.productId
     const score = formData.get("productRating");
     const title = formData.get("title");
     const text = formData.get("text");
-    let userId = await getUserId(request)
+    let userId = getUserId(context);
+
     if (!score || !title || typeof title !== "string" || !text || typeof text !== "string") {
         return { error: "Debes de escribir un título y review" }
     }
