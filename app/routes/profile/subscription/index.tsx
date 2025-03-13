@@ -5,7 +5,7 @@ import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integratio
 import type Stripe from "stripe";
 import { GoArrowRight } from "react-icons/go";
 import InfoAlert from "~/components/shared/info";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { calculateRenewalDate } from "~/utils/helpers";
 import { translateSubscriptionStatus } from "~/utils/translations";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -58,7 +58,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         )}
       </div>
       {subscription?.cancellationDate &&
-        <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDayTime(subscription.cancellationDate)}</InfoAlert>
+        <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDayTimeEs(subscription.cancellationDate)}</InfoAlert>
       }
       <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
         <p className="flex justify-between items-center">
@@ -78,11 +78,11 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         </div>
         <p className="flex justify-between">
           <span>Actualizado</span>
-          <span className="font-semibold">{formatDayTime(subscription?.updatedAt)}</span>
+          <span className="font-semibold">{formatDayTimeEs(subscription?.updatedAt)}</span>
         </p>
         <p className="flex justify-between">
           <span>Próxima renovación</span>
-          <span className="font-semibold">{formatDayTime(calculateRenewalDate(subscription?.updatedAt) as Date)}</span>
+          <span className="font-semibold">{formatDayTimeEs(calculateRenewalDate(subscription?.updatedAt) as Date)}</span>
         </p>
         {/* Only show for active subscriptions */}
         {!isPastDue ? (

@@ -2,7 +2,7 @@ import { fetchOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
 import { Form } from "react-router";
 import { FaCheck } from "react-icons/fa";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { CopyToClipBoard } from "~/components/shared/CopyToClipBoard";
 import { GrRevert } from "react-icons/gr";
 
@@ -19,7 +19,7 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       <h2 className="text-xl text-primary text-center mx-auto my-5">
         Detalles del pedido: <span className="font-bold">{order?.id}</span>
       </h2>
-      <p className="font-semibold mb-4">Actualizado: {formatDayTime(order?.updatedAt as Date)}</p>
+      <p className="font-semibold mb-4">Actualizado: {formatDayTimeEs(order?.updatedAt as Date)}</p>
       {order?.guest
         ? <div className="font-bold mb-4 t">
           <p className="text-warning/70">Pedido de invitado</p>

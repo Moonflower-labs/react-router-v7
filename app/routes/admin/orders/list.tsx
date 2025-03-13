@@ -8,7 +8,7 @@ import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import type { OrderStatus } from "@prisma/client";
 import { GrRevert } from "react-icons/gr";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -132,7 +132,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               <span>
                 {index + 1}. {order.id}{" "}
               </span>
-              <span className="me-5">{formatDayTime(order.updatedAt)}</span>
+              <span className="me-5">{formatDayTimeEs(order.updatedAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
               {order?.status === "Paid" ? (

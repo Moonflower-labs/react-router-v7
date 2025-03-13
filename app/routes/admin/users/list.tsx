@@ -5,7 +5,7 @@ import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ }: Route.LoaderArgs) {
@@ -59,7 +59,7 @@ export default function UserList({ loaderData, actionData }: Route.ComponentProp
                 </div>
                 <h2 className="card-title">{user.username}</h2>
                 <div className="mb-4">
-                  <p>Creado: {formatDayTime(user.createdAt)}</p>
+                  <p>Creado: {formatDayTimeEs(user.createdAt)}</p>
                   <p>Email: {user.email}</p>
                   <p>ID: {user.id}</p>
                   <p>Stripe customerId: {user.customerId}</p>

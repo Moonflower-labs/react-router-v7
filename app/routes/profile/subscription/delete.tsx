@@ -1,7 +1,7 @@
 import { Form, useNavigation, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/delete";
 import { cancelStripeSubscription } from "~/integrations/stripe/index.server";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { useCallback } from "react";
 
 
@@ -31,7 +31,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
       <h2 className="text-2xl text-primary my-3">Cancela tu suscripción</h2>
       {subscription.cancellationDate ?
         <p className="mb-4 max-w-xl mx-auto px-3">
-          Tu suscripción no se volverá a renovar, y será cancelada el {formatDayTime(subscription.cancellationDate)} .
+          Tu suscripción no se volverá a renovar, y será cancelada el {formatDayTimeEs(subscription.cancellationDate)} .
         </p> :
         <>
           {cancellationDate ?

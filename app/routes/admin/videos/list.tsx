@@ -1,6 +1,6 @@
 import { data, Form, href, Link, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { ImBin } from "react-icons/im";
@@ -87,7 +87,7 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
               <div className="card-body">
                 <h2 className="card-title">{video.title}</h2>
                 <span className="badge badge-primary">{video.section}</span>
-                <p>{formatDayTime(video.createdAt)}</p>
+                <p>{formatDayTimeEs(video.createdAt)}</p>
                 <div className="justify-end card-actions items-center">
                   {video?.published ? <div className="badge badge-primary">Publicado</div> : <div className="badge badge-secondary">Borrador</div>}
                   <Link to={"create"} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>

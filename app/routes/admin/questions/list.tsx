@@ -1,6 +1,6 @@
 import { data, Form, Link, Outlet, useNavigate, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -110,7 +110,7 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
               <span>
                 {index + 1}. Usuario: <span className="font-semibold"> {question.user?.username}</span> {" "}
               </span>
-              <span className="me-5">{formatDayTime(question.createdAt)}</span>
+              <span className="me-5">{formatDayTimeEs(question.createdAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
               <Link to={`${question.id}/detail`} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>

@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { PLANS, updateStripeAndUserSubscription } from "~/integrations/stripe/subscription.server";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import InfoAlert from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
@@ -137,15 +137,15 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
           >
             <p>INFO </p>
             <p>
-              Fecha de prorrateo <span className="font-bold">{formatDayTime(new Date(previewInvoice.subscription_proration_date! * 1000))}</span>
+              Fecha de prorrateo <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.subscription_proration_date! * 1000))}</span>
             </p>
             <p>
-              Periodo de facturado desde <span className="font-bold">{formatDayTime(new Date(previewInvoice.period_start * 1000))}</span> hasta <span className="font-bold">{formatDayTime(new Date(previewInvoice.period_end * 1000))}</span>{" "}
+              Periodo de facturado desde <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.period_start * 1000))}</span> hasta <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.period_end * 1000))}</span>{" "}
             </p>
             {previewInvoice?.lines?.data.map((item) => (
               <div key={item.description}>
                 <p>
-                  PERIODO: desde <span className="font-bold">{formatDayTime(new Date(item.period.start * 1000))}</span> hasta <span className="font-bold">{formatDayTime(new Date(item.period.end * 1000))}</span>{" "}
+                  PERIODO: desde <span className="font-bold">{formatDayTimeEs(new Date(item.period.start * 1000))}</span> hasta <span className="font-bold">{formatDayTimeEs(new Date(item.period.end * 1000))}</span>{" "}
                 </p>
                 <p>
                   {item?.description} <span className="font-bold">£{item?.amount / 100}</span>

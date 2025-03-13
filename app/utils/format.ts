@@ -1,10 +1,22 @@
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { es } from "date-fns/locale/es";
 
-//**
-// DATE FORMATING
-// **/
-export const formatDayTime = (date: Date): string => {
+/**
+ *  Returns the formatRelative with the es locale
+ *
+ *  "el lunes pasado a las 17:43"
+ * @param date  a Date
+ * @returns  a string
+ *
+ * @example
+ *
+ * // app/middlewares/session.ts
+ * import { sessionStorage } from "~/session";
+ * import { unstable_createSessionMiddleware } from "remix-utils";
+ *
+ */
+
+export const formatDayTimeEs = (date: Date): string => {
   // el lunes pasado a las 17:43
   return formatRelative(date, new Date(), { locale: es });
 };

@@ -1,5 +1,5 @@
 import { data, Form, href, Link, Outlet, useSubmit } from "react-router";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect, useState } from "react";
 import { toast, type Id } from "react-toastify";
@@ -105,7 +105,7 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
                             <span>
                                 {index + 1}. {session.name}{" "}
                             </span>
-                            <span className="me-5">{formatDayTime(session.createdAt)}</span>
+                            <span className="me-5">{formatDayTimeEs(session.createdAt)}</span>
                         </div>
                         <div className="flex flex-col justify-between items-center w-full">
                             <span>

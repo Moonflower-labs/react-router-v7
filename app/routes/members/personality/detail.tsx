@@ -1,7 +1,7 @@
 import { PiFlowerLotus } from "react-icons/pi";
 import type { Route } from "./+types/detail";
 import { addToFavoritePost, getPostWithAverageRating, type Post, ratePost } from "~/models/post.server";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { data, useRouteLoaderData } from "react-router";
 import Comments from "~/components/members/Comments";
 import type { User } from "~/models/user.server";
@@ -109,7 +109,7 @@ export default function PersonalityDetail({ loaderData }: Route.ComponentProps) 
             ))}
         </div>
         <p className="whitespace-pre-wrap mb-8">{post?.description}</p>
-        <p className="mb-4">La Flor Blanca el {formatDayTime(post?.createdAt)}</p>
+        <p className="mb-4">La Flor Blanca el {formatDayTimeEs(post?.createdAt)}</p>
 
         <div className="divider divider-primary md:w-2/3 mx-auto">
           <span className="text-primary">

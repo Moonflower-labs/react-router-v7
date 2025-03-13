@@ -1,6 +1,6 @@
 import { prisma } from "~/db.server";
 import type { Route } from "./+types/detail";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const basic = await prisma.question.findUnique({ where: { id: params.id } });
@@ -19,7 +19,7 @@ export default function Detail({ loaderData }: Route.ComponentProps) {
           {!question?.section ?
             <>
               <h2 className="card-title">
-                Usuario: <span className="font-light">{question?.name}</span> <span className="text-sm">{formatDayTime(question?.createdAt as Date)}</span>
+                Usuario: <span className="font-light">{question?.name}</span> <span className="text-sm">{formatDayTimeEs(question?.createdAt as Date)}</span>
               </h2>
               <div className="mb-3">
                 <div className="font-semibold">
@@ -55,7 +55,7 @@ export default function Detail({ loaderData }: Route.ComponentProps) {
             </>
             : <>
               <h2 className="card-title">
-                Sección: <span className="font-light">{question?.section}</span> <span className="text-sm">{formatDayTime(question?.createdAt as Date)}</span>
+                Sección: <span className="font-light">{question?.section}</span> <span className="text-sm">{formatDayTimeEs(question?.createdAt as Date)}</span>
               </h2>
               <div className="mb-3">
                 <div className="font-semibold">¿Qué duda tienes o qué te interesa saber?</div>

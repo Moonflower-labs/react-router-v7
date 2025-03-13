@@ -3,7 +3,7 @@ import type { Route } from './+types/product-reviews'
 import { Form, href, Link, useNavigation } from 'react-router';
 import { useCallback } from 'react';
 import { FaArrowLeft, FaStar } from 'react-icons/fa';
-import { formatDayTime } from '~/utils/format';
+import { formatDayTimeEs } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
 import { getUserId } from '~/middleware/sessionMiddleware';
 
@@ -116,7 +116,7 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                                     <div className="pt-4 mb-3 flex justify-center">{renderStars(review.score)}</div>
                                     <h2 className="card-title mx-auto">{review.title}</h2>
                                     <p>{review.text}</p>
-                                    <p className='text-xs'>{formatDayTime(review.createdAt)}</p>
+                                    <p className='text-xs'>{formatDayTimeEs(review.createdAt)}</p>
                                     <div className="card-actions justify-end">
                                         <span>{review.user ? review.user.username : "Anónimo"}</span>
                                     </div>

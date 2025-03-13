@@ -1,6 +1,6 @@
 import { fetchUserOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 import { href } from "react-router";
 import { getUserId } from "~/middleware/sessionMiddleware";
 
@@ -19,7 +19,7 @@ export default function OrderDetail({ loaderData, params }: Route.ComponentProps
     return (
         <div className="mb-6 lg:w-2/3 mx-auto px-4">
             <h2 className="text-xl text-primary text-center mx-auto my-5">
-                Pedido realizado el <span className="font-bold">{formatDayTime(order?.createdAt as Date)}</span>
+                Pedido realizado el <span className="font-bold">{formatDayTimeEs(order?.createdAt as Date)}</span>
             </h2>
             {order?.guest
                 ? <p className="font-semibold mb-4 text-warning/75">Pedido de invitado</p>

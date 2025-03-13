@@ -3,7 +3,7 @@ import type { Route } from "./+types/live";
 import { getSessions } from "~/utils/chat.server";
 import { BsTelegram } from "react-icons/bs";
 import { IoChatboxEllipses } from "react-icons/io5";
-import { formatDayTime } from "~/utils/format";
+import { formatDayTimeEs } from "~/utils/format";
 
 export async function loader({ }: Route.LoaderArgs) {
   return { sessions: await getSessions() };
@@ -23,10 +23,10 @@ export default function LiveSessions({ loaderData }: Route.ComponentProps) {
 
       {sessions.length > 0 ? sessions.map((session) => (
         <div key={session.id} className="p-2 rounded-lg shadow-sm max-w-3xl mx-auto mb-4 border border-base-300">
-          <h2 className="text-xl font-bold flex justify-between px-4"><span>{session.name}</span> <span>{formatDayTime(session.startDate)}</span></h2>
+          <h2 className="text-xl font-bold flex justify-between px-4"><span>{session.name}</span> <span>{formatDayTimeEs(session.startDate)}</span></h2>
           <p className="p-4">{session.description}</p>
-          <p className="mb-2">Comienza: {formatDayTime(session.startDate)}</p>
-          <p className="mb-2">Finaliza: {formatDayTime(session.endDate)}</p>
+          <p className="mb-2">Comienza: {formatDayTimeEs(session.startDate)}</p>
+          <p className="mb-2">Finaliza: {formatDayTimeEs(session.endDate)}</p>
           <a href={session.link} target="_blank" rel="noreferrer" className="link link-primary mb-2 flex justify-center items-center gap-2"><span>Enlace a la sesión</span> <BsTelegram size={24} /></a>
           <p className="flex gap-2 justify-center items-center mb-2">Chat en directo: <IoChatboxEllipses size={24} /></p>
           <Link key={session.id} to={href("/members/spirit/live/chat/:roomId", { roomId: session.room?.id as string })} className="link link-primary">
