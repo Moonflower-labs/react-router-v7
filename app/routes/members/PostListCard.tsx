@@ -1,4 +1,4 @@
-import { FaRegCommentAlt } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 import { href, Link } from "react-router";
 import type { Post } from "~/models/post.server";
@@ -26,7 +26,7 @@ export function PostListCard({ post }: { post: Post }) {
             <div className="">{rating}</div>
           </div>
           <div className="flex gap-4 text-xl">
-            <FaRegCommentAlt size={30} />
+            <FaRegComment size={30} />
             <div className="">{post?.comments?.length || 0}</div>
           </div>
         </div>

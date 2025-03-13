@@ -1,6 +1,6 @@
 import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { useRef, useEffect, useState, startTransition } from "react";
-import { FaRegCommentAlt, FaReply } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import { AnimatePresence, motion } from "motion/react";
 import { formatDayTimeEs, formatDistanceToNowEs } from "~/utils/format";
 import type { User } from "~/models/user.server";
@@ -26,7 +26,7 @@ export default function Comments({ objectId, fieldName }: CommentSectionProps) {
   return (
     <div className="md:px-20">
       <h2 className="flex gap-4 align-middle text-primary justify-center font-semibold text-2xl mt-4 mb-3">
-        Comentarios <FaRegCommentAlt size={24} className="my-auto" />
+        Comentarios <FaRegComment size={24} className="my-auto" />
       </h2>
       <CommentForm objectId={objectId} fieldName={fieldName} action="comment" />
       <div className="text-center">
@@ -125,12 +125,12 @@ function CommentItem({ comment, userId, avatar, commentForm, likeButton, deleteB
         <div className="flex gap-4">
           {comment.user?.id === userId && deleteButton}
           {comment.replies !== undefined && (
-            <button onClick={() => { startTransition(() => setIsopen(!isOpen)) }} title="Responder" className="flex items-center gap-2 text-primary cursor-pointer">
-              <FaReply size={24} />
+            <button onClick={() => { startTransition(() => setIsopen(!isOpen)) }} title="Respuestas" className="flex items-center gap-2 text-primary rounded-xl shadow-md py-1 px-2.5">
+              <FaRegComment size={24} className="cursor-pointer" />
               {comment.replies.length}
             </button>
           )}
-          <div className="flex justify-center items-center gap-2 text-primary cursor-pointer">
+          <div className="flex justify-center items-center gap-2 text-primary rounded-xl shadow-md py-1 px-2.5">
             {likeButton && likeButton}
             <span className="text-primary font-bold">{comment?.likes?.length || 0}</span>
           </div>
@@ -184,13 +184,11 @@ function DeleteButton({ object, id }: { object: string; id: string }) {
   const fetcher = useFetcher();
 
   return (
-    <div>
-      <fetcher.Form method="delete">
-        <input type="hidden" name="object" value={object} />
-        <button type="submit" name="id" value={id} className="cursor-pointer text-error" disabled={fetcher.state !== "idle"}>
-          <ImBin size={24} title="Borrar mensage" />
-        </button>
-      </fetcher.Form>
-    </div>
+    <fetcher.Form method="delete" className="flex items-center rounded-xl shadow-md py-1 px-1.5">
+      <input type="hidden" name="object" value={object} />
+      <button type="submit" name="id" value={id} className="cursor-pointer text-error" disabled={fetcher.state !== "idle"}>
+        <ImBin size={24} title="Borrar mensage" />
+      </button>
+    </fetcher.Form>
   );
 }

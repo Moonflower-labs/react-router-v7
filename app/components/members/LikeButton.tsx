@@ -19,7 +19,7 @@ function Like({ object, id, isLiked }: Props) {
     isLiked;
 
   return (
-    <fetcher.Form method="post" className="my-auto">
+    <fetcher.Form method="post" className="flex items-center">
       <input type="hidden" name={object} value={id} />
       <input type="hidden" name="intent" value="like" />
       <AnimatedHeartButton liked={liked} />
@@ -73,7 +73,7 @@ const AnimatedHeartButton: React.FC<AnimatedHeartButtonProps> = ({ liked }) => {
                 repeatDelay: 1
               }}
             >
-              <FaHeart className="text-primary" size={25} />
+              <FaHeart className="text-primary cursor-pointer" size={25} />
             </motion.div>
           </motion.div>
         ) : (
@@ -95,7 +95,7 @@ const AnimatedHeartButton: React.FC<AnimatedHeartButtonProps> = ({ liked }) => {
             }}
             whileTap={{ scale: 0.9 }}
           >
-            <FaRegHeart className="text-primary" size={25} />
+            <FaRegHeart className="text-primary cursor-pointer" size={25} />
           </motion.div>
         )}
       </AnimatePresence>
