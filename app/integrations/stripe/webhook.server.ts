@@ -4,12 +4,7 @@ import { prisma } from "~/db.server";
 import { type SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { createSubscriptionPlan, getSubscriptionPlan } from "~/models/plan.server";
 import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/models/user.server";
-import {
-  sendMissedSubscriptionPaymentEmail,
-  sendOrderEmail,
-  sendSubscriptionEmail,
-  sendSubscriptionUpdatedEmail
-} from "../mailer/utils.server";
+import { sendMissedSubscriptionPaymentEmail, sendOrderEmail, sendSubscriptionEmail } from "../mailer/utils.server";
 import type { ExtendedOrder } from "~/models/order.server";
 import { stripe } from "./stripe.server";
 import { deductBalanceUsed } from "./customer.server";
@@ -226,14 +221,8 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
       // Determine update: NEW, UPGRADE, DOWNGRADE or RENEWAL
       const updateType = getSubscriptionUpdateType(previousAttributes, subscription);
       console.info("UPDATE TYPE: ", updateType);
-      // Send email according to update type
-      //  "upgrade" | "downgrade" | "renewal" | "new" | "unknown"
-      await sendSubscriptionUpdatedEmail(
-        user?.email,
-        user?.username,
-        plan?.name as SubscriptionPlan["name"],
-        updateType
-      );
+      // Pass the update type to the email sender
+      await sendSubscriptionEmail(user?.email, user?.username, plan?.name as SubscriptionPlan["name"], updateType);
       return;
     }
     case "past_due": {
@@ -283,6 +272,18 @@ export async function handleInvoicePaid(event: Stripe.Event) {
   return;
 }
 
+/**
+ *
+ * This function determines the update type of a subscription.
+ *
+ * Compares the previous_attributes prices if present with the subscription items prices
+ *
+ * Compares the subscription.created (date) with the subscription.current_period_start to determine if is a new subscription
+ *
+ * @param previousAttributes the previous_attributes prop from the subscription event.data
+ * @param subscription a Stripe Subscription object
+ * @returns a string
+ */
 function getSubscriptionUpdateType(previousAttributes: any, subscription: Stripe.Subscription) {
   // No previous attributes or first billing cycle -> New subscription
   if (!previousAttributes || Object.keys(previousAttributes).length === 0) {

@@ -16,15 +16,16 @@ import { href } from "react-router";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 
 
-interface NewSubscriptionEmailProps {
+interface SubscriptionEmailProps {
     planData: SubscriptionPlan;
     username?: string;
+    updateType: "upgrade" | "downgrade" | "renewal" | "new" | "unknown"
 }
 
 const baseUrl = process.env.RENDER_URL
     ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
 
-const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps) => {
+const SubscriptionEmail = ({ planData, username, updateType }: SubscriptionEmailProps) => {
 
     return (
         <Html>
@@ -34,9 +35,21 @@ const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps)
                     <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
                         <Section className="mt-[32px] text-center mb-8">
                             <ShiningLogo />
-                            <Text className="text-center text-black text-2xl leading-[24px]">
-                                Bienvenido a <strong>{planData.name}</strong>
-                            </Text>
+                            {updateType === "downgrade" || updateType === "upgrade" ?
+                                (
+                                    <Text className="text-center text-black text-2xl leading-[24px]">
+                                        Cambio de Plan procesado. Bienvenido a <strong>{planData.name}</strong>
+                                    </Text>
+                                ) : updateType === "renewal" ? (
+                                    <Text className="text-center text-black text-2xl leading-[24px]">
+                                        Tu Plan a <strong>{planData.name}</strong> ha sido renovado.
+                                    </Text>
+                                ) : (
+                                    <Text className="text-center text-black text-2xl leading-[24px]">
+                                        Bienvenido a <strong>{planData.name}</strong>
+                                    </Text>
+                                )
+                            }
                             <Img
                                 className="rounded-md object-cover mx-auto"
                                 src={`${baseUrl}/${planData.img}`}
@@ -44,17 +57,23 @@ const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps)
                                 height="64"
                             />
                         </Section>
-
-                        <Text></Text>
                         <Text className="text-black text-[14px] leading-[24px]">
                             Hola {username},
                         </Text>
-                        <Text className="text-black text-[14px] leading-[24px]">
-                            gracias por tu suscripción, ya eres un miembro más 🎉.
-                        </Text>
-                        <Text className="text-black text-[14px] leading-[24px]">
-                            Cominza a disfrutar de nuestro contenido cuanto antes..
-                        </Text>
+                        {updateType === "downgrade" || updateType === "upgrade" ? (
+                            <Text className="text-black text-[14px] leading-[24px]">
+                                gracias por tu suscripción, nos alegramos de que sigas con nosotros.
+                            </Text>
+                        ) : (
+                            <>
+                                <Text className="text-black text-[14px] leading-[24px]">
+                                    gracias por tu suscripción, ya eres un miembro más 🎉.
+                                </Text>
+                                <Text className="text-black text-[14px] leading-[24px]">
+                                    Cominza a disfrutar de nuestro contenido cuanto antes.
+                                </Text>
+                            </>
+                        )}
                         <Section className="text-center mt-[32px] mb-[32px]">
                             <Link
                                 className="bg-[#9d67e9] rounded text-white text-[12px] font-semibold no-underline text-center px-4 py-2 shadow"
@@ -95,6 +114,6 @@ const NewSubscriptionEmail = ({ planData, username }: NewSubscriptionEmailProps)
 
 
 
-export function renderNewSubscriptionEmail({ planData, username }: NewSubscriptionEmailProps) {
-    return render(<NewSubscriptionEmail planData={planData} username={username} />)
+export function renderSubscriptionEmail({ planData, username, updateType }: SubscriptionEmailProps) {
+    return render(<SubscriptionEmail planData={planData} username={username} updateType={updateType} />)
 }

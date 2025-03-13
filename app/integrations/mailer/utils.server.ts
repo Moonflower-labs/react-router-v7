@@ -3,10 +3,9 @@ import { renderWelcomeEmail } from "./html-templates/welcome";
 import { renderNewOrderEmail } from "./html-templates/new-order";
 import type { ExtendedOrder } from "~/models/order.server";
 import { getSubscriptionData, type SubscriptionPlan } from "../stripe/subscription.server";
-import { renderNewSubscriptionEmail } from "./html-templates/new-subscription";
 import { renderMissedSubscriptionPaymentEmail } from "./html-templates/missed-payment";
 import { renderResetPasswordEmail } from "./html-templates/reset-password";
-import { renderUpdatedSubscriptionEmail } from "./html-templates/updated-subscription";
+import { renderSubscriptionEmail } from "./html-templates/subscription";
 
 export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
@@ -18,34 +17,19 @@ export async function sendWelcomeEmail(email: string, username: string) {
   });
 }
 
-export async function sendSubscriptionEmail(email: string, username: string, plan: SubscriptionPlan["name"]) {
-  const planData = getSubscriptionData(plan);
-  return transporter.sendMail({
-    from: "admin@thechicnoir.com",
-    to: email,
-    subject: `Tu suscripción a ${planData.name}`,
-    text: `Tu suscripción a La Flor Blanca`,
-    html: await renderNewSubscriptionEmail({ planData, username })
-  });
-}
-
-export async function sendSubscriptionUpdatedEmail(
+export async function sendSubscriptionEmail(
   email: string,
   username: string,
   plan: SubscriptionPlan["name"],
-  updateType: "upgrade" | "downgrade" | "renewal" | "new" | "unknown"
+  updateType: "upgrade" | "downgrade" | "renewal" | "new" | "unknown" = "new"
 ) {
-  // todo: construct this email remarking changes
   const planData = getSubscriptionData(plan);
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,
     subject: `Tu suscripción a ${planData.name}`,
     text: `Tu suscripción a La Flor Blanca`,
-    html:
-      updateType === "new"
-        ? await renderNewSubscriptionEmail({ planData, username })
-        : await renderUpdatedSubscriptionEmail({ planData, username, updateType })
+    html: await renderSubscriptionEmail({ planData, username, updateType })
   });
 }
 
