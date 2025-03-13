@@ -1,9 +1,9 @@
 import { createProductReview, getProduct, getProductReviews } from '~/models/product.server';
 import type { Route } from './+types/product-reviews'
-import { Form, href, Link } from 'react-router';
+import { Form, href, Link, useNavigation } from 'react-router';
 import { useCallback } from 'react';
 import { FaArrowLeft, FaStar } from 'react-icons/fa';
-import { formatDate } from '~/utils/format';
+import { formatDayTime } from '~/utils/format';
 import ActionError from '~/components/framer-motion/ActionError';
 import { getUserId } from '~/middleware/sessionMiddleware';
 
@@ -68,6 +68,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
 
 export default function ProductReviews({ loaderData, actionData }: Route.ComponentProps) {
     const { product, reviews, page, totalReviews } = loaderData
+    const navigation = useNavigation()
     const pageSize = 3; // Match getProductReviews default
     const totalPages = Math.ceil(totalReviews / pageSize);
     // const reviews = product?.reviews
@@ -115,7 +116,7 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                                     <div className="pt-4 mb-3 flex justify-center">{renderStars(review.score)}</div>
                                     <h2 className="card-title mx-auto">{review.title}</h2>
                                     <p>{review.text}</p>
-                                    <p className='text-xs'>{formatDate(review.createdAt)}</p>
+                                    <p className='text-xs'>{formatDayTime(review.createdAt)}</p>
                                     <div className="card-actions justify-end">
                                         <span>{review.user ? review.user.username : "Anónimo"}</span>
                                     </div>
@@ -173,7 +174,7 @@ export default function ProductReviews({ loaderData, actionData }: Route.Compone
                         <textarea className="textarea textarea-lg h-24 w-full" name='text' placeholder="Mi opinión sobre este producto..." ></textarea>
                     </fieldset>
                     {actionData?.error && <ActionError actionData={actionData} />}
-                    <button type='submit' className='btn btn-primary my-3'>Enviar</button>
+                    <button type='submit' className='btn btn-primary my-3' disabled={navigation.state !== "idle"}>Enviar</button>
                 </Form>
             </section>
         </main>

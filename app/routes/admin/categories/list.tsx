@@ -4,7 +4,7 @@ import { CiEdit } from "react-icons/ci";
 import { ImBin } from "react-icons/im";
 import { IoMdAdd } from "react-icons/io";
 import { Link, Form, Outlet, data, href } from "react-router";
-import { formatDate } from "~/utils/format";
+import { formatDayTime } from "~/utils/format";
 import { deleteCategory } from "~/models/category.server";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -44,7 +44,7 @@ export default function CategoryList({ loaderData, actionData }: Route.Component
             <div key={category.id} className="card bg-base-100 card-md shadow-sm">
               <div className="card-body">
                 <h2 className="card-title">{category.name} </h2>
-                <p>{formatDate(category.createdAt)}</p>
+                <p>{formatDayTime(category.createdAt)}</p>
                 <div className="justify-end card-actions items-center">
                   <Link to={href('/admin/categories/create')} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
                     <IoMdAdd size={24} className="text-success" />

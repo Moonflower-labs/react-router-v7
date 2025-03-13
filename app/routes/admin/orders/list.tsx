@@ -1,6 +1,5 @@
 import { data, Form, Link, Outlet, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
-import { formatDate } from "~/utils/format";
 import { ImBin } from "react-icons/im";
 import { useEffect, useState } from "react";
 import { toast, type Id } from "react-toastify";
@@ -9,6 +8,7 @@ import { FaCheck } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import type { OrderStatus } from "@prisma/client";
 import { GrRevert } from "react-icons/gr";
+import { formatDayTime } from "~/utils/format";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -132,7 +132,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               <span>
                 {index + 1}. {order.id}{" "}
               </span>
-              <span className="me-5">{formatDate(order.updatedAt)}</span>
+              <span className="me-5">{formatDayTime(order.updatedAt)}</span>
             </div>
             <div className="flex gap-3 items-center">
               {order?.status === "Paid" ? (

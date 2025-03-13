@@ -4,7 +4,7 @@ import { CiEdit } from "react-icons/ci";
 import { ImBin } from "react-icons/im";
 import { IoMdAdd } from "react-icons/io";
 import { Link, Form, Outlet, data, href } from "react-router";
-import { formatDate } from "~/utils/format";
+import { formatDayTime } from "~/utils/format";
 import { deleteShippinRate } from "~/models/shippingRate";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
 
@@ -47,7 +47,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                         <div key={rate.id} className="card bg-base-100 card-md shadow-sm">
                             <div className="card-body">
                                 <h2 className="card-title">{rate.displayName}</h2>
-                                <p>{formatDate(rate.createdAt)}</p>
+                                <p>{formatDayTime(rate.createdAt)}</p>
                                 <p>£{rate.amount / 100}</p>
                                 <div className="justify-end card-actions items-center">
                                     <Link to={href("/admin/shippingRates/create")} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>

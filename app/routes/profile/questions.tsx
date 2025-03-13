@@ -1,7 +1,7 @@
 import { getUserId } from '~/middleware/sessionMiddleware';
 import type { Route } from './+types/questions'
 import { getUserQuestions } from '~/models/question.server'
-import { formatDate } from '~/utils/format'
+import { formatDayTime } from '~/utils/format'
 
 export async function loader({ context }: Route.LoaderArgs) {
     const userId = getUserId(context);
@@ -22,7 +22,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 {basic?.length > 0
                     ? basic.map((question, index) =>
                         <div key={question.id} className='mb-3'>
-                            <p>{index + 1}. {formatDate(question.createdAt)}</p>
+                            <p>{index + 1}. {formatDayTime(question.createdAt)}</p>
                             <p>{question.text}</p>
                         </div>
                     )
@@ -34,7 +34,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 {tarot?.length > 0
                     ? tarot.map((question, index) =>
                         <div key={question.id} className='mb-3'>
-                            <p>{index + 1}. {formatDate(question.createdAt)}</p>
+                            <p>{index + 1}. {formatDayTime(question.createdAt)}</p>
                             <p>{question.text}</p>
                         </div>
                     )
@@ -46,7 +46,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 {live?.length > 0
                     ? live.map((question, index) =>
                         <div key={question.id} className='mb-3'>
-                            <p>{index + 1}. {formatDate(question.createdAt)}</p>
+                            <p>{index + 1}. {formatDayTime(question.createdAt)}</p>
                             <p>{question.text}</p>
                             <p>{question.info}</p>
                         </div>

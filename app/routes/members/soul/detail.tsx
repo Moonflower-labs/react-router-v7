@@ -3,7 +3,6 @@ import { PiFlowerLotus } from "react-icons/pi";
 import type { Route } from "./+types/detail";
 import { addToFavoriteVideo, fetchVideo, fetchVideoComments, type Video } from "~/models/video.server";
 import VideoComponent from "~/components/members/VideoComponent";
-import { formatDate, formatDayTime } from "~/utils/format";
 import Comments from "~/components/members/Comments";
 import type { User } from "~/models/user.server";
 import { Favorite } from "~/components/members/Favorite";

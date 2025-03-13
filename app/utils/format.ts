@@ -1,5 +1,5 @@
-import { formatDistanceToNow, format, formatRelative } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDistanceToNow, formatRelative } from "date-fns";
+import { es } from "date-fns/locale/es";
 
 export const formatDate = (date: Date | string | number | undefined) => {
   if (!date) return;

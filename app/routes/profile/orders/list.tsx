@@ -1,6 +1,6 @@
 import type { Route } from "./+types/list";
 import { Link, Outlet } from "react-router";
-import { formatDate } from "~/utils/format";
+import { formatDayTime } from "~/utils/format";
 import { fetchUserOrders, getUserOrderCount } from "~/models/order.server";
 import { FaEye } from "react-icons/fa";
 import { getUserId } from "~/middleware/sessionMiddleware";
@@ -35,7 +35,7 @@ export default function UserOrders({ loaderData }: Route.ComponentProps) {
                         <div key={order.id} className="card card-md shadow-md border">
                             <div className="card-body">
                                 <h2 className="card-title">{index + 1}. Pedido: {order.id}</h2>
-                                <span className="me-5">{formatDate(order.createdAt)}</span>
+                                <span className="me-5">{formatDayTime(order.createdAt)}</span>
                                 <div className="flex gap-3 items-center lg:w-1/3">
                                     {order?.status === "Paid" ? (
                                         <div className="badge badge-success">Pagado</div>
