@@ -2,7 +2,7 @@ import type { Route } from "./+types/list";
 import { data, Form, Link } from "react-router";
 import { deleteWebhookEndpoint, listWebhookEndpoints } from "~/integrations/stripe/webhook.server";
 import { ImBin } from "react-icons/im";
-import { formatUnixDate } from "~/utils/format";
+import { formatDayTime } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 
@@ -37,7 +37,7 @@ export default function Webhooks({ loaderData }: Route.ComponentProps) {
             {endpoints?.length ? (
                 endpoints.map((endpoint, index) => (
                     <div key={endpoint.id} className="flex justify-between items-center p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
-                        {endpoint.description} {formatUnixDate(endpoint.created)}
+                        {endpoint.description} {formatDayTime(new Date(endpoint.created * 1000))}
                         <div className="flex gap-3 items-center">
                             <div className="inline-grid *:[grid-area:1/1]">
                                 <div className={`status ${endpoint.status === "enabled" ? "status-success" : " status-error"} animate-ping`}></div>

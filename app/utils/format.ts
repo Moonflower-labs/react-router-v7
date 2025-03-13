@@ -1,14 +1,9 @@
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { es } from "date-fns/locale/es";
 
-export const formatDate = (date: Date | string | number | undefined) => {
-  if (!date) return;
-
-  const dateObj = date instanceof Date ? date : new Date(date);
-
-  return dateObj.toLocaleString("en-GB");
-};
-
+//**
+// DATE FORMATING
+// **/
 export const formatDayTime = (date: Date): string => {
   // el lunes pasado a las 17:43
   return formatRelative(date, new Date(), { locale: es });
@@ -22,9 +17,9 @@ export const formatDistanceToNowEs = (date: Date | string | number | undefined) 
   return formatDistanceToNow(dateObj, { addSuffix: true, locale: es });
 };
 
-export const formatUnixDate = (unixTimestamp: number, locale = "en-GB", options?: Intl.DateTimeFormatOptions) => {
-  return new Date(unixTimestamp * 1000).toLocaleString(locale, options);
-};
+//**
+// LIKES
+// **/
 
 export const formatLikes = (likes: any | null) => {
   if (likes) {

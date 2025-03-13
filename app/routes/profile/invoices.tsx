@@ -2,7 +2,6 @@ import { getCustomerId } from "~/integrations/stripe/index.server";
 import type { Route } from "./+types/invoices";
 import { listInvoices } from "~/integrations/stripe/invoice.server";
 import { href, Link, redirect } from "react-router";
-import { formatUnixDate } from "~/utils/format";
 import { FaFilePdf } from "react-icons/fa";
 import { getUserId } from "~/middleware/sessionMiddleware";
 
@@ -35,7 +34,7 @@ export default function ListInvoices({ loaderData }: Route.ComponentProps) {
                             className="card w-96 bg-base-200/40 card-md shadow-sm mx-auto">
                             <div className="card-body">
                                 <h2 className="card-title">Cliente {invoice.customer_name}</h2>
-                                <span>Fecha: {formatUnixDate(invoice.created)}</span>
+                                <span>Fecha: {(invoice.created)}</span>
                                 {invoice.lines.data && invoice.lines.data.map((line) => (
                                     <span key={line.id}>{line.description}</span>
                                 ))}
