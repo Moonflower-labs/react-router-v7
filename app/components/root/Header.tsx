@@ -147,6 +147,13 @@ export function Header() {
 const themes = [
   { value: 'florBlanca', label: 'Default' },
   { value: 'garden', label: 'Garden' },
+  { value: 'pastel', label: 'Pastel' },
+  { value: 'valentine', label: 'Valentine' },
+  { value: 'fantasy', label: 'Fantasy' },
+  { value: 'lemonade', label: 'Lemonade' },
+  { value: 'winter', label: 'Winter' },
+  { value: 'sunset', label: 'Sunset' },
+  { value: 'cyberpunk', label: 'CyberPunk' },
   { value: 'dracula', label: 'Dracula' },
   { value: 'cupcake', label: 'Cupcake' },
   { value: 'coffee', label: 'Coffee' },

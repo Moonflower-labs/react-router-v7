@@ -91,22 +91,21 @@ export default function ResgisterPage({ actionData }: Route.ComponentProps) {
   return (
     <>
       <div className="text-center">
-        <h1 className="text-5xl text-primary font-bold">Registrar usuario</h1>
+        <h1 className="text-4xl text-primary font-bold">Registrar usuario</h1>
         <p className="py-6">
-          Si ya estás registrado inicia sesión{" "}
-          <Link to={"/login"} className="link-primary">
+          Si ya estás registrado inicia sesión
+          <Link to={"/login"} className="ms-2 link link-primary">
             aquí
           </Link>
         </p>
       </div>
-      <Form method="post" className="w-full">
+      <Form method="post">
         <HoneypotInputs label="Please leave this field blank" />
         <div className="card text-center max-w-sm shadow-2xl bg-base-200 border mx-auto">
           <div className="card-body">
             <label className="floating-label mb-3" htmlFor="username">
               <span>Nombre de usuario</span>
               <input type="text" placeholder="Usuario" className="input input-md input-primary" name="username" id="username" />
-
             </label>
             {actionErrors?.errors?.username && <div className="text-error mb-3">{actionErrors.errors.username}</div>}
             <label className="floating-label mb-3" htmlFor="email">

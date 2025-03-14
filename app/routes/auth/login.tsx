@@ -92,10 +92,10 @@ export default function Login({ actionData }: Route.ComponentProps) {
   return (
     <>
       <div className="text-center">
-        <h1 className="text-5xl text-primary font-bold">Iniciar sesión</h1>
+        <h1 className="text-4xl text-primary font-bold">Iniciar sesión</h1>
         <p className="py-8">
-          ¿ No tienes una cuenta ?{" "}
-          <Link to={"/register"} className="link-primary">
+          ¿ No tienes una cuenta ?
+          <Link to={"/register"} className="ms-2 link link-primary">
             Registro
           </Link>
         </p>
@@ -118,9 +118,10 @@ export default function Login({ actionData }: Route.ComponentProps) {
             <Link to={"/forgot-password"} className="link link-primary link-hover">
               Olvidaste tu contraseña?
             </Link>
-            <label className="label">
-              <span className="label-text">Remember me</span>
-              <input type="checkbox" name="remember" className="checkbox checkbox-primary" />
+            <label className="fieldset-label">
+              <span className="label-text"></span>
+              <input type="checkbox" name="remember" className="checkbox checkbox-xs checkbox-primary" />
+              Remember me
             </label>
             <div className="mx-auto">
               <button type="submit" className="btn btn-primary mt-3 disabled:opacity-85" disabled={navigation.state === "submitting"}>

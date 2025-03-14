@@ -140,12 +140,12 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
         de
         <span className="text-warning"> 3</span>
       </div>
-      <fetcher.Form ref={formRef} method="post" id="question" className="p-2 rounded-xl md:w-2/3 mx-auto shadow-lg border border-base-300">
+      <fetcher.Form ref={formRef} method="post" id="question" className="p-2 rounded-xl max-w-xl mx-auto shadow-lg border border-base-300">
         <input type="hidden" name="questionCount" value={questionCount} />
-        <div className="p-8 flex flex-col justify-center items-center">
-          <label className="label floating-label mb-3">
-            <span>Nombre</span>
-            <input type="text" name="name" placeholder="Nombre" className="input input-lg w-full" />
+        <div className="p-8 flex flex-col justify-center items-center gap-5">
+          <label className="input input-lg">
+            <span className="label">Nombre</span>
+            <input type="text" name="name" placeholder="" />
           </label>
           {errors?.name && <ActionError actionData={{ error: errors.name }} />}
 
@@ -188,47 +188,47 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           <div className="mb-6">
             <div className="font-bold text-xl mb-3">3. ¿Dónde has oído hablar de nosotros?</div>
             <div className="flex flex-col gap-3 items-end w-fit mx-auto">
-              <label className="label">
-                <span>Telegram</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value={"Telegram"} name="media" />
+              <label className="label gap-3">
+                Telegram
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value={"Telegram"} name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>YouTube</span>
 
-                <input type="checkbox" className="checkbox checkbox-primary" value={"YouTube"} name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value={"YouTube"} name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>Instagram</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value={"Instagram"} name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value={"Instagram"} name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>Facebook</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value="Facebook" name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value="Facebook" name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>LinkedIn</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value="LinkedIn" name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value="LinkedIn" name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>Anuncio</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value="Anuncio" name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value="Anuncio" name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De boca en boca</span>
-                <input type="checkbox" className="checkbox checkbox-primary" value="De boca en boca" name="media" />
+                <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" value="De boca en boca" name="media" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>Otro</span>
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-primary"
+                  className="checkbox checkbox-sm checkbox-primary"
                   value="otro"
                   name="media"
                   onChange={event => {
@@ -249,44 +249,44 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
           <div className="mb-4">
             <div className="font-bold text-xl mb-3">4. ¿Cúal es tu grupo de edad?</div>
             <div className="flex flex-col gap-3 items-end w-fit mx-auto">
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 16 a 25 años </span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="16-25" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="16-25" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 26 a 35 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="26-35" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="26-35" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 36 a 45 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="36-45" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="36-45" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 46 a 55 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="46-55" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="46-55" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 56 a 65 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="56-65" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="56-65" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>De 66 a 75 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value="66-75" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value="66-75" />
               </label>
 
-              <label className="label">
+              <label className="label gap-3">
                 <span>Mayor de 75 años</span>
-                <input type="radio" name="age_group" className="radio radio-primary" value=">75" />
+                <input type="radio" name="age_group" className="radio radio-sm radio-primary" value=">75" />
               </label>
             </div>
             {errors?.ageGroup && <ActionError actionData={{ error: errors.ageGroup }} />}
           </div>
-          <label className="select select-lg mb-3">
+          <label className="select select-lg">
             <span className="label">5. Género</span>
             <select name="gender" required>
               <option value="mujer">Mujer</option>
@@ -294,21 +294,21 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
             </select>
           </label>
 
-          <label className="input input-lg mb-3">
+          <label className="input input-lg">
             <span className="label">6. País</span>
             <input type="text" name="country" placeholder="País" required />
           </label>
 
-          <label className="input input-lg mb-3">
+          <label className="input input-lg">
             <span className="label">7. Ciudad</span>
             <input type="text" name="city" placeholder="Ciudad" required />
           </label>
         </div>
         <div className="flex gap-3 mb-3 justify-center">
-          <button type="reset" className="btn btn-sm btn-accent  btn-outline">
+          <button type="reset" className="btn btn-accent  btn-outline">
             Cancelar
           </button>
-          <button type="submit" className="btn btn-sm btn-primary"
+          <button type="submit" className="btn btn-primary"
             disabled={fetcher.state === "submitting" || Number(questionCount) >= 3}
           >
             {fetcher.state === "submitting" ? "Enviando..." : "Enviar"}
