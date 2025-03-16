@@ -68,7 +68,7 @@ export default function EditSession({ loaderData }: Route.ComponentProps) {
                     </label>
                     <label className="textarea textarea-lg">
                         <span className="label  mb-2">Descripción</span>
-                        <textarea name="description" rows={6} defaultValue={session?.description || ""} required />
+                        <textarea name="description" rows={6} defaultValue={session?.description || ""} className="w-full" required />
                     </label>
                     <button type="submit" className="btn btn-primary" disabled={navigation.state !== "idle"}>Editar Sesión</button>
                 </div>

@@ -61,7 +61,7 @@ export default function CreateSession({ }: Route.ComponentProps) {
                     </label>
                     <label className="textarea textarea-lg">
                         <span className="label">Descripción</span>
-                        <textarea name="description" id="description" rows={6} required />
+                        <textarea name="description" id="description" className="w-full" rows={6} required />
                     </label>
                     <button type="submit" className="btn btn-primary" disabled={navigation.state !== "idle"}>Crear Sesión</button>
                 </div>
