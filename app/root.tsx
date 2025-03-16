@@ -4,7 +4,7 @@ import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
 import { setGuestId } from "~/middleware/sessionMiddleware";
 import { getCartItemsCount } from "./models/cart.server";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, ToastContainer, type ToastContentProps } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
@@ -100,7 +100,15 @@ export default function App({ loaderData }: Route.ComponentProps) {
   const { toastMessage } = loaderData
   useEffect(() => {
     if (toastMessage) {
-      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message)
+      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message, {
+        // add a thin purple border because I like purple
+        className: 'border border-primary',
+        style: {
+          borderRadius: '5px',
+          width: "100%"
+        },
+        ariaLabel: toastMessage.message,
+      })
     }
   }, [toastMessage])
 
