@@ -141,7 +141,7 @@ export default function BasicQuestion({ loaderData }: Route.ComponentProps) {
       <h2 className="text-2xl">Información Básica</h2>
       <BasicInfo basicInfo={loaderData?.basicInfo} />
       <h2 className="text-2xl py-4">Tu Pregunta</h2>
-      <QuestionForm questionCount={loaderData?.basicQuestionCount || 3} />
+      <QuestionForm questionCount={Number(questionCount)} />
     </div>
   );
 }
