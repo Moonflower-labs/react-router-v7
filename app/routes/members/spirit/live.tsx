@@ -12,9 +12,7 @@ export async function loader({ }: Route.LoaderArgs) {
 
 export default function LiveSessions({ loaderData }: Route.ComponentProps) {
   const { sessions } = loaderData;
-  console.log(sessions[0].startDate)
-  console.log()
-  console.log()
+
 
   return (
     <div className="text-center pt-4 px-1">
