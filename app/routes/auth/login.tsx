@@ -1,4 +1,4 @@
-import { Form, Link, redirect, useLocation, useNavigation } from "react-router";
+import { Form, href, Link, redirect, useLocation, useNavigation } from "react-router";
 import type { Route } from "./+types/login";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils/helpers";
@@ -23,8 +23,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const remember = formData.get("remember");
-  const redirectTo = formData.get("redirectTo") ?? "/profile";
-  console.log(redirectTo)
+  const redirectTo = formData.get("redirectTo");
 
   try {
     await honeypot.check(formData)
@@ -60,9 +59,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   // Manage cart merging
   const guestId = getUserId(context);
   await mergeGuestCart(guestId, user?.id);
+
   const toastMessage = { message: "Sesión iniciada!", type: "info" };
 
-  // Set the data in the session
+  // Set the data in the session and flash a message
   session.set("userId", user.id)
   session.set("isAdmin", isAdmin)
   if (remember) session.set("remember", remember)
@@ -75,7 +75,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 export default function Login({ actionData }: Route.ComponentProps) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const from = params.get("redirectTo") ?? "/";
+  const from = params.get("redirectTo") ?? href("/profile");
   const actionErrors = actionData;
   const navigation = useNavigation();
   const emailRef = React.useRef<HTMLInputElement>(null);

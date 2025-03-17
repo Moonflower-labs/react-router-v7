@@ -16,27 +16,31 @@ const sessionContext = unstable_createContext<Session>();
 const USER_SESSION_KEY = "userId";
 
 const EXCLUDED_URLS = [
-  href("/logout"), // Exclude to avoid commiting the destroyed session
+  // href("/logout"), // Exclude to avoid commiting the destroyed session
   /^\/api(\/|$)/,
   href("/chat/stream")
 ];
 
 export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {
+  let start = performance.now();
   let session = await sessionStorage.getSession(request.headers.get("Cookie"));
+
+  const url = new URL(request.url);
+  // Handle logout before reaching the action
+  if (url.pathname === href("/logout")) {
+    console.log("LOGOUT VIA MIDDLEWARE");
+    let duration = performance.now() - start;
+    console.log(`Navigated to ${request.url} (${duration.toFixed(2)}ms)`);
+    throw redirect("/", {
+      headers: {
+        "Set-Cookie": await sessionStorage.destroySession(session)
+      }
+    });
+  }
 
   let initialData = structuredClone(session.data);
 
   context.set(sessionContext, session);
-  const url = new URL(request.url);
-
-  // // Handle logout
-  // if (url.pathname === href("/logout")) {
-  //   return redirect("/", {
-  //     headers: {
-  //       "Set-Cookie": await sessionStorage.destroySession(session)
-  //     }
-  //   });
-  // }
 
   let response = await next();
 
@@ -52,6 +56,9 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
       })
     );
   }
+  let duration = performance.now() - start;
+  console.log(`Navigated to ${request.url} (${duration.toFixed(2)}ms)`);
+
   return response;
 };
 
@@ -76,7 +83,6 @@ export function getSessionContext(context: unstable_RouterContextProvider) {
 
 // Util to only get the id from the context
 export function getUserId(context: unstable_RouterContextProvider) {
-  console.log(context.get(sessionContext).get(USER_SESSION_KEY));
   return context.get(sessionContext).get(USER_SESSION_KEY);
 }
 export function setGuestId(session: Session) {

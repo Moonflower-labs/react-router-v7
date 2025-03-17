@@ -5,16 +5,15 @@ import { addToCart, calculateTotalAmount, getShoppingCart, removeFromCart } from
 import { useState } from "react";
 import { motion } from "motion/react";
 import { getShippinRates } from "~/models/shippingRate";
-import { getUserDiscount } from "~/models/user.server";
+import { getUserById, getUserDiscount } from "~/models/user.server";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { getCustomerBalance } from "~/integrations/stripe/customer.server";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
-import { getUserContext } from "~/middleware/userMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)
-  const user = getUserContext(context)
   const userId = session.get("userId")
+  const user = await getUserById(userId);
   const [cart, shippingRates] = await Promise.all([getShoppingCart(userId as string), getShippinRates()])
 
   const discount = getUserDiscount(user?.subscription?.plan?.name as SubscriptionPlan["name"])

@@ -12,8 +12,7 @@ import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrat
 import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
 import { differenceInDays } from "date-fns"
-import { getUserDiscount } from "~/models/user.server";
-import { getUserContext } from "~/middleware/userMiddleware";
+import { getUserById, getUserDiscount } from "~/models/user.server";
 import { getUserId } from "~/middleware/sessionMiddleware";
 
 
@@ -21,8 +20,8 @@ loadStripe.setLoadParameters({ advancedFraudSignals: false });
 const stripePromise = loadStripe("pk_test_51LIRtEAEZk4zaxmw2ngsEkzDCYygcLkU5uL4m2ba01aQ6zXkWFXboTVdNH71GBZzvHNmiRU13qtQyjjCvTzVizlX00yXeplNgV");
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-  const user = getUserContext(context)
-  const userId = getUserId(context)
+  const userId = getUserId(context);
+  const user = await getUserById(userId);
   const url = new URL(request.url);
   const mode = url.pathname.includes("subscribe") ? "subscription" : url.pathname.includes("setup") ? "setup" : "payment"
   const customerSessionSecret = user?.customerId && mode === "payment" ? await createCustomerSession(user?.customerId) : null;

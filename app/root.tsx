@@ -4,7 +4,7 @@ import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
 import { setGuestId } from "~/middleware/sessionMiddleware";
 import { getCartItemsCount } from "./models/cart.server";
-import { toast, ToastContainer, type ToastContentProps } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
@@ -12,11 +12,11 @@ import { HoneypotProvider } from "remix-utils/honeypot/react"
 import "./app.css";
 import { useEffect } from "react";
 import { getSessionContext, sessionMiddleware } from "./middleware/sessionMiddleware";
-import { getUserContext, userMiddleware } from "./middleware/userMiddleware";
 import { authMiddleware } from "./middleware/authMiddleware";
+import { getUserById } from "./models/user.server";
 
 
-export const unstable_middleware = [sessionMiddleware, userMiddleware, authMiddleware]
+export const unstable_middleware = [sessionMiddleware, authMiddleware]
 
 
 export const links: Route.LinksFunction = () => [
@@ -39,9 +39,9 @@ export const links: Route.LinksFunction = () => [
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const honeypotInputProps = await honeypot.getInputProps()
-  const user = getUserContext(context);
   const session = getSessionContext(context);
   const userId = session.get("userId");
+  const user = await getUserById(userId);
   const toastMessage = session.get("toastMessage")
   const isAdmin = session.get("isAdmin")
 
@@ -102,9 +102,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
     if (toastMessage) {
       toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message, {
         // add a thin purple border because I like purple
-        className: 'border border-primary',
+        className: 'border border-primary/40',
         style: {
-          borderRadius: '5px',
+          borderRadius: '4px',
           width: "100%"
         },
         ariaLabel: toastMessage.message,
