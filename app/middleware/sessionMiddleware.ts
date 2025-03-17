@@ -16,7 +16,7 @@ const sessionContext = unstable_createContext<Session>();
 const USER_SESSION_KEY = "userId";
 
 const EXCLUDED_URLS = [
-  // href("/logout"), // Exclude to avoid commiting the destroyed session
+  // href("/logout"), // Exclude to avoid commiting the destroyed session unless explicitly handle logout in middleware
   /^\/api(\/|$)/,
   href("/chat/stream")
 ];
@@ -30,7 +30,7 @@ export const sessionMiddleware: Route.unstable_MiddlewareFunction = async ({ req
   if (url.pathname === href("/logout")) {
     console.log("LOGOUT VIA MIDDLEWARE");
     let duration = performance.now() - start;
-    console.log(`Navigated to ${request.url} (${duration.toFixed(2)}ms)`);
+    console.log(`${request.url} (${duration.toFixed(2)}ms)`);
     throw redirect("/", {
       headers: {
         "Set-Cookie": await sessionStorage.destroySession(session)

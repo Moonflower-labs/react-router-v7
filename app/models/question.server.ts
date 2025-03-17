@@ -75,6 +75,38 @@ export async function getQuestionCount({ userId, section }: { userId: string; se
   }
 }
 
+export async function saveBasicInfo({ userId, data }: { userId: string; data: Record<string, any> }) {
+  return prisma.basicInfo.create({
+    data: {
+      user: { connect: { id: userId } },
+      name: data.name,
+      country: data.country,
+      city: data.city,
+      media: data.media,
+      ageGroup: data.ageGroup,
+      gender: data.gender
+    }
+  });
+}
+export async function editBasicInfo({ userId, data }: { userId: string; data: Record<string, any> }) {
+  return prisma.basicInfo.update({
+    where: { userId },
+    data: {
+      user: { connect: { id: userId } },
+      name: data.name,
+      country: data.country,
+      city: data.city,
+      media: data.media,
+      ageGroup: data.ageGroup,
+      gender: data.gender
+    }
+  });
+}
+
+export async function fetchBasicInfo(userId: string) {
+  return prisma.basicInfo.findUnique({ where: { userId } });
+}
+
 export async function createBasicQuestion({ userId, data }: { userId: string; data: Record<string, any> }) {
   return prisma.question.create({
     data: {
