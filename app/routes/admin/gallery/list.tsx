@@ -1,6 +1,5 @@
 import cloudinary from "~/integrations/cloudinary/service.server";
 import type { Route } from "./+types/list";
-import { Cloudinary } from "@cloudinary/url-gen";
 import { Form, Link, useNavigation, useSearchParams, useSubmit } from "react-router";
 import { ImBin } from "react-icons/im";
 import { BiUpload } from "react-icons/bi";
