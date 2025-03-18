@@ -65,28 +65,35 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+:root {
+  --toastify-color-light: var(--color-base-100); /* DaisyUI base-100 */
+  --toastify-color-dark: var(--color-base-300); /* DaisyUI base-300 */
+  --toastify-color-info: var(--color-info); /* DaisyUI info */
+  --toastify-color-success: var(--color-success); /* DaisyUI success */
+  --toastify-color-warning: var(--color-warning); /* DaisyUI warning */
+  --toastify-color-error: var(--color-error); /* DaisyUI error */
+
+  --toastify-icon-color-info: var(--color-info);
+  --toastify-icon-color-success: var(--color-success);
+  --toastify-icon-color-warning: var(--color-warning);
+  --toastify-icon-color-error: var(--color-error);
+
+  --toastify-text-color-light: var(--color-base-content);
+  --toastify-text-color-dark: var(--color-neutral-content);
+  --toastify-text-color-info: var(--color-info-content);
+  --toastify-text-color-success: var(--color-success-content);
+  --toastify-text-color-warning: var(--color-warning-content);
+  --toastify-text-color-error: var(--color-error-content);
+}
+
 .Toastify__toast {
-  @apply bg-base-100 text-base-content rounded border border-primary/40;
-}
-.Toastify__progress-bar--info {
-  @apply bg-info;
-}
-.Toastify__progress-bar--success {
-  @apply bg-success;
-}
-.Toastify__progress-bar--warning {
-  @apply bg-warning;
-}
-.Toastify__progress-bar--error {
-  @apply bg-error;
+  @apply rounded border border-primary/40;
 }
 
 .scale-hover {
   @apply hover:scale-110 ease-in duration-200;
 }
-/* .border {
-  @apply border-base-300;
-} */
 
 .btn-primary:disabled {
   @apply cursor-not-allowed bg-primary/40 text-primary-content;
