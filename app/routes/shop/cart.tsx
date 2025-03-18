@@ -17,7 +17,7 @@ export async function loader({ context }: Route.LoaderArgs) {
   const [cart, shippingRates] = await Promise.all([getShoppingCart(userId as string), getShippinRates()])
 
   const discount = getUserDiscount(user?.subscription?.plan?.name as SubscriptionPlan["name"])
-  const totalAmount = calculateTotalAmount(cart?.cartItems || [], discount);
+  const totalAmount = calculateTotalAmount(cart?.cartItems || []);
 
   if (!user) return { cart, totalAmount, shippingRates, discount };
 
