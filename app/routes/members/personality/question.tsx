@@ -205,8 +205,8 @@ const QuestionForm = ({ questionCount }: { questionCount: number }) => {
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Habilidades Psíquicas" />
             </label>
             <label className="label w-full justify-between">
-              <span className="flex flex-wrap">
-                Otro <span className="font-semibold ms-1">(siguiendo la línea de nuestro contenido)</span>{" "}
+              <span>
+                Otro <span className="font-bold ms-1 text-xs">(siguiendo la línea de nuestro contenido)</span>{" "}
               </span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Other" />
             </label>
