@@ -7,7 +7,7 @@ import type { Route } from "./+types/room";
 import { IoMdSend } from "react-icons/io";
 import { prisma } from "~/db.server";
 import { useChatSubscription } from "./useChatStream";
-import { getUserId } from "~/middleware/sessionMiddleware";
+import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
 
 export function headers(_: Route.HeadersArgs) {
     return {
@@ -20,15 +20,16 @@ export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
     if (!roomId) throw data({ message: "Room ID missing" }, { status: 400 });
 
-    const [messages, room, { message: statusMsg, status }] = await Promise.all([
+    const [messages, room, { message: statusMsg, status, endDate }] = await Promise.all([
         getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
-    return { messages, room, status, statusMsg };
+    return { messages, room, status, statusMsg, endDate };
 };
 
 
 export async function action({ request, params, context }: Route.ActionArgs) {
 
     const formData = await request.formData();
+    const session = getSessionContext(context)
     // todo: Tempoprarily clear chat 
     if (request.method === "DELETE") {
         console.log('delete')
@@ -37,6 +38,12 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         return { success: true };
     }
     const text = formData.get("text") as string;
+    const endDate = Number(formData.get("endDate"));
+    // Check if session ended
+    if (endDate <= new Date().getTime()) {
+        session.flash("toastMessage", { type: "warning", message: "La sesión ha finalizado" })
+        return {}
+    }
     const roomId = params.roomId as string;
     const userId = getUserId(context);
     if (!text || !roomId) {
@@ -49,7 +56,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
 
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
-    const { messages: initialMessages, room, status, statusMsg } = loaderData;
+    const { messages: initialMessages, room, status, statusMsg, endDate } = loaderData;
     const user = useRouteLoaderData("root")?.user;
     const currentUserId = user?.id;
     const [isActiveRoom, setIsActiveRoom] = useState(Boolean(status === "active"))
@@ -143,6 +150,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
 
             {isActiveRoom && (
                 <fetcher.Form method="post" ref={formRef} className="fixed bottom-0 left-0 right-0 px-4 pb-4 mx-auto z-50 flex justify-center items-center gap-2 mb-4 max-w-xl">
+                    <input type="hidden" name="endDate" value={endDate?.getTime()} />
                     <label className="floating-label w-full">
                         <span>Mensaje</span>
                         <input type="text" name="text" className="input input-lg w-full input-primary" placeholder="Mensaje" required />
