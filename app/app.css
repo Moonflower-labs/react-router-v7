@@ -65,6 +65,21 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+.Toastify__toast {
+  @apply bg-base-100 text-base-content rounded border border-primary/40;
+}
+.Toastify__progress-bar--info {
+  @apply bg-info;
+}
+.Toastify__progress-bar--success {
+  @apply bg-success;
+}
+.Toastify__progress-bar--warning {
+  @apply bg-warning;
+}
+.Toastify__progress-bar--error {
+  @apply bg-error;
+}
 
 .scale-hover {
   @apply hover:scale-110 ease-in duration-200;

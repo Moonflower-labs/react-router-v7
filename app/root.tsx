@@ -100,15 +100,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
   const { toastMessage } = loaderData
   useEffect(() => {
     if (toastMessage) {
-      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message, {
-        // add a thin purple border because I like purple
-        className: 'border border-primary/40',
-        style: {
-          borderRadius: '4px',
-          width: "100%"
-        },
-        ariaLabel: toastMessage.message,
-      })
+      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message)
     }
   }, [toastMessage])
 
