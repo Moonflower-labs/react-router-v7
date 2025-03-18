@@ -7,6 +7,7 @@ import { IoMdSend } from "react-icons/io";
 import { prisma } from "~/db.server";
 import { useChatSubscription } from "./useChatStream";
 import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
+import { connectRedis } from "~/integrations/redis/service.server";
 
 export function headers(_: Route.HeadersArgs) {
     return {
@@ -23,6 +24,11 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 
     const [messages, room, { message: statusMsg, status, endDate }] = await Promise.all([
         getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
+    console.log(status)
+    // Connect redis clients only if session is active
+    if (endDate?.getTime()! > Date.now() && status === "active") {
+        await connectRedis()
+    }
     return { messages, room, status, statusMsg, endDate, isAdmin };
 };
 

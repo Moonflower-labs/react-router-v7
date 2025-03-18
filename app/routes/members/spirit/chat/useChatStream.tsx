@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useTransition, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, type Dispatch, type SetStateAction } from "react";
 import { href } from "react-router";
 import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
@@ -27,7 +27,7 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
     const participants = useEventSource(path, { event: "participants" });
     const chatExpired = useEventSource(path, { event: "chat_expired" });
 
-    const fetchMissedMessages = async () => {
+    const fetchMissedMessages = useCallback(() => async () => {
         console.info("fetching missed msgs")
         try {
             setIsFetching(true)
@@ -53,22 +53,20 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
                         return updated;
                     });
                 });
-            } else {
-                console.log("there are no missed msgs")
             }
         } catch (error) {
             console.error("Failed to fetch missed messages:", error);
         } finally {
             setIsFetching(false)
         }
-    };
+    }, [])
 
 
     useEffect(() => {
         // Handle chatExpired event
         if (chatExpired && !hasExpiredRef.current) {
             console.log(JSON.parse(chatExpired))
-            const id = toast.info("Esta sesión ha finalizado. Gracias por participar!")
+            toast.info("Esta sesión ha finalizado. Gracias por participar!")
             setIsActiveRoom(false);
             hasExpiredRef.current = true; // Mark as handled
             return;
@@ -105,7 +103,16 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
 
     // Heartbeat: Detect disconnection
     useEffect(() => {
-        if (!heartbeat || chatExpired) return;
+        if (chatExpired) {
+            if (heartbeatTimeoutRef.current) {
+                clearTimeout(heartbeatTimeoutRef.current);
+                heartbeatTimeoutRef.current = null; // reset ref
+            }
+            return;
+        }
+
+        if (!heartbeat) return;
+
         lastHeartbeatRef.current = Date.now(); // Update last heartbeat time
         if (heartbeatTimeoutRef.current) {
             clearTimeout(heartbeatTimeoutRef.current);
@@ -123,7 +130,6 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
 
     // Visibility: Catch up on return
     useEffect(() => {
-        if (chatExpired) return;
         const handleVisibilityChange = () => {
             if (document.visibilityState === "visible") {
                 const timeSinceLastHeartbeat = Date.now() - lastHeartbeatRef.current;
@@ -135,8 +141,10 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
                 }
             }
         };
-
-        document.addEventListener("visibilitychange", handleVisibilityChange);
+        // Only add listener if chat isn’t expired
+        if (!chatExpired) {
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+        }
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
