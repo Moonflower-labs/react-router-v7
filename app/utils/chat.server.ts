@@ -199,17 +199,20 @@ export async function getRoomStatus(roomId: string) {
   if (now < startDate) {
     return {
       status: "pending",
-      message: `Sesión comienza el ${startDate.toLocaleString()}`
+      message: `Sesión comienza el ${startDate.toLocaleString()}`,
+      endDate
     };
   } else if (now > endDate) {
     return {
       status: "closed",
-      message: `Sesión finalizó el ${endDate.toLocaleString()}`
+      message: `Sesión finalizó el ${endDate.toLocaleString()}`,
+      endDate
     };
   } else {
     return {
       status: "active",
-      message: `Sesión finaliza ${endDate.toLocaleString()}`
+      message: `Sesión finaliza ${endDate.toLocaleString()}`,
+      endDate
     };
   }
 }

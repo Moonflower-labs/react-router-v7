@@ -11,13 +11,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         throw new Response("roomId is required", { status: 400 });
     }
     const userId = getUserId(context);
-    const userIdFromUrl = url.searchParams.get("userId");
-    if (userIdFromUrl && userIdFromUrl !== userId) {
-        throw new Response("User ID mismatch", { status: 403 });
-    }
-
     // Check if the session is active
-    const { status } = await getRoomStatus(roomId)
+    const { status, endDate } = await getRoomStatus(roomId);
 
     if (status !== "active") {
         console.log(`room: ${userId}, status: ${status}`);
@@ -73,6 +68,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
         let lastActivity = Date.now();
         let heartbeatInterval: NodeJS.Timeout | undefined;
+        let expirationTimeout: NodeJS.Timeout | undefined;
 
         const originalSend = send;
         send = (event) => {
@@ -109,15 +105,21 @@ export async function loader({ request, context }: Route.LoaderArgs) {
                 }, 2000);
             }, 5000);
 
-            // let abortTimeout: NodeJS.Timeout | undefined;
+            const timeLeft = endDate ? endDate.getTime() - Date.now() : Date.now();
+
+            expirationTimeout = setTimeout(() => {
+                send({ event: "chat_expired", data: JSON.stringify({ message: "Chat time is over" }) });
+                leave();
+                unsubscribe();
+                if (heartbeatInterval) clearInterval(heartbeatInterval);
+            }, timeLeft);
+
+            // Listen for abort signal
             request.signal.addEventListener("abort", async () => {
-                // clearTimeout(abortTimeout);
-                // abortTimeout = setTimeout(() => {
                 console.log(`[${new Date().toISOString()}] Abort for ${userId}`);
                 unsubscribe();
                 await leave();
                 if (heartbeatInterval) clearInterval(heartbeatInterval);
-                // }, 3000);
             }, { once: true });
         }
 
@@ -126,6 +128,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
             unsubscribe();
             leave();
             if (heartbeatInterval) clearInterval(heartbeatInterval);
+            if (expirationTimeout) clearTimeout(expirationTimeout);
         };
     });
 }

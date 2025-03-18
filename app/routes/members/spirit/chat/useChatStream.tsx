@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type Dispatch, type SetStateAction } from "react";
 import { href } from "react-router";
+import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
 import type { ChatMessage } from "~/utils/chat.server";
 
 // Custom hook for SSE subscription, visibility, and participants
-export function useChatSubscription(roomId: string, initialMessages: ChatMessage[], userId: string) {
+export function useChatSubscription(roomId: string, initialMessages: ChatMessage[], setIsActiveRoom: Dispatch<SetStateAction<boolean>>) {
     const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
     const [participantCount, setParticipantCount] = useState<number>(1);
     const [isFetching, setIsFetching] = useState(false)
@@ -18,22 +19,23 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
 
     const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastHeartbeatRef = useRef<number>(0); // Tracks last heartbeat for disconnection and visibility checks
-
-    const path = `${href("/chat/stream")}roomId=${roomId}&userId=${encodeURIComponent(userId)}`;
+    const hasExpiredRef = useRef(false);
+    const path = `${href("/chat/stream")}?roomId=${roomId}`;
 
     const newMessage = useEventSource(path, { event: "new-message" });
     const heartbeat = useEventSource(path, { event: "heartbeat" });
     const participants = useEventSource(path, { event: "participants" });
+    const chatExpired = useEventSource(path, { event: "chat_expired" });
 
     const fetchMissedMessages = async () => {
-        console.log("fetching missed msgs")
+        console.info("fetching missed msgs")
         try {
             setIsFetching(true)
             const response = await fetch(`/api/chat/missed?roomId=${roomId}&since=${lastTimestampRef.current}`);
             const missedMessages: ChatMessage[] = await response.json();
 
             if (missedMessages.length > 0) {
-                console.log("there are missed msgs")
+                console.info("there are missed msgs")
                 startTransition(() => {
                     setLiveMessages((prev) => {
                         const newMessages = missedMessages.filter(
@@ -61,42 +63,49 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
         }
     };
 
-    // Handle new messages
+
     useEffect(() => {
-        if (!newMessage) return;
+        // Handle chatExpired event
+        if (chatExpired && !hasExpiredRef.current) {
+            console.log(JSON.parse(chatExpired))
+            const id = toast.info("Esta sesión ha finalizado. Gracias por participar!")
+            setIsActiveRoom(false);
+            hasExpiredRef.current = true; // Mark as handled
+            return;
+            // Handle new messages
+        } else if (newMessage) {
+            try {
+                const message = JSON.parse(newMessage) as ChatMessage;
+                console.log("new message", message);
 
-        try {
-            const message = JSON.parse(newMessage) as ChatMessage;
-            console.log("new message", message);
+                setLiveMessages((prev) => {
+                    if (!prev.some((m) => m.id === message.id) &&
+                        !initialMessages.some((m) => m.id === message.id)) {
+                        lastTimestampRef.current = new Date(message.createdAt).toISOString();
+                        return [...prev, message];
+                    }
+                    return prev;
+                });
+            } catch (error) {
+                console.error("Error processing message:", error);
+            }
 
-            setLiveMessages((prev) => {
-                if (!prev.some((m) => m.id === message.id) &&
-                    !initialMessages.some((m) => m.id === message.id)) {
-                    lastTimestampRef.current = new Date(message.createdAt).toISOString();
-                    return [...prev, message];
-                }
-                return prev;
-            });
-        } catch (error) {
-            console.error("Error processing message:", error);
+            // Handle participant count
+        } else if (participants) {
+            try {
+                const event = JSON.parse(participants);
+                setParticipantCount(parseInt(event.count)); // Sync with server count
+                console.log(`Participant count updated to ${event.count}`);
+            } catch (error) {
+                console.error("Error processing participants:", error);
+            }
         }
-    }, [newMessage]);
 
-    // Handle participant count
-    useEffect(() => {
-        if (!participants) return;
-        try {
-            const event = JSON.parse(participants);
-            setParticipantCount(parseInt(event.count)); // Sync with server count
-            console.log(`Participant count updated to ${event.count}`);
-        } catch (error) {
-            console.error("Error processing participants:", error);
-        }
-    }, [participants]);
+    }, [newMessage, participants, chatExpired]);
 
     // Heartbeat: Detect disconnection
     useEffect(() => {
-        if (!heartbeat) return;
+        if (!heartbeat || chatExpired) return;
         lastHeartbeatRef.current = Date.now(); // Update last heartbeat time
         if (heartbeatTimeoutRef.current) {
             clearTimeout(heartbeatTimeoutRef.current);
@@ -110,10 +119,11 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
                 clearTimeout(heartbeatTimeoutRef.current);
             }
         };
-    }, [heartbeat]);
+    }, [heartbeat, chatExpired]);
 
     // Visibility: Catch up on return
     useEffect(() => {
+        if (chatExpired) return;
         const handleVisibilityChange = () => {
             if (document.visibilityState === "visible") {
                 const timeSinceLastHeartbeat = Date.now() - lastHeartbeatRef.current;
@@ -125,11 +135,12 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
                 }
             }
         };
+
         document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
-    }, []);
+    }, [chatExpired]);
 
     return {
         liveMessages,

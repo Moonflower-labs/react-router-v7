@@ -1,5 +1,5 @@
 // app/routes/chat.$roomId.tsx
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { data, useFetcher, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom, type ChatMessage, getRoomStatus } from "~/utils/chat.server";
 import { Form } from "react-router";
@@ -8,7 +8,6 @@ import { IoMdSend } from "react-icons/io";
 import { prisma } from "~/db.server";
 import { useChatSubscription } from "./useChatStream";
 import { getUserId } from "~/middleware/sessionMiddleware";
-// import { redisPublisher } from "~/integrations/redis/service.server";
 
 export function headers(_: Route.HeadersArgs) {
     return {
@@ -20,19 +19,10 @@ export function headers(_: Route.HeadersArgs) {
 export async function loader({ params }: Route.LoaderArgs) {
     const { roomId } = params;
     if (!roomId) throw data({ message: "Room ID missing" }, { status: 400 });
-    // !   Clear count
-    // const participantKey = `room:${roomId}:participants`;
-    // const del = await redisPublisher.del(participantKey)
-    // console.log(del)
-    // const canAccess = await canAccessRoom(roomId);
-    // if (!canAccess) {
-    //     const { message } = await getRoomStatus(roomId);
-    //     throw new Response(message, { status: 403 });
-    // }
+
     const [messages, room, { message: statusMsg, status }] = await Promise.all([
         getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
     return { messages, room, status, statusMsg };
-
 };
 
 
@@ -60,10 +50,10 @@ export async function action({ request, params, context }: Route.ActionArgs) {
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     const { messages: initialMessages, room, status, statusMsg } = loaderData;
-    const isSessionActive = Boolean(status === "active");
     const user = useRouteLoaderData("root")?.user;
     const currentUserId = user?.id;
-    const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages, user.id);
+    const [isActiveRoom, setIsActiveRoom] = useState(Boolean(status === "active"))
+    const { liveMessages, participantCount, isFetching } = useChatSubscription(params.roomId, initialMessages, setIsActiveRoom);
     const fetcher = useFetcher()
 
     // Combine initial and live messages
@@ -96,14 +86,14 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
     };
 
     useEffect(() => {
-        if (!isSessionActive) return;
+        if (!isActiveRoom) return;
         const leaveChat = async () => {
             await handleLeave();
         };
         return () => {
             leaveChat();
         };
-    }, [isSessionActive]);
+    }, [isActiveRoom]);
 
     if (!room) return <div>Room not found</div>
 
@@ -126,8 +116,8 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             )}
             <h1 className="text-3xl text-center mb-3">Chat en directo: {room?.name}</h1>
             <div className="mb-4">
-                <p className={`text-lg ${status === "active" ? 'text-success' : status === "closed" ? 'text-error' : "text-warning"}`}>
-                    {status === "active" ? "Sesión Activa" : status === "closed" ? "Sesión Finalizada" : "Pendiente"}
+                <p className={`text-lg ${isActiveRoom ? 'text-success' : "text-warning"}`}>
+                    {isActiveRoom ? "Sesión Activa" : "Sesión Inactiva"}
                 </p>
                 <p>
                     {statusMsg}
@@ -136,7 +126,7 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
             <Form method="DELETE" className="mb-4">
                 <button className="btn btn-error btn-outline" type="submit">Clear chat</button>
             </Form>
-            {isSessionActive && <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>}
+            {isActiveRoom && <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>}
             {allMessages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
                     {allMessages.map((message) => (
@@ -151,8 +141,8 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
                 <p>No hay mensajes todavía.</p>
             }
 
-            {isSessionActive && (
-                <fetcher.Form method="post" ref={formRef} className="fixed bottom-0 left-0 right-0 px-4 pb-4 mx-auto z-50 flex justify-center items-center gap-2 mb-4">
+            {isActiveRoom && (
+                <fetcher.Form method="post" ref={formRef} className="fixed bottom-0 left-0 right-0 px-4 pb-4 mx-auto z-50 flex justify-center items-center gap-2 mb-4 max-w-xl">
                     <label className="floating-label w-full">
                         <span>Mensaje</span>
                         <input type="text" name="text" className="input input-lg w-full input-primary" placeholder="Mensaje" required />
