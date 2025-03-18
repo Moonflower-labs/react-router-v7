@@ -186,27 +186,27 @@ const QuestionForm = ({ questionCount }: { questionCount: number }) => {
       <div className="p-8 flex flex-col justify-center items-center gap-5">
         <div className="mb-4">
           <div className="font-bold text-xl mb-3">¿Tu pregunta es sobre Limpiezas, Emociones y Sentimientos Discordantes, Ataques Psíquicos o Habilidades Psíquicas?</div>
-          <div className="flex flex-col gap-3 justify-center md:w-fit items-end mx-auto">
-            <label className="label">
+          <div className="flex flex-col gap-3 justify-center md:w-fit items-end mx-auto px-4 w-sm">
+            <label className="label w-full justify-between">
               <span>Limpiezas</span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Limpiezas" />
             </label>
 
-            <label className="label">
+            <label className="label w-full justify-between">
               <span>Emociones y Sentimientos Discordantes</span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Emociones" />
             </label>
-            <label className="label">
+            <label className="label w-full  justify-between">
               <span>Ataques Psíquicos</span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Ataques Psíquicos" />
             </label>
-            <label className="label">
+            <label className="label w-full justify-between">
               <span>Habilidades Psíquicas</span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Habilidades Psíquicas" />
             </label>
-            <label className="label">
-              <span>
-                Otro <span className="font-semibold">(siguiendo la línea de nuestro contenido)</span>{" "}
+            <label className="label w-full justify-between">
+              <span className="flex flex-wrap">
+                Otro <span className="font-semibold ms-1">(siguiendo la línea de nuestro contenido)</span>{" "}
               </span>
               <input type="radio" name="subject" className="radio radio-primary radio-sm" value="Other" />
             </label>
@@ -300,14 +300,14 @@ const BasicInfo = ({ basicInfo }: { basicInfo: Awaited<ReturnType<typeof fetchBa
 
               <div className="mb-6">
                 <div className="font-bold text-xl mb-3">¿Dónde has oído hablar de nosotros?</div>
-                <div className="flex flex-col flex-wrap gap-3 items-end w-fit mx-auto">
+                <div className="flex flex-col flex-wrap gap-3 items-end w-xs mx-auto">
                   {mediaOptions.map(option => (
-                    <label key={option.value} className="label gap-3">
+                    <label key={option.value} className="label gap-3 w-full justify-between">
                       {option.label}
                       <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" defaultChecked={basicInfo?.media.includes(option.value)} value={option.value} name="media" />
                     </label>
                   ))}
-                  <label className="label gap-3">
+                  <label className="label gap-3 w-full justify-between">
                     <span>Otro</span>
                     <input
                       type="checkbox"
@@ -331,9 +331,9 @@ const BasicInfo = ({ basicInfo }: { basicInfo: Awaited<ReturnType<typeof fetchBa
 
               <div className="mb-4">
                 <div className="font-bold text-xl mb-3">¿Cúal es tu grupo de edad?</div>
-                <div className="flex flex-col gap-3 items-end w-fit mx-auto">
+                <div className="flex flex-col gap-3 items-end w-xs mx-auto">
                   {ageOptions.map(option => (
-                    <label key={option.value} className="label gap-3">
+                    <label key={option.value} className="label gap-3 w-full justify-between">
                       <span>{option.label}</span>
                       <input type="radio" name="age_group" className="radio radio-sm radio-primary" defaultChecked={basicInfo?.ageGroup === option.value} value={option.value} />
                     </label>
