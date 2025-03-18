@@ -1,4 +1,3 @@
-// app/routes/chat.$roomId.tsx
 import { useCallback, useEffect, useState } from "react";
 import { data, useFetcher, useRouteLoaderData } from "react-router";
 import { getMessages, addMessage, getRoom, type ChatMessage, getRoomStatus } from "~/utils/chat.server";
@@ -16,13 +15,15 @@ export function headers(_: Route.HeadersArgs) {
     };
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, context }: Route.LoaderArgs) {
     const { roomId } = params;
     if (!roomId) throw data({ message: "Room ID missing" }, { status: 400 });
+    const session = getSessionContext(context);
+    const isAdmin = session.get("isAdmin")
 
     const [messages, room, { message: statusMsg, status, endDate }] = await Promise.all([
         getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
-    return { messages, room, status, statusMsg, endDate };
+    return { messages, room, status, statusMsg, endDate, isAdmin };
 };
 
 
@@ -34,13 +35,12 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     if (request.method === "DELETE") {
         console.log('delete')
         await prisma.message.deleteMany({ where: { roomId: params.roomId as string } });
-        // return redirect(href("/members/spirit/live/chat/:roomId", { roomId: params.roomId }));
         return { success: true };
     }
     const text = formData.get("text") as string;
     const endDate = Number(formData.get("endDate"));
     // Check if session ended
-    if (endDate <= new Date().getTime()) {
+    if (endDate <= Date.now()) {
         session.flash("toastMessage", { type: "warning", message: "La sesión ha finalizado" })
         return {}
     }
@@ -50,13 +50,18 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         return { error: "Text and roomId are required" };
     }
 
-    const message = await addMessage(roomId, text, userId);
-    return { success: true, message };
+    try {
+        await addMessage(roomId, text, userId);
+    } catch (error) {
+        console.error(error);
+        return { error: "Ha ocurrido un error" };
+    }
+    return { success: true };
 };
 
 
 export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
-    const { messages: initialMessages, room, status, statusMsg, endDate } = loaderData;
+    const { messages: initialMessages, room, status, statusMsg, endDate, isAdmin } = loaderData;
     const user = useRouteLoaderData("root")?.user;
     const currentUserId = user?.id;
     const [isActiveRoom, setIsActiveRoom] = useState(Boolean(status === "active"))
@@ -130,9 +135,9 @@ export default function ChatRoom({ loaderData, params }: Route.ComponentProps) {
                     {statusMsg}
                 </p>
             </div>
-            <Form method="DELETE" className="mb-4">
+            {isAdmin && <Form method="DELETE" className="mb-4">
                 <button className="btn btn-error btn-outline" type="submit">Clear chat</button>
-            </Form>
+            </Form>}
             {isActiveRoom && <div className="mb-4">Participantes <span className="badge badge-primary">{participantCount}</span></div>}
             {allMessages.length > 0 ?
                 <div className="flex-1 w-full md:w-3/4 mx-auto overflow-y-auto border rounded-lg mb-16">
