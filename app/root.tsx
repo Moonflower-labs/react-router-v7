@@ -9,11 +9,12 @@ import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
 import { honeypot } from "./utils/honeypot.server";
 import { HoneypotProvider } from "remix-utils/honeypot/react"
-import "./app.css";
 import { useEffect } from "react";
 import { getSessionContext, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { getUserById } from "./models/user.server";
+import "./app.css";
+
 
 
 export const unstable_middleware = [sessionMiddleware, authMiddleware]
