@@ -24,7 +24,7 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 
     const [messages, room, { message: statusMsg, status, endDate }] = await Promise.all([
         getMessages(roomId), getRoom(roomId), getRoomStatus(roomId)]);
-    console.log(status)
+
     // Connect redis clients only if session is active
     if (endDate?.getTime()! > Date.now() && status === "active") {
         await connectRedis()
