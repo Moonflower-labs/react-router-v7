@@ -13,8 +13,12 @@ import { getSessionContext } from "~/middleware/sessionMiddleware";
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)
   const userId = session.get("userId")
-  const user = await getUserById(userId);
-  const [cart, shippingRates] = await Promise.all([getShoppingCart(userId as string), getShippinRates()])
+
+  const [user, cart, shippingRates] = await Promise.all([
+    getUserById(userId),
+    getShoppingCart(userId as string),
+    getShippinRates()
+  ])
 
   const discount = getUserDiscount(user?.subscription?.plan?.name as SubscriptionPlan["name"])
   const totalAmount = calculateTotalAmount(cart?.cartItems || []);
