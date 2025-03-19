@@ -2,7 +2,8 @@ import { use } from 'react'
 import { NavLink } from 'react-router'
 
 export function ImageGallery({ imagePromise }: { imagePromise: Promise<any> }) {
-    const images = use(imagePromise)
+    const images = use(imagePromise);
+
     return (
         <div className="gallery grid gap-5 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
             {images?.map((image: any) => (

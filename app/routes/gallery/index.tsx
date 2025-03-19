@@ -4,6 +4,10 @@ import InfoAlert from '~/components/shared/info'
 import { ImageGallery, ImageGallerySkeleton } from './gallery.js'
 import { Suspense } from 'react'
 
+export const headers: Route.HeadersFunction = () => ({
+    "Cache-Control": "max-age=3600", // Cache for 1 hour
+});
+
 export async function loader({ request }: Route.LoaderArgs) {
 
     const images = new Promise<any>((resolve, reject) => {
