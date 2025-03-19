@@ -8,7 +8,7 @@ import { RiLiveLine, RiWebhookFill } from "react-icons/ri";
 import { href, NavLink, Outlet } from "react-router";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
-import { MdLocalShipping, MdOutlineClose } from "react-icons/md";
+import { MdLocalShipping, MdOutlineClose, MdOutlineMailOutline } from "react-icons/md";
 import { adminAuthMiddleware } from "~/middleware/adminMiddleware";
 
 export const unstable_middleware = [adminAuthMiddleware];
@@ -90,5 +90,5 @@ const LINKS = [
   { to: href("/admin/users"), icon: <PiUsersThreeFill size={20} />, text: "Usuarios" },
   { to: href("/admin/webhooks"), icon: <RiWebhookFill size={20} />, text: "Webhooks" },
   // { to: href("/admin/stripe"), icon: <RiWebhookFill size={20} />, text: "Stripe" },
-  { to: href("/admin/emails"), icon: <RiWebhookFill size={20} />, text: "Emails" },
+  { to: href("/admin/emails"), icon: <MdOutlineMailOutline size={20} />, text: "Emails" },
 ]

@@ -23,12 +23,13 @@ export async function getShoppingCart(userId: string) {
   });
 }
 
-export async function getCartItemsCount(userId: string) {
-  const cart = await getShoppingCart(userId);
-  if (!cart) {
-    return 0;
-  }
-  return cart.cartItems.reduce((acc, item) => acc + item.quantity, 0);
+export async function getCartItemsCount(userId: string): Promise<number> {
+  const result = await prisma.cartItem.aggregate({
+    where: { cartId: userId },
+    _sum: { quantity: true }
+  });
+
+  return result._sum.quantity ?? 0;
 }
 
 export function calculateTotalAmount(cartItems: CartItem[], discount: number = 0, shippingRate: number = 0): number {

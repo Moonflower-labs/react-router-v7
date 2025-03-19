@@ -42,18 +42,16 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const honeypotInputProps = await honeypot.getInputProps()
   const session = getSessionContext(context);
   const userId = session.get("userId");
-  const user = await getUserById(userId);
   const toastMessage = session.get("toastMessage")
   const isAdmin = session.get("isAdmin")
-
+  const [user, userPrefs, totalItemCount] = await Promise.all([
+    getUserById(userId), getUserPrefs(request), getCartItemsCount(String(userId))
+  ])
   if (!userId) {
     // Ensure there's always a userId to assocciate the cart to
     setGuestId(session);
   }
-
-  const userPrefs = await getUserPrefs(request);
   const theme = userPrefs?.theme ?? "florBlanca";
-  const totalItemCount = await getCartItemsCount(String(userId));
 
   return { user, totalItemCount, theme, honeypotInputProps, toastMessage, isAdmin };
 };

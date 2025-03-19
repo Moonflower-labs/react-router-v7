@@ -184,7 +184,7 @@ export default function StripeLayout({ loaderData }: Route.ComponentProps) {
   const customerSessionClientSecret = loaderData?.customerSessionSecret;
   const clientSecret = loaderData?.clientSecret as string;
   const [stripe, setStripe] = useState<Promise<Stripe | null> | null>(null);
-  const darkThemes = ["dracula", "night", "dim", "sunset", "coffee", "abyss", "aqua"]
+  const darkThemes = ["dracula", "night", "dim", "sunset", "coffee", "abyss", "aqua", "dark"]
 
   useEffect(() => {
     setStripe(stripePromise);
