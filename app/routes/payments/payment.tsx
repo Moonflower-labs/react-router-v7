@@ -125,6 +125,7 @@ function CheckoutForm() {
           <AddressElement options={addressElementOptions} />
         </>
       }
+      <h3 className="text-primary text-lg font-semibold my-3">Pago</h3>
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
