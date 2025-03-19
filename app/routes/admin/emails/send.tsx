@@ -18,11 +18,11 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Email() {
     return (
-        <div>
-            Email
+        <div className="p-8">
+            <h1 className="text-2xl text-center mb-4">Email</h1>
 
-            <Form method="POST">
-                <input type="text" name="to" className="input" placeholder="Email to" />
+            <Form method="POST" className="max-w-xs mx-auto text-center">
+                <input type="text" name="to" className="input input-lg mb-4" placeholder="example@hotmail.com" />
                 <button type="submit" className="btn btn-primary">Send a test email</button>
             </Form>
         </div>

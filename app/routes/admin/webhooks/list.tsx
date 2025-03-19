@@ -35,28 +35,30 @@ export default function Webhooks({ loaderData }: Route.ComponentProps) {
         <div>
             <h2 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Webhooks</h2>
             {endpoints?.length ? (
-                endpoints.map((endpoint, index) => (
-                    <div key={endpoint.id} className="flex justify-between items-center p-3 border border-primary/20 rounded-lg shadow-md mb-3 lg:w-2/3 mx-auto">
-                        {endpoint.description} {formatDayTimeEs(new Date(endpoint.created * 1000))}
-                        <div className="flex gap-3 items-center">
-                            <div className="inline-grid *:[grid-area:1/1]">
-                                <div className={`status ${endpoint.status === "enabled" ? "status-success" : " status-error"} animate-ping`}></div>
-                                <div className={`status status-${endpoint.status === "enabled" ? " status-success" : " status-error"}`}></div>
+                endpoints.map((endpoint) => (
+                    <div key={endpoint.id} className="card max-w-md border border-primary/20 shadow-md mb-3 lg:w-2/3 mx-auto">
+                        <div className="card-body">
+                            <h2 className="card-title">{endpoint.description} {formatDayTimeEs(new Date(endpoint.created * 1000))}</h2>
+                            <div className="flex gap-3 items-center">
+                                <div className="inline-grid *:[grid-area:1/1]">
+                                    <div className={`status ${endpoint.status === "enabled" ? "status-success" : " status-error"} animate-ping`}></div>
+                                    <div className={`status status-${endpoint.status === "enabled" ? " status-success" : " status-error"}`}></div>
+                                </div>
+                                <div>{endpoint.status}</div>
                             </div>
-                            <div>{endpoint.status}</div>
-                        </div>
-                        <div className="flex gap-3 items-center">
-                            <Link to={"create"} className="btn btn-sm btn-outline btn-success" viewTransition>
-                                <IoMdAdd size={24} />
-                            </Link>
-                            <Link to={`edit/${endpoint.id}`} className="btn btn-sm btn-outline btn-info" viewTransition>
-                                <CiEdit size={24} />
-                            </Link>
-                            <Form method="post">
-                                <button type="submit" name="endpointId" value={endpoint.id} className="btn btn-sm btn-outline btn-error">
-                                    <ImBin size={24} />
-                                </button>
-                            </Form>
+                            <div className="card-actions justify-end">
+                                <Link to={"create"} className="btn btn-sm btn-ghost btn-circle shadow" viewTransition>
+                                    <IoMdAdd size={24} className="text-success" />
+                                </Link>
+                                <Link to={`edit/${endpoint.id}`} className="btn btn-sm btn-ghost btn-circle shadow" viewTransition>
+                                    <CiEdit size={24} className="text-info" />
+                                </Link>
+                                <Form method="post">
+                                    <button type="submit" name="endpointId" value={endpoint.id} className="btn btn-sm btn-ghost btn-circle shadow">
+                                        <ImBin size={24} className="text-error" />
+                                    </button>
+                                </Form>
+                            </div>
                         </div>
                     </div>
 

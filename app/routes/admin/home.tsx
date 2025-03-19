@@ -5,10 +5,10 @@ export default function Admin() {
   return (
     <div className="flex flex-col min-h-screen w-full justify-center items-center gap-12 pt-8 mb-4">
       <h1 className="text-4xl font-bold text-primary my-4">Bienvenida a tu Admin Panel</h1>
-      <p>A continuación el sumario de acciones/operaciones disponibles en el panel.</p>
       <InfoAlert level="Importante" className="alert-warning">
         <span>Este documento no está terminado. Alguna de la información puede ser incorrecta!</span>
       </InfoAlert>
+      <p>A continuación el sumario de acciones/operaciones disponibles en el panel.</p>
       <div className="card w-full max-w-screen-md shadow">
         <div className="card-body">
           <div className="card-title text-2xl mm-2">Contenido</div>

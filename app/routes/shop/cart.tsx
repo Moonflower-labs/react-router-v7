@@ -123,7 +123,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
             <div className="font-bold">Gastos Postales £{selectedRate?.amount ? selectedRate.amount / 100 : 0}</div>
             {customerBalance > 0 && <div className="font-bold">Crédito disponible £{customerBalance / 100}</div>}
             <div className="font-bold">Total Artículos + Envío £{(totalAmount + (selectedRate?.amount ? selectedRate.amount : 0)) / 100}</div>
-            {discount > 0 && <div className="font-bold text-success my-2">Descuento de {discount}% será applicado en Checkout (-£{((totalAmount * discount / 100) / 100).toFixed(2)})</div>}
+            {discount > 0 && <div className="font-bold text-success mb-2">Descuento de {discount}% será applicado en Checkout (-£{((totalAmount * discount / 100) / 100).toFixed(2)})</div>}
             <div className="font-bold">Total a Pagar £{Math.max((totalAmount + (selectedRate?.amount ? selectedRate.amount : 0) - (customerBalance ?? 0)), 50) / 100}</div>
           </div>
           {selectedRateId && (
