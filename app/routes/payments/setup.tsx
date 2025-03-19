@@ -68,8 +68,7 @@ function SetupForm() {
     };
 
     return (
-        <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-lg border border-base-300 bg-base-100 shadow-lg px-8 min-w-[400px] w-[30vw] text-center">
-            <h3 className="text-primary text-lg font-semibold my-3">Email</h3>
+        <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-xl border border-base-300 bg-base-100 shadow-lg p-6 min-w-[400px] w-[30vw] text-center">
             <LinkAuthenticationElement
                 options={{ defaultValues: { email: user?.email || "" } }}
                 className="my-3" />

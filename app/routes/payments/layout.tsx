@@ -1,5 +1,5 @@
 import { Elements } from "@stripe/react-stripe-js";
-import { data, href, Outlet, redirect } from "react-router";
+import { data, href, Outlet, redirect, useRouteLoaderData } from "react-router";
 import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
@@ -180,9 +180,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
 
 export default function StripeLayout({ loaderData }: Route.ComponentProps) {
+  const theme = useRouteLoaderData("root")?.theme
   const customerSessionClientSecret = loaderData?.customerSessionSecret;
   const clientSecret = loaderData?.clientSecret as string;
   const [stripe, setStripe] = useState<Promise<Stripe | null> | null>(null);
+  const darkThemes = ["dracula", "night", "dim", "sunset", "coffee", "abyss", "aqua"]
 
   useEffect(() => {
     setStripe(stripePromise);
@@ -192,9 +194,10 @@ export default function StripeLayout({ loaderData }: Route.ComponentProps) {
   }, []);
 
   const appearance: Appearance = {
-    theme: "stripe",
+    theme: theme && darkThemes.includes(theme) ? "night" : "stripe",
+    labels: 'floating',
     variables: {
-      colorPrimary: "#a92deb"
+      colorPrimary: "#a762f1",
     }
   };
 

@@ -114,8 +114,7 @@ function CheckoutForm() {
   }
 
   return (
-    <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-lg border border-base-300 bg-base-100 shadow-lg px-8 min-w-[400px] w-[30vw] text-center">
-      <h3 className="text-primary text-lg font-semibold my-3">Email</h3>
+    <Form id="payment-form" onSubmit={handleSubmit} className="mx-auto rounded-xl border border-base-300 bg-base-100 shadow-lg p-6 min-w-[400px] w-[30vw] text-center">
       <LinkAuthenticationElement
         options={{ defaultValues: { email: user?.email || guestEmail } }}
         onChange={handleGuestEmail}
@@ -126,7 +125,6 @@ function CheckoutForm() {
           <AddressElement options={addressElementOptions} />
         </>
       }
-      <h3 className="text-primary text-lg font-semibold my-3">Pago</h3>
       <PaymentElement options={paymentElementOptions} />
       <input type="hidden" name="amount" value={amount} />
       {deductions && <div className="mt-4 font-semibold">Crédito disponible £{(customerBalance / 100)}</div>}
