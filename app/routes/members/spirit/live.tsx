@@ -19,7 +19,7 @@ export default function LiveSessions({ loaderData }: Route.ComponentProps) {
       <p className="mb-3 max-w-4xl mx-auto px-2">Aquí encontrarás los enlaces a las sesiones en directo via Telegram, y también accederás a un chat en el que podrás comentar durante la sesión en directo.</p>
 
       {sessions.length > 0 ? sessions.map((session) => (
-        <div key={session.id} className="card shadow-sm max-w-3xl mx-auto mb-4 border border-base-300">
+        <div key={session.id} className="card shadow max-w-3xl mx-auto mb-4 border border-base-100">
           <div className="card-body">
             <span className="absolute top-4 right-4 badge shadow">{formatDate(session.startDate, "d/m/yy h:mm a")}</span>
             <h2 className="card-title pt-6">{session.name}</h2>
