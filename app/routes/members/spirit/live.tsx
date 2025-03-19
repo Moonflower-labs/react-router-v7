@@ -2,7 +2,6 @@ import { href, Link } from "react-router";
 import type { Route } from "./+types/live";
 import { getSessions } from "~/utils/chat.server";
 import { BsTelegram } from "react-icons/bs";
-import { formatDayTimeEs } from "~/utils/format";
 import { FaRegComment } from "react-icons/fa6";
 import { formatDate } from "date-fns";
 
@@ -30,8 +29,8 @@ export default function LiveSessions({ loaderData }: Route.ComponentProps) {
               <p>{formatDate(session.startDate, "h:mm a")}-{formatDate(session.endDate, "h:mm a")}</p>
             </div>
             <div className="card-actions justify-end">
-              <a href={session.link} target="_blank" rel="noreferrer" className="btn btn-primary">Enlace a la sesión <BsTelegram size={24} /></a>
-              <Link key={session.id} to={href("/members/spirit/live/chat/:roomId", { roomId: session.room?.id as string })} className="btn btn-info">
+              <a href={session.link} target="_blank" rel="noreferrer" className="btn btn-sm btn-primary">Enlace a la sesión <BsTelegram size={24} /></a>
+              <Link key={session.id} to={href("/members/spirit/live/chat/:roomId", { roomId: session.room?.id as string })} className="btn btn-sm btn-info">
                 Chat en directo <FaRegComment size={24} />
               </Link>
             </div>
