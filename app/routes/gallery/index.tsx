@@ -1,15 +1,22 @@
 import cloudinary from '~/integrations/cloudinary/service.server.js'
 import type { Route } from './+types/index.js'
-import { NavLink } from 'react-router'
 import InfoAlert from '~/components/shared/info'
+import { ImageGallery, ImageGallerySkeleton } from './gallery.js'
+import { Suspense } from 'react'
 
 export async function loader({ request }: Route.LoaderArgs) {
-    const images = await cloudinary.api.resources({
-        type: "upload",
-        prefix: "susurros",
-        max_results: 20
-    })
-    return { images: images.resources, cloudName: process.env.CLOUD_NAME }
+
+    const images = new Promise<any>((resolve, reject) => {
+        cloudinary.api.resources(
+            { type: "upload", prefix: "susurros", max_results: 20 },
+            (error: any, result: any) => {
+                if (error) reject(error);
+                else resolve(result.resources); // Extract resources
+            }
+        );
+    });
+
+    return { images, cloudName: process.env.CLOUD_NAME }
 }
 
 
@@ -24,32 +31,13 @@ export default function Gallery({ loaderData }: Route.ComponentProps) {
                 Pincha en cada imagen para ampliar.
             </InfoAlert>
             <div className="gallery">
-                <div className="gallery grid gap-5 justify-center items-center grid-cols-2 lg:grid-cols-3 mb-4">
-                    {loaderData?.images.map((image: any) => (
-                        <NavLink
-                            key={image.public_id}
-                            to={`/gallery/image/${encodeURIComponent(image.public_id)}`}
-                            viewTransition
-                            className={"w-fit mx-auto"}
-                            prefetch='viewport'>
-                            {({ isTransitioning }) => (
-                                <>
-                                    <img
-                                        src={image.url}
-                                        alt={image.resource_type}
-                                        className={`gallery-item w-full aspect-square object-cover object-top m-auto rounded hover:rotate-2 transition-all ease-in-out duration-500`}
-                                        style={{
-                                            viewTransitionName: isTransitioning
-                                                ? "full-image"
-                                                : "none",
-                                        }}
-                                    />
-                                    {/* <AdvancedImage key={image.url} cldImg={cld.image(image?.public_id)} /> */}
-                                </>
-                            )}
-                        </NavLink>
-                    ))}
-                </div>
+                <Suspense fallback={<ImageGallerySkeleton />}>
+                    <ImageGallery imagePromise={loaderData?.images} />
+                </Suspense>
+            </div>
+            <div className="gallery">
+
+
             </div>
         </main>
     )
