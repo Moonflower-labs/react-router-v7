@@ -1,4 +1,4 @@
-import { Link, useFetcher } from "react-router";
+import { href, Link, useFetcher } from "react-router";
 import { TbTrash } from "react-icons/tb";
 import type { Route } from "./+types/favorites";
 import { getUserFavorites } from "~/models/profile.server";
@@ -33,7 +33,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
           {favPosts?.length ? (
             favPosts.map(fav => (
               <div key={fav.id} className="flex flex-row justify-between border border-primary/55 rounded-md my-2 p-2 shadow-md">
-                <Link to={`/personality/post/${fav?.post?.id}`} className="w-2/3 hover:opacity-80">
+                <Link to={href("/members/personality/post/:id", { id: fav?.post?.id! })} className="w-2/3 hover:opacity-80">
                   {fav?.post?.title}
                 </Link>
                 <fetcher.Form method="post" action={`/personality/post/${fav?.post?.id}`} className="text-end w-1/3">
@@ -55,7 +55,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
           {favVids?.length ? (
             favVids.map(fav => (
               <div key={fav?.video?.id} className="flex flex-row justify-between border border-primary/55 rounded-md my-2 p-2 shadow-md">
-                <Link to={`/${fav?.video?.section}/video/${fav?.video?.id}`} className="w-2/3">
+                <Link to={`${href("/members")}/${fav?.video?.section}/video/${fav?.video?.id}`} className="w-2/3">
                   {fav?.video?.title}
                 </Link>
                 <div className="flex flex-row gap-2 justify-end w-1/3">
@@ -78,7 +78,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
           )}
         </section>
         <section className="py-6">
-          <h2 className="font-semibold text-2xl text-primary">Liked</h2>
+          {/* <h2 className="font-semibold text-2xl text-primary">Liked</h2> */}
           {/* {favorite_videos?.length ?   (
             favorite_videos?.map((video)=> (
             <div key={video.id}  className="flex flex-col sm:flex-row justify-between">
@@ -106,7 +106,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
           ): (
             <div>No tienes ningún favorito</div>
           )} */}
-          <div>TODO</div>
+          {/* <div>TODO</div> */}
         </section>
       </div>
     </div>
