@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaExclamationTriangle, FaInfo, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 
 type CustomAlertProps = {
   children: React.ReactNode;
@@ -13,23 +13,22 @@ export function CustomAlert({
   className,
   iconSize = 22,
 }: CustomAlertProps) {
-  // Map level to icons and colors
   const levelConfig = {
     info: { icon: <FaInfoCircle size={iconSize} className="text-info" />, border: "border-info" },
     success: { icon: <FaCheckCircle size={iconSize} className="text-success" />, border: "border-success" },
-    warning: { icon: <FaExclamationTriangle size={26} className="text-warning" />, border: "border-warning" },
+    warning: { icon: <FaExclamationTriangle size={iconSize} className="text-warning" />, border: "border-warning" },
     error: { icon: <FaTimesCircle size={iconSize} className="text-error" />, border: "border-error" },
   };
 
-  const config = levelConfig[level || "info"]; // Fallback to info
+  const config = levelConfig[level || "info"];
 
   return (
     <div
       role="alert"
       className={`flex items-center text-base-content gap-4 border-l-4 my-4 ${config.border} p-3 mx-auto mb-3 w-fit ${className}`}
     >
-      {config.icon}
-      <span>
+      <div className="flex-shrink-0">{config.icon}</div>
+      <span className="flex-1">
         {children}
       </span>
     </div>
