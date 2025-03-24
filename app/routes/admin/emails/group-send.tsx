@@ -108,8 +108,8 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                 ))}
                 <button type="button" className="btn btn-sm btn-success" onClick={addLinkField}>Add Link</button>
 
-                <button type="submit" name="intent" value={"preview"} disabled={navigation.state === "submitting"} className="btn btn-sm btn-info">Generate Preview</button>
-                {navigation.state === "submitting" && <div className="alert alert-info">Generating preview...</div>}
+                <button type="submit" name="intent" value={"preview"} disabled={navigation.state === "submitting"} className="btn btn-sm btn-info">Generar Preview</button>
+                {navigation.state === "submitting" && <CustomAlert>Generando preview...</CustomAlert>}
             </Form>
             {success && <CustomAlert level="success">Emails enviados {count}</CustomAlert>}
             {previewHtml && (
@@ -124,7 +124,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                     </ul>
                     <Form method="post">
                         <input type="hidden" name="emailData" value={JSON.stringify({ recipients, subject, text, links })} />
-                        <button type="submit" name="intent" value={"send"} className="btn btn-sm btn-primary" disabled={navigation.state === "submitting"}>{navigation.state === "submitting" ? "Enviando" : "Confirm & Send"}</button>
+                        <button type="submit" name="intent" value={"send"} className="btn btn-sm btn-primary" disabled={navigation.state === "submitting"}>{navigation.state === "submitting" ? "Enviando" : "Confirmar & Enviar"}</button>
                     </Form>
                 </div>
             )}
