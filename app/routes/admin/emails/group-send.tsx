@@ -109,7 +109,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                 <button type="button" className="btn btn-sm btn-success" onClick={addLinkField}>Add Link</button>
 
                 <button type="submit" name="intent" value={"preview"} disabled={navigation.state === "submitting"} className="btn btn-sm btn-info">Generar Preview</button>
-                {navigation.state === "submitting" && <CustomAlert>Generando preview...</CustomAlert>}
+                {navigation.state === "submitting" && <CustomAlert level="loading">Generando preview...</CustomAlert>}
             </Form>
             {success && <CustomAlert level="success">Emails enviados {count}</CustomAlert>}
             {previewHtml && (
