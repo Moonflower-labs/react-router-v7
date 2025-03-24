@@ -93,7 +93,7 @@ export function AvatarSelector({ avatars, setSelectedAvatar, submit, selectedAva
                                     >
                                         <div className="avatar mx-auto mb-4">
                                             <div
-                                                className={`w-24 rounded-full ${avatar.secure_url === selectedAvatar ? 'border-4 border-primary' : ''
+                                                className={`w-24 rounded-full border-4 ${avatar.secure_url === selectedAvatar ? 'border-primary' : ' border-transparent'
                                                     }`}
                                             >
                                                 <img src={thumbnailUrl} className="object-top" alt={avatar.public_id.split('/').pop()} />
