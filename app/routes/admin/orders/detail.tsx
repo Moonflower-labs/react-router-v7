@@ -19,9 +19,10 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       <h2 className="text-xl text-primary text-center mx-auto my-5">
         Detalles del pedido: <span className="font-bold">{order?.id}</span>
       </h2>
-      <p className="font-semibold mb-4">Actualizado: {formatDayTimeEs(order?.updatedAt as Date)}</p>
+      <p className="font-semibold mb-1.5">Payment Intent ID: {order?.paymentIntentId}</p>
+      <p className="font-semibold mb-1.5">Actualizado: {formatDayTimeEs(order?.updatedAt as Date)}</p>
       {order?.guest
-        ? <div className="font-bold mb-4 t">
+        ? <div className="font-bold mb-4">
           <p className="text-warning/70">Pedido de invitado</p>
           <p>Email: {order.guestEmail}</p>
         </div>
