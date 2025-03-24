@@ -171,7 +171,7 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
                   <span className="label">Info</span>
                   <input type="text" name={"info"} defaultValue={selectedPrice?.info} placeholder="Color Rosa, Talla xl..." />
                 </label>
-                {errors?.displayName && <ActionError actionData={{ error: errors.displayName }} />}
+                {errors?.info && <ActionError actionData={{ error: errors.info }} />}
                 <fieldset className="fieldset">
                   <label className="input input-lg mb-3">
                     <span className="label">Precio</span>
