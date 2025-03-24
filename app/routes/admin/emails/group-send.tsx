@@ -69,7 +69,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
     const styleTable = (html: string) =>
         html.replace(
             /<td>/g,
-            '<td style="padding-right: 24px; padding-left: 24px;">'
+            '<td style="padding-right: 10px; padding-left: 10px;">'
         );
 
 
@@ -131,7 +131,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
 
 
                     <div
-                        className="text-start"
+                        className="text-start mx-auto"
                         dangerouslySetInnerHTML={{ __html: styleTable(previewHtml) }}
                     />
                     <h3>Recipients ({recipients?.length}):</h3>
