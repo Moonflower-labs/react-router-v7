@@ -1,14 +1,11 @@
 import {
     Body,
-    Button,
     Container,
-    Column,
     Head,
     Heading,
     Hr,
     Html,
     Img,
-    Row,
     Section,
     Text,
     Tailwind,
@@ -16,7 +13,6 @@ import {
     Link,
 } from "@react-email/components";
 import ShiningLogo from "./components/logo";
-import { href } from "react-router";
 
 
 interface CustomEmailProps {
@@ -37,7 +33,7 @@ const CustomEmail = ({ username, text, subject, links }: CustomEmailProps) => {
             <Tailwind>
                 <Body className="bg-white my-auto mx-auto font-sans px-2">
                     <Container className="border border-solid border-[#eaeaea] rounded my-[40px] px-4 mx-auto p-[20px] max-w-[465px]">
-                        <Section className="mt-[32px] text-center">
+                        <Section className="mt-[32px] flex justify-center mx-auto">
                             <ShiningLogo />
                         </Section>
                         <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
@@ -46,7 +42,7 @@ const CustomEmail = ({ username, text, subject, links }: CustomEmailProps) => {
                         <Text className="text-black text-[14px] leading-[24px]">
                             Hola {username},
                         </Text>
-                        <Text className="text-black text-[14px] leading-[24px]">
+                        <Text className="text-black text-[14px] leading-[24px] whitespace-pre-wrap">
                             {text}
                         </Text>
                         <Section>
