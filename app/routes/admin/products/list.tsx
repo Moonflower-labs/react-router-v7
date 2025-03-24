@@ -7,7 +7,7 @@ import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { syncStripeProducts } from "~/models/utils.server";
 import { syncStripeShippingRates } from "~/models/utils.server";
-import { getAllPlans } from "~/models/plan.server";
+import { deletePlan, getAllPlans } from "~/models/plan.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -29,22 +29,24 @@ export async function action({ request }: Route.ActionArgs) {
       return { success: true };
     }
     case "DELETE": {
-      const formData = await request.formData()
-      const productId = formData.get("productId")
-      if (!productId) {
-        return { error: "productId must be a string!" }
-      }
+      const formData = await request.formData();
+      const productId = formData.get("productId");
+      const planId = formData.get("planId");
+
       try {
-        await deleteProduct(productId as string);
+        if (productId) {
+          await deleteProduct(productId as string);
+        } else if (planId) {
+          await deletePlan(planId as string);
+        }
         break;
       } catch (error) {
         console.error(error)
         return { success: false }
       }
-
     }
     default:
-      return { error: "Method not allowed" }
+      return {}
   }
 
 }

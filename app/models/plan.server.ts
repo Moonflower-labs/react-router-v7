@@ -20,3 +20,7 @@ export async function createSubscriptionPlan({ id, name, priceId, amount, thumbn
 export async function getAllPlans() {
   return prisma.plan.findMany({});
 }
+
+export async function deletePlan(id: string) {
+  return await prisma.plan.delete({ where: { id } });
+}
