@@ -153,7 +153,7 @@ export default function EditProduct({ actionData, loaderData }: Route.ComponentP
                 <FaImages size={24} />
                 Imágenes
               </label>
-              <div className="tab-content border-base-200 bg-base-100 p-8">
+              <div className="tab-content border-base-300 bg-base-100 p-8">
                 {/* Select avaliable Image */}
                 {imageSource === "existing" && (
                   <fieldset className="fieldset">

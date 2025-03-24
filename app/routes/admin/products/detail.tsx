@@ -171,7 +171,10 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
               </div>
             </dialog>
 
-            <Form method="DELETE">
+            <Form method="DELETE" onSubmit={(e) => {
+              if (!confirm(`Seguro que quieres borrar ${price.info}?`))
+                e.preventDefault();
+            }}>
               <input type="hidden" name="priceId" value={price.id} />
               <button type="submit" className="btn btn-sm btn-circle btn-ghost shadow" disabled={navigation.state === "submitting"}>
                 <TbTrash size={24} className="text-error" />
