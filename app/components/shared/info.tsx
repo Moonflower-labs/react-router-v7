@@ -9,7 +9,7 @@ type CustomAlertProps = {
 
 export function CustomAlert({
   children,
-  level,
+  level = "info",
   className,
   iconSize = 22,
 }: CustomAlertProps) {
@@ -20,7 +20,7 @@ export function CustomAlert({
     error: { icon: <FaTimesCircle size={iconSize} className="text-error" />, border: "border-error" },
   };
 
-  const config = levelConfig[level || "info"];
+  const config = levelConfig[level];
 
   return (
     <div
