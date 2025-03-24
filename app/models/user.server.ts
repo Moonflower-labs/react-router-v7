@@ -105,3 +105,20 @@ export async function getMembersCount() {
     }
   });
 }
+
+export async function getUsersByPlan(plan: SubscriptionPlan["name"]) {
+  return prisma.user.findMany({
+    where: {
+      subscription: {
+        plan: {
+          name: plan
+        },
+        status: "active"
+      }
+    },
+    select: {
+      email: true,
+      username: true
+    }
+  });
+}

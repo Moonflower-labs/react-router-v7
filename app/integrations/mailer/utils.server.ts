@@ -6,6 +6,7 @@ import { getSubscriptionData, type SubscriptionPlan } from "../stripe/subscripti
 import { renderMissedSubscriptionPaymentEmail } from "./html-templates/missed-payment";
 import { renderResetPasswordEmail } from "./html-templates/reset-password";
 import { renderSubscriptionEmail } from "./html-templates/subscription";
+import { renderCustomEmail } from "./html-templates/custom-email";
 
 export async function sendWelcomeEmail(email: string, username: string) {
   return transporter.sendMail({
@@ -59,11 +60,21 @@ export async function sendOrderEmail(email: string, username: string, order: Ext
 }
 
 export async function sendResetPasswordEmail(email: string, resetUrl: string) {
-  await transporter.sendMail({
+  return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,
     subject: "Resetea tu contraseña con La Flor Blanca",
     text: `Resetea tu contraseña. Usa este enlace: ${resetUrl}`,
     html: await renderResetPasswordEmail({ resetPasswordLink: resetUrl, email })
+  });
+}
+
+export async function sendCustomEmail(email: string, previewHtml: string, subject: string, text: string) {
+  return transporter.sendMail({
+    from: "admin@thechicnoir.com",
+    to: email,
+    subject: subject,
+    text: text,
+    html: previewHtml
   });
 }
