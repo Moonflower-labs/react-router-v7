@@ -10,7 +10,11 @@ export const adminRoutes = [
       route(":id/edit", "routes/admin/categories/edit.tsx")
     ]),
     //  Emails
-    ...prefix("emails", [index("routes/admin/emails/send.tsx")]),
+    ...prefix("emails", [
+      index("routes/admin/emails/index.tsx"),
+      route("send", "routes/admin/emails/send.tsx"),
+      route("group-send", "routes/admin/emails/group-send.tsx")
+    ]),
     //  Gallery
     ...prefix("gallery", [index("routes/admin/gallery/list.tsx"), route("upload", "routes/admin/gallery/upload.tsx")]),
     // Live Sessions
