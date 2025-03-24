@@ -37,14 +37,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
         // Render email with links
         const previewHtml = await renderCustomEmail({ username: "user", text, subject, links });
 
-        return { previewHtml, recipients: users, subject, text };
+        return { previewHtml, recipients: users, subject, text, links };
     }
 
     const emailData = JSON.parse(formData.get("emailData") as string);
     let emails
     try {
         // Send email to users
-        emails = await Promise.all(emailData.recipients.map((user: any) => sendCustomEmail(user.email, emailData.previewHtml, emailData.subject, emailData.text,)));
+        emails = await Promise.all(emailData.recipients.map((user: any) => sendCustomEmail(user.email, user.username, emailData.subject, emailData.text, emailData.links)));
     } catch (error) {
         console.error(error);
         return { error: "Something went wrong" };
@@ -80,7 +80,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 // }
 
 export default function EmailForm({ actionData }: Route.ComponentProps) {
-    const { recipients, previewHtml, subject, text, success, count } = actionData || {};
+    const { recipients, previewHtml, subject, text, links, success, count } = actionData || {};
     const [linkFields, setLinkFields] = useState([{ id: Date.now() }]);
     const navigation = useNavigation();
 
@@ -149,7 +149,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                         ))}
                     </ul>
                     <Form method="post">
-                        <input type="hidden" name="emailData" value={JSON.stringify({ previewHtml, recipients, subject, text })} />
+                        <input type="hidden" name="emailData" value={JSON.stringify({ recipients, subject, text, links })} />
                         <button type="submit" name="intent" value={"send"} className="btn btn-sm btn-primary" disabled={navigation.state === "submitting"}>{navigation.state === "submitting" ? "Enviando" : "Confirm & Send"}</button>
                     </Form>
                 </div>
