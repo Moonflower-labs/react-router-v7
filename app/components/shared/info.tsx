@@ -25,7 +25,7 @@ export function CustomAlert({
   return (
     <div
       role="alert"
-      className={`flex items-center text-base-content gap-4 border-l-4 my-4 ${config.border} p-3 mx-auto mb-3 w-fit ${className}`}
+      className={`flex items-center text-base-content gap-4 border-l-4 my-6 ${config.border} bg-${level || "info"}/5 p-3 mx-auto mb-3 w-fit rounded-e-md ${className}`}
     >
       <div className="flex-shrink-0">{config.icon}</div>
       <span className="flex-1">

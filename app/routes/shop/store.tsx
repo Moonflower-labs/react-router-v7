@@ -7,6 +7,7 @@ import { getAllProducts, type Product } from "~/models/product.server";
 import type { User } from "~/models/user.server";
 import { ProductItem } from "~/components/shop/ProductItem";
 import { getUserId } from "~/middleware/sessionMiddleware";
+import { CustomAlert } from "~/components/shared/info";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -44,10 +45,7 @@ export default function Store({ loaderData }: Route.ComponentProps) {
     <main className="min-h-screen mx-2">
       <h2 className="text-3xl text-center text-primary font-semibold pt-3 mb-4">Tienda</h2>
       {!user && (
-        <div role="alert" className="alert alert-warning mb-4 w-fit max-w-xl mx-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-black shrink-0 w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+        <CustomAlert level="warning" className="mb-8">
           <div className="text-center">
             Si estás suscrito a cualquier plan de <span className="text-primary font-bold">La Flor Blanca</span>, asegúrate de
             <Link to={href("/login")} className="link link-primary">
@@ -66,12 +64,12 @@ export default function Store({ loaderData }: Route.ComponentProps) {
                 15% ~ Espíritu.
               </li>
             </ul>
-            <Link to={href("/plans")} className="link link-primary float-end pt-2">
+            <Link to={href("/plans")} className="btn btn-primary btn-xs float-end mt-3">
               {" "}
               Ver Planes de Suscripción
             </Link>
           </div>
-        </div>
+        </CustomAlert>
       )}
       <Suspense fallback={<StoreSkeleton />}>
         <Products productPromise={loaderData?.products} baseUrl={loaderData?.baseUrl} />
