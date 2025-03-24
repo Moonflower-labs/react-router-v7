@@ -81,7 +81,10 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
               <Link to={`${product.id}/edit`} className="btn btn-circle btn-ghost shadow" viewTransition>
                 <CiEdit size={24} className="text-info" />
               </Link>
-              <Form method="DELETE">
+              <Form method="DELETE" onSubmit={(e) => {
+                if (!confirm(`Seguro que quieres borrar ${product.name}?`))
+                  e.preventDefault();
+              }}>
                 <button type="submit" name="productId" value={product.id} className="btn btn-circle btn-ghost shadow">
                   <ImBin size={24} className="text-error" />
                 </button>
@@ -116,7 +119,10 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
               <p>£{plan.amount / 100}</p>
               <p>{plan.priceId}</p>
               <div className="justify-end card-actions">
-                <Form method="delete">
+                <Form method="delete" onSubmit={(e) => {
+                  if (!confirm(`Are you sure you want to delete ${plan.name}?`))
+                    e.preventDefault();
+                }}>
                   <button type="submit" name="planId" value={plan.id} className="btn btn-circle btn-ghost shadow">
                     <ImBin className="text-error" size={24} />
                   </button>
