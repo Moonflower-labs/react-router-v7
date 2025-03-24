@@ -6,7 +6,7 @@ import { renderCustomEmail } from "~/integrations/mailer/html-templates/custom-e
 import { getUsersByPlan } from "~/models/user.server";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { sendCustomEmail } from "~/integrations/mailer/utils.server";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -111,7 +111,7 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                 <button type="submit" name="intent" value={"preview"} disabled={navigation.state === "submitting"} className="btn btn-sm btn-info">Generate Preview</button>
                 {navigation.state === "submitting" && <div className="alert alert-info">Generating preview...</div>}
             </Form>
-            {success && <InfoAlert level="success" className="alert alert-success my-4">Emails enviados {count}</InfoAlert>}
+            {success && <CustomAlert level="success">Emails enviados {count}</CustomAlert>}
             {previewHtml && (
                 <div className="py-8 text-center">
                     <h2 className="font-bold text-2xl">Email Preview</h2>

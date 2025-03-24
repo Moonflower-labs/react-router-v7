@@ -2,7 +2,7 @@ import { href, Link, useFetcher } from "react-router";
 import { TbTrash } from "react-icons/tb";
 import type { Route } from "./+types/favorites";
 import { getUserFavorites } from "~/models/profile.server";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 import { getUserId } from "~/middleware/sessionMiddleware";
 
 export async function loader({ context }: Route.LoaderArgs) {
@@ -26,7 +26,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
   return (
     <div className="px-3 overflow-x-hidden">
       <h2 className="font-bold text-2xl text-primary text-center py-4">Favoritos</h2>
-      <InfoAlert level="Tip">Pincha en cada favorito para navegar al post o vídeo.</InfoAlert>
+      <CustomAlert >Pincha en cada favorito para navegar al post o vídeo.</CustomAlert>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="py-6">
           <h2 className="font-semibold text-xl text-primary">Posts</h2>

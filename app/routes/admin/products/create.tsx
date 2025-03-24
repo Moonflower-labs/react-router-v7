@@ -1,5 +1,5 @@
 import { data, Form, href, redirect, useNavigation } from "react-router";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 import type { Route } from "./+types/create";
 import ActionError from "~/components/framer-motion/ActionError";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
@@ -123,9 +123,9 @@ export default function CreateProduct({ actionData, loaderData }: Route.Componen
   return (
     <div className="md:w-2/3 mx-auto">
       <h2 className="text-2xl text-primary my-4 text-center">Crea un Producto</h2>
-      <InfoAlert className="alert-warning w-fit">
+      <CustomAlert level="warning" className="mb-6">
         <span>Este producto no será creado en stripe!</span>
-      </InfoAlert>
+      </CustomAlert>
       {error && <ActionError actionData={{ error }} />}
       <Form method="POST" encType="multipart/form-data" className="card max-w-xs items-center mx-auto pb-4 flex flex-col">
         <label className="input input-lg mb-3">

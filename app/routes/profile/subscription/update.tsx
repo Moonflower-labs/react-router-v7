@@ -5,7 +5,7 @@ import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
 import { formatDayTimeEs } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
 import { isSubscriptionDefaultPaymentMethodValid } from "~/integrations/stripe/customer.server";
 import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
@@ -93,7 +93,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
     <div className="text-center">
       <h2 className="text-2xl text-primary my-3" ref={ref}>Actualiza tu plan</h2>
       <p className="mb-6">Elige el plan al que deseas cambiar.</p>
-      {loaderData?.error && <InfoAlert level="Importante" className="alert alert-error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </InfoAlert>}
+      {!loaderData?.error && <CustomAlert level="error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </CustomAlert>}
       <div className="flex flex-col md:flex-row gap-3 md:w-2/3 mx-auto justify-around mb-4">
         {plans
           .filter((p) => p.name !== subscription?.plan?.name)

@@ -4,7 +4,7 @@ import { getUserSubscription } from "~/models/subscription.server";
 import { getSubscriptionData, stripe, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import type Stripe from "stripe";
 import { GoArrowRight } from "react-icons/go";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 import { formatDayTimeEs } from "~/utils/format";
 import { calculateRenewalDate } from "~/utils/helpers";
 import { translateSubscriptionStatus } from "~/utils/translations";
@@ -58,7 +58,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         )}
       </div>
       {subscription?.cancellationDate &&
-        <InfoAlert level="Atención" className="alert-error my-4">Subscripción pendiente de cancelación el {formatDayTimeEs(subscription.cancellationDate)}</InfoAlert>
+        <CustomAlert level="warning" className="mb-4">Subscripción pendiente de cancelación el {formatDayTimeEs(subscription.cancellationDate)}</CustomAlert>
       }
       <div className="mb-4 border shadow-sm rounded-lg p-4 md:w-1/2 mx-auto flex flex-col gap-3">
         <p className="flex justify-between items-center">

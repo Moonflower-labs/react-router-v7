@@ -4,14 +4,14 @@ import type { StripeError, StripePaymentElementOptions } from "@stripe/stripe-js
 import { Form, useNavigate, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/payment";
 import type { User } from "~/models/user.server";
-import InfoAlert from "~/components/shared/info";
+import { CustomAlert } from "~/components/shared/info";
 
 
 export default function Payment({ }: Route.ComponentProps) {
     return (
         <div className="pb-4">
             <h1 className="text-3xl text-center text-primary font-semibold pt-3 mb-4">Actualiza tu método de pago</h1>
-            <InfoAlert level="Info">El método de pago será guardado Stripe para pagos futuros de tu suscripción.</InfoAlert>
+            <CustomAlert level="info">El método de pago será guardado Stripe para pagos futuros de tu suscripción.</CustomAlert>
             <SetupForm />
         </div>
     );
