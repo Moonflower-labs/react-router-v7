@@ -66,6 +66,13 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
         setLinkFields(linkFields.filter((field) => field.id !== id));
     }
 
+    const styleTable = (html: string) =>
+        html.replace(
+            /<td>/g,
+            '<td style="padding-right: 24px; padding-left: 24px;">'
+        );
+
+
     return (
         <div className="p-8">
             <h1 className="text-2xl text-center mb-4">Email</h1>
@@ -115,7 +122,18 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
             {previewHtml && (
                 <div className="py-8 text-center">
                     <h2 className="font-bold text-2xl">Email Preview</h2>
-                    <div className="text-start" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                    <>
+                        {console.log(previewHtml)}
+                    </>
+                    {/* <div className="text-start text-base-content !border-0 !border-none !border-spacing-0 !border-collapse"
+                        dangerouslySetInnerHTML={{ __html: previewHtml }}
+                    /> */}
+
+
+                    <div
+                        className="text-start"
+                        dangerouslySetInnerHTML={{ __html: styleTable(previewHtml) }}
+                    />
                     <h3>Recipients ({recipients?.length}):</h3>
                     <ul className="mb-4">
                         {recipients?.map((user, i) => (
