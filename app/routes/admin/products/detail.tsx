@@ -2,10 +2,11 @@ import { data, Form, href, Link, useNavigation } from "react-router";
 import type { Route } from "./+types/detail";
 import { createPrice, deletePrice, getProduct, updatePrice } from "~/models/product.server";
 import ActionError from "~/components/framer-motion/ActionError";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TbTrash } from "react-icons/tb";
 import { CiEdit } from "react-icons/ci";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import type { Price } from "@prisma/client";
 
 export async function loader({ params }: Route.LoaderArgs) {
   if (!params.id) {
@@ -46,7 +47,6 @@ export async function action({ request, params }: Route.ActionArgs) {
       }
     }
     case "PATCH": {
-      console.log("PATCH", formData);
       const id = formData.get("priceId") as string;
       let errors: any = {};
       if (!info) {
@@ -99,6 +99,9 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
   const dialogRef = useRef<HTMLDialogElement>(null); // Ref for dialog
   const editDialogRef = useRef<HTMLDialogElement>(null); // Ref for dialog
   const navigation = useNavigation();
+  const [selectedPrice, setSelectedPrice] = useState<Price | null>(null);
+
+
 
   useEffect(() => {
     if (navigation.state === "idle" && !actionData?.errors && dialogRef.current) {
@@ -108,6 +111,15 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
       editDialogRef.current.close(); // Close on redirect completion
     }
   }, [navigation.state, actionData]);
+
+  const handleEdit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const priceId = event.currentTarget.dataset.priceid; // Get price ID from data attribute
+    const price = product?.prices.find(p => p.id === priceId); // Find matching price
+    if (price) {
+      setSelectedPrice(price);
+      editDialogRef.current?.showModal();
+    }
+  };
 
   return (
     <div className="p-10 max-w-3xl mx-auto">
@@ -130,46 +142,11 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
             </div>
             <div className="flex gap-3 items-center">
               {price.active ? <div aria-label="success" className="status status-success"></div> : <div aria-label="error" className="status status-error"></div>}
-              <button className="btn btn-sm btn-ghost btn-circle shadow" onClick={() => editDialogRef.current?.showModal()}>
+              <button className="btn btn-sm btn-ghost btn-circle shadow" data-priceid={price.id} onClick={handleEdit} >
                 <CiEdit size={24} className="text-info" />
               </button>
             </div>
 
-            {/* Edit Price Dialog */}
-            <dialog id="edit_price_modal" className="modal" ref={editDialogRef}>
-              <div className="modal-box">
-                <Form method="PATCH" className="card max-w-xs items-center mx-auto pb-4 flex flex-col">
-                  <input type="hidden" name="priceId" value={price.id} />
-                  <label className="input input-lg mb-3">
-                    <span className="label">Info</span>
-                    <input type="text" name={"info"} defaultValue={price.info} placeholder="Color Rosa, Talla xl..." />
-                  </label>
-                  {errors?.displayName && <ActionError actionData={{ error: errors.displayName }} />}
-                  <fieldset className="fieldset">
-                    <label className="input input-lg mb-3">
-                      <span className="label">Precio</span>
-                      <input type="number" min={0} name={"amount"} defaultValue={price.amount} />
-                    </label>
-                    {errors?.amount && <ActionError actionData={{ error: errors.amount }} />}
-                    <p className="fieldset-label">⚠️ En céntimos, £1 = 100</p>
-                  </fieldset>
-                  <fieldset className="fieldset">
-                    <label className="fieldset-label">
-                      <input type="checkbox" defaultChecked name="active" className="toggle toggle-primary" />
-                      Active
-                    </label>
-                  </fieldset>
-                  <div className="flex justify-end gap-3 mt-4">
-                    <button type="reset" onClick={() => editDialogRef.current?.close()} className="btn btn-primary btn-outline btn-sm">
-                      Cancelar
-                    </button>
-                    <button type="submit" className="btn btn-primary btn-sm" disabled={navigation.state !== "idle"}>
-                      {navigation.state === "submitting" ? "Editando" : "Editar"}
-                    </button>
-                  </div>
-                </Form>
-              </div>
-            </dialog>
 
             <Form method="DELETE" onSubmit={(e) => {
               if (!confirm(`Seguro que quieres borrar ${price.info}?`))
@@ -183,8 +160,48 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
           </div>
         )) : <div>No hay precios</div>}
 
+
+        {/* Edit Price Dialog */}
+        <dialog id="edit_price_modal" className="modal" ref={editDialogRef}>
+          <div className="modal-box">
+            {selectedPrice &&
+              <Form method="PATCH" className="card max-w-xs items-center mx-auto pb-4 flex flex-col">
+                <input type="hidden" name="priceId" value={selectedPrice.id} />
+                <label className="input input-lg mb-3">
+                  <span className="label">Info</span>
+                  <input type="text" name={"info"} defaultValue={selectedPrice?.info} placeholder="Color Rosa, Talla xl..." />
+                </label>
+                {errors?.displayName && <ActionError actionData={{ error: errors.displayName }} />}
+                <fieldset className="fieldset">
+                  <label className="input input-lg mb-3">
+                    <span className="label">Precio</span>
+                    <input type="number" min={0} name={"amount"} defaultValue={selectedPrice?.amount} />
+                  </label>
+                  {errors?.amount && <ActionError actionData={{ error: errors.amount }} />}
+                  <p className="fieldset-label">⚠️ En céntimos, £1 = 100</p>
+                </fieldset>
+                <fieldset className="fieldset">
+                  <label className="fieldset-label">
+                    <input type="checkbox" defaultChecked name="active" className="toggle toggle-primary" />
+                    Active
+                  </label>
+                </fieldset>
+                <div className="flex justify-end gap-3 mt-4">
+                  <button type="reset" onClick={() => editDialogRef.current?.close()} className="btn btn-primary btn-outline btn-sm">
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={navigation.state !== "idle"}>
+                    {navigation.state === "submitting" ? "Editando" : "Editar"}
+                  </button>
+                </div>
+              </Form>}
+          </div>
+        </dialog>
+
         <button className="btn btn-sm btn-primary my-2" onClick={() => dialogRef.current?.showModal()}>Añadir precio</button>
         <Link to={href("/admin/products/:id/edit", { id: product?.id as string })} className="btn btn-sm btn-info m-2" >Editar este Producto</Link>
+
+        {/* Add Price Dialog */}
         <dialog id="add_price_modal" className="modal" ref={dialogRef}>
           <div className="modal-box">
             <form method="dialog">
@@ -214,7 +231,7 @@ export default function detail({ loaderData, actionData }: Route.ComponentProps)
                 </label>
               </fieldset>
               <div className="flex justify-end gap-3 mt-4">
-                <button type="reset" className="btn btn-primary btn-outline btn-sm">
+                <button type="reset" className="btn btn-primary btn-outline btn-sm" onClick={() => dialogRef.current?.close()} >
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary btn-sm" disabled={navigation.state !== "idle"}>
