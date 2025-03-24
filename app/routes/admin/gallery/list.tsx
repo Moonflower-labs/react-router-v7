@@ -43,8 +43,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             <h1 className="text-primary text-3xl font-semibold mb-4 pt-4">Galería</h1>
             <Form onChange={e => submit(e.currentTarget)} className="mb-6 mx-auto pb-2">
                 <div className="join">
-                    <input className="join-item btn btn-primary w-28" type="radio" name="folder" defaultChecked={searchParams.get('folder') === "susurros" || !searchParams.get('folder')} value="susurros" aria-label="Susurros" />
-                    <input className="join-item btn btn-primary w-28" type="radio" name="folder" value="avatars" defaultChecked={searchParams.get('folder') === "avatars"} aria-label="Avatars" />
+                    <input className="join-item btn w-28" type="radio" name="folder" value="susurros" defaultChecked={searchParams.get('folder') === "susurros" || !searchParams.get('folder')} aria-label="Susurros" />
+                    <input className="join-item btn w-28" type="radio" name="folder" value="avatars" defaultChecked={searchParams.get('folder') === "avatars"} aria-label="Avatars" />
+                    <input className="join-item btn w-28" type="radio" name="folder" value="products" defaultChecked={searchParams.get('folder') === "products"} aria-label="Products" />
                 </div>
             </Form>
             <div className="grid gap-3 justify-center items-start grid-cols-2 lg:grid-cols-3 mb-4">
@@ -56,7 +57,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 {loaderData?.images?.length > 0 ?
                     loaderData.images.map((image: any) =>
                         <div key={image.url} className="flex flex-col justify-start items-center gap-2">
-                            <img src={image.secure_url} alt={image?.display_name} className="w-4/5 m-auto aspect-square object-cover object-top rounded" />
+                            <img src={image.secure_url} alt={image?.display_name} className="w-4/5 m-auto aspect-square object-cover object-top rounded-xl" />
                             <Form method="post">
                                 <button
                                     type="submit"

@@ -14,11 +14,11 @@ model CartItem {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId  String
   quantity   Int
-  price      Price    @relation(fields: [priceId], references: [id])
+  price      Price    @relation(fields: [priceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  priceId    String
   totalPrice Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  priceId    String
 }
 
 model Order {
@@ -77,8 +77,9 @@ model Product {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   cartItems   CartItem[]
-  OrderItem   OrderItem[]
+  orderItem   OrderItem[]
   reviews     ProductReview[]
+  active      Boolean         @default(true)
 }
 
 model Price {
@@ -91,6 +92,7 @@ model Price {
   productId  String
   orderItems OrderItem[]
   cartItem   CartItem[]
+  active     Boolean     @default(true)
 }
 
 model ProductReview {

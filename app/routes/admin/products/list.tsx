@@ -1,14 +1,13 @@
 import type { Route } from "./+types/list";
-import { getAllProducts } from "~/models/product.server";
+import { deleteProduct, getAllProducts } from "~/models/product.server";
 import { Form, Link, Outlet } from "react-router";
 import { FaEye } from "react-icons/fa";
 import { ImBin } from "react-icons/im";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
-import { syncStripeProducts } from "~/models/cart.server";
+import { syncStripeProducts } from "~/models/utils.server";
 import { syncStripeShippingRates } from "~/models/utils.server";
 import { getAllPlans } from "~/models/plan.server";
-import { prisma } from "~/db.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -31,15 +30,23 @@ export async function action({ request }: Route.ActionArgs) {
     }
     case "DELETE": {
       const formData = await request.formData()
-      const planId = formData.get("planId")
-      if (planId) {
-        await prisma.plan.delete({ where: { id: planId as string } })
+      const productId = formData.get("productId")
+      if (!productId) {
+        return { error: "productId must be a string!" }
       }
-    }
+      try {
+        await deleteProduct(productId as string);
+        break;
+      } catch (error) {
+        console.error(error)
+        return { success: false }
+      }
 
+    }
+    default:
+      return { error: "Method not allowed" }
   }
 
-  return {};
 }
 
 export default function ListProducts({ loaderData }: Route.ComponentProps) {
@@ -74,8 +81,8 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
               <Link to={`${product.id}/edit`} className="btn btn-circle btn-ghost shadow" viewTransition>
                 <CiEdit size={24} className="text-info" />
               </Link>
-              <Form method="post">
-                <button type="submit" name="orderId" value={product.id} className="btn btn-circle btn-ghost shadow">
+              <Form method="DELETE">
+                <button type="submit" name="productId" value={product.id} className="btn btn-circle btn-ghost shadow">
                   <ImBin size={24} className="text-error" />
                 </button>
               </Form>
@@ -92,7 +99,7 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
           </Form>
         </div>
       )}
-      <h2 className="text-2xl text-primary text-center font-bold my-4">Usuarios</h2>
+      <h2 className="text-2xl text-primary text-center font-bold my-4">Planes</h2>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {plans.length > 0 && plans.map(plan =>
         (
@@ -106,7 +113,7 @@ export default function ListProducts({ loaderData }: Route.ComponentProps) {
                   </div>
                 </div>
               </div>
-              <p>{plan.amount / 100}</p>
+              <p>£{plan.amount / 100}</p>
               <p>{plan.priceId}</p>
               <div className="justify-end card-actions">
                 <Form method="delete">

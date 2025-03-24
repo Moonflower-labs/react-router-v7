@@ -108,13 +108,13 @@ export async function removeFromCart(userId: string, priceId: string) {
 
   return prisma.cartItem.deleteMany({
     where: {
-      cartId: cart!.id,
+      cartId: cart?.id,
       priceId
     }
   });
 }
 
-//   Merge cart
+//  Merge cart
 export async function mergeGuestCart(guestId: string, userId: string) {
   const guestCart = await getShoppingCart(guestId);
   if (!guestCart) return;
@@ -127,6 +127,7 @@ export async function mergeGuestCart(guestId: string, userId: string) {
   await deleteCart(guestCart.id);
   return cart.id;
 }
+
 export async function deleteCart(cartId: string) {
   try {
     await prisma.cart.delete({ where: { id: cartId } });
@@ -135,74 +136,74 @@ export async function deleteCart(cartId: string) {
   }
 }
 
-export async function syncStripeProducts() {
-  try {
-    // Fetch all products and prices from Stripe
-    const stripeProducts = await stripe.products.search({
-      query: "active:'true' AND metadata['app']:'florblanca'"
-    });
-    const stripePrices = await stripe.prices.list({ limit: 100 });
+// export async function syncStripeProducts() {
+//   try {
+//     // Fetch all products and prices from Stripe
+//     const stripeProducts = await stripe.products.search({
+//       query: "active:'true' AND metadata['app']:'florblanca'"
+//     });
+//     const stripePrices = await stripe.prices.list({ limit: 100 });
 
-    for (const stripeProduct of stripeProducts.data) {
-      // Check if the product already exists in Strapi
-      const existingProduct = await prisma.product.findUnique({
-        where: { id: stripeProduct.id }
-      });
-      if (existingProduct) {
-        // Update existing product
-        await prisma.product.update({
-          where: { id: stripeProduct.id },
-          data: {
-            name: stripeProduct.name,
-            description: stripeProduct.description || "",
-            thumbnail: stripeProduct.images?.[0]
-          }
-        });
-      } else {
-        // Create new product
-        await prisma.product.create({
-          data: {
-            id: stripeProduct.id,
-            name: stripeProduct.name,
-            description: stripeProduct.description || "",
-            thumbnail: stripeProduct.images?.[0]
-          }
-        });
-      }
+//     for (const stripeProduct of stripeProducts.data) {
+//       // Check if the product already exists in Strapi
+//       const existingProduct = await prisma.product.findUnique({
+//         where: { id: stripeProduct.id }
+//       });
+//       if (existingProduct) {
+//         // Update existing product
+//         await prisma.product.update({
+//           where: { id: stripeProduct.id },
+//           data: {
+//             name: stripeProduct.name,
+//             description: stripeProduct.description || "",
+//             thumbnail: stripeProduct.images?.[0]
+//           }
+//         });
+//       } else {
+//         // Create new product
+//         await prisma.product.create({
+//           data: {
+//             id: stripeProduct.id,
+//             name: stripeProduct.name,
+//             description: stripeProduct.description || "",
+//             thumbnail: stripeProduct.images?.[0]
+//           }
+//         });
+//       }
 
-      // Handle associated prices for the product
-      const associatedPrices = stripePrices.data.filter(price => price.product === stripeProduct.id);
+//       // Handle associated prices for the product
+//       const associatedPrices = stripePrices.data.filter(price => price.product === stripeProduct.id);
 
-      for (const price of associatedPrices) {
-        // Check if the price already exists in Strapi
-        const existingPrice = await prisma.price.findUnique({
-          where: { id: price.id }
-        });
+//       for (const price of associatedPrices) {
+//         // Check if the price already exists in Strapi
+//         const existingPrice = await prisma.price.findUnique({
+//           where: { id: price.id }
+//         });
 
-        if (existingPrice) {
-          // Update existing price
-          await prisma.price.update({
-            where: { id: price.id },
-            data: {
-              amount: price.unit_amount!,
-              info: price.metadata?.color || price.metadata?.title || price.metadata?.size
-            }
-          });
-        } else {
-          // Create new price
-          await prisma.price.create({
-            data: {
-              id: price.id,
-              product: { connect: { id: stripeProduct.id } },
-              amount: price.unit_amount!,
-              info: price.metadata?.color || price.metadata?.title || price.metadata?.size || ""
-            }
-          });
-        }
-      }
-    }
-    console.info("Stripe products and prices synced with Prisma.");
-  } catch (error) {
-    console.error("Error syncing products:", error);
-  }
-}
+//         if (existingPrice) {
+//           // Update existing price
+//           await prisma.price.update({
+//             where: { id: price.id },
+//             data: {
+//               amount: price.unit_amount!,
+//               info: price.metadata?.color || price.metadata?.title || price.metadata?.size
+//             }
+//           });
+//         } else {
+//           // Create new price
+//           await prisma.price.create({
+//             data: {
+//               id: price.id,
+//               product: { connect: { id: stripeProduct.id } },
+//               amount: price.unit_amount!,
+//               info: price.metadata?.color || price.metadata?.title || price.metadata?.size || ""
+//             }
+//           });
+//         }
+//       }
+//     }
+//     console.info("Stripe products and prices synced with Prisma.");
+//   } catch (error) {
+//     console.error("Error syncing products:", error);
+//   }
+// }

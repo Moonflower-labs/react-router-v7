@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { syncStripeProducts } from "~/models/cart.server";
+import { syncStripeProducts } from "~/models/utils.server";
 
 const prisma = new PrismaClient();
 

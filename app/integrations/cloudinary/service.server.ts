@@ -12,12 +12,23 @@ export default cloudinary;
 
 export async function uploadImage(
   data: ReadableStream<Uint8Array>,
-  folder: "avatars" | "susurros",
-  publicId: string | undefined = undefined
+  folder: "avatars" | "susurros" | "products",
+  publicId: string | undefined = undefined,
+  transformation: Record<string, number> | undefined = undefined
 ): Promise<any> {
   const uploadPromise = new Promise(async (resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder, public_id: publicId },
+      {
+        folder,
+        public_id: publicId,
+        transformation: [
+          { quality: "auto:good" },
+          { fetch_format: "auto" },
+          { width: 800, crop: "scale" },
+          { secure: true },
+          transformation
+        ]
+      },
       (error, result) => {
         if (error) {
           reject(error);
