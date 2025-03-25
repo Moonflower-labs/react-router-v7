@@ -8,7 +8,7 @@ import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
 import { updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
 import { createOrder, isOrderExist, updateOrderItems, updateOrderPaymentIntent } from "~/models/order.server";
-import { createFreeSubscriptionSetupIntent, createSetupIntent } from "~/integrations/stripe/setup.server";
+import { createSetupIntent } from "~/integrations/stripe/setup.server";
 import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
 import { differenceInDays } from "date-fns"
@@ -157,8 +157,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           throw data({ message: "customerId required for subscription!" }, { status: 400 })
         }
         if (amount <= 0) {
-          // Create a SetupIntent for a Free subcription
-          const { clientSecret, type } = await createFreeSubscriptionSetupIntent({ priceId, customerId, metadata: { plan: planName } })
+          // Create a SetupIntent for a Free subcription by proiding the priceId
+          const { clientSecret, type } = await createSetupIntent({ priceId, customerId, metadata: { plan: planName } })
 
           return {
             clientSecret, amount, planName, customerSessionSecret, priceId, img, type

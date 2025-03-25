@@ -1,45 +1,28 @@
 import { stripe } from "./stripe.server";
 
-export async function createSetupIntent({
-  customerId,
-  metadata
-}: {
+interface SetupIntentProps {
   customerId: string;
-  metadata: Record<string, string> | undefined;
-}) {
-  const setupIntent = await stripe.setupIntents.create({
-    customer: customerId,
-    payment_method_types: ["card", "link"],
-    usage: "off_session",
-    metadata: {
-      ...metadata
-    }
-  });
-  return {
-    clientSecret: setupIntent.client_secret,
-    type: "setup"
-  };
+  metadata?: Record<string, string>;
+  priceId?: string;
 }
-
-export async function createFreeSubscriptionSetupIntent({
-  customerId,
-  priceId,
-  metadata
-}: {
-  priceId: string;
-  customerId: string;
-  metadata: Record<string, string> | undefined;
-}) {
+/**
+ *
+ * @param customerId the stripe customerId of the user
+ * @param metadata an optional object
+ * @param priceId string- if provided it will be attached to the metadata along with a free_subscription flag
+ * @returns an object containing: clientSecret and type ("setup")
+ */
+export async function createSetupIntent({ customerId, metadata, priceId }: SetupIntentProps) {
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
     payment_method_types: ["card", "link"],
     usage: "off_session",
     metadata: {
       ...metadata,
-      free_subscription: "true",
-      priceId
+      ...(priceId ? { free_subscription: "true", priceId } : {})
     }
   });
+
   return {
     clientSecret: setupIntent.client_secret,
     type: "setup"
