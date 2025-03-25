@@ -9,6 +9,7 @@ import { FaEye } from "react-icons/fa";
 import type { OrderStatus } from "@prisma/client";
 import { GrRevert } from "react-icons/gr";
 import { formatDayTimeEs } from "~/utils/format";
+import { CustomAlert } from "~/components/shared/info";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -95,8 +96,8 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
       setToastId(null)
     }
     const _toastId = toast.warn(
-      <div>
-        <span>Quieres borrar este pedido?</span>
+      <CustomAlert level="warning" className="!m-0">
+        <span>Quieres borrar el pedido {event.currentTarget.dataset.orderid}?</span>
         <div>Asegúrate de que ha sido completado.</div>
         <div className="flex justify-center gap-5 mt-3">
           <button
@@ -104,83 +105,99 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
               toast.dismiss();
               submit({ orderId, status, isProcessed }, { method: "DELETE" });
             }}
-            className="btn btn-sm btn-primary">
-            Si
+            className="btn btn-sm btn-warning w-1/3">
+            Aceptar
           </button>
-          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary">
-            No
+          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary btn-outline w-1/3">
+            Cancelar
           </button>
         </div>
-      </div>,
+      </CustomAlert>,
       {
         autoClose: false,
+        closeButton: false,
+        // containerId: "toastContainer",
+        className: "!p-0 !m-0 !bg- !border-none !shadow-none",
+        style: { padding: 0 }
       }
     );
     setToastId(_toastId);
   };
 
   return (
-    <div>
+    <div className="px-2.5 py-4">
       <h1 className="text-2xl text-primary flex justify-center items-center gap-4 my-5">Pedidos</h1>
-      <p className="mb-3 text-center">Pedidos pendientes <span className="badge badge-primary">{loaderData?.pendingOrderCount}</span></p>
-      {orders?.length ? (
-        orders.map((order, index) => (
-          <div
-            key={order.id}
-            className={`flex flex-col lg:flex-row justify-between items-center gap-6 p-3 border ${order.id === orderId ? "border-warning border-2" : ""} rounded-lg shadow-md md:w-2/3 mx-auto mb-6`}>
-            <div className="flex flex-wrap justify-between items-center w-full">
-              <span>
-                {index + 1}. {order.id}{" "}
-              </span>
-              <span className="me-5">{formatDayTimeEs(order.updatedAt)}</span>
+      <ul className="list bg-base-100 rounded-box shadow-md">
+        <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
+          <div className="flex gap-2">
+            <div>
+              Pendientes <span className="badge badge-xs badge-primary">{loaderData?.pendingOrderCount}</span>
             </div>
-            <div className="flex gap-3 items-center">
-              {order?.status === "Paid" ? (
-                <div className="badge badge-success">Pagado</div>
-              ) : (
-                <div className="badge badge-error">Pendiente</div>
-              )}
-              {order?.isProcessed ? (
-                <>
-                  <div className="inline-grid *:[grid-area:1/1]">
-                    <div className="status status-success"></div>
-                  </div> Procesado
-                </>
-              ) : (
-                <>
-                  <div className="inline-grid *:[grid-area:1/1]">
-                    <div className="status status-warning animate-ping"></div>
-                    <div className="status status-warning"></div>
-                  </div>
-                  En proceso
-                </>
-              )}
-              <Link to={`${order.id}/detail`} className="btn btn-sm btn-outline btn-success" viewTransition>
-                <FaEye size={24} />
-              </Link>
-              <Form method="PUT">
-                <input type="hidden" name="isProcessed" value={order.isProcessed ? "false" : "true"} />
-                <button type="submit" name="orderId" value={order.id} className={`btn btn-sm btn-${order?.isProcessed ? "warning" : "success"}`}>
-                  {order?.isProcessed ? <GrRevert size={20} /> : <FaCheck size={20} />}
-                </button>
-              </Form>
-
-              <Form method="DELETE" onSubmit={handleSbubmit}>
-                <input type="hidden" name="status" value={order.status} />
-                <input type="hidden" name="isProcessed" value={order.isProcessed ? "true" : "false"} />
-                <input type="hidden" name="date" value={order.createdAt.toISOString()} />
-                <button type="submit" name="orderId" value={order.id} className=" btn btn-sm btn-outline btn-error">
-                  <ImBin size={24} />
-                </button>
-              </Form>
+            <div>
+              En Proceso <span className="badge badge-xs badge-warning">{loaderData?.orders.filter((o) => !o.isProcessed && o.status === "Paid").length}</span>
             </div>
           </div>
-        ))
-      ) : (
-        <div className="flex gap-4 justify-center items-center">
-          <span>No hay ningún pedido que mostrar.</span>
-        </div>
-      )}
+        </li>
+
+        {orders?.length ? (
+          orders.map((order, index) => (
+            <li className={`list-row ${order.id === orderId ? "border-warning border-2" : ""} `}
+              key={order.id}
+            >
+              <div className="text-4xl font-thin opacity-30 tabular-nums"> {index + 1}</div>
+              <div>
+                <div>{order.id}</div>
+                <div className="text-xs uppercase font-semibold opacity-60">{formatDayTimeEs(order.updatedAt)}</div>
+              </div>
+              <div className="flex flex-col md:flex-row gap-1.5 items-center">
+                {order?.status === "Paid" ? (
+                  <div className="badge badge-xs badge-success opacity-80">Pagado</div>
+                ) : (
+                  <div className="badge badge-xs badge-error opacity-70">Pendiente</div>
+                )}
+                {order?.isProcessed ? (
+                  <div className="text-xs">
+                    <div className="inline-grid *:[grid-area:1/1]">
+                      <div className="status status-success"></div>
+                    </div> Procesado
+                  </div>
+                ) : (
+                  <div className="text-xs">
+                    <div className="inline-grid *:[grid-area:1/1]">
+                      <div className="status status-warning animate-ping"></div>
+                      <div className="status status-warning"></div>
+                    </div>
+                    {" "}En proceso
+                  </div>
+                )}
+              </div>
+              <div className="list-col-wrap flex gap-1.5 justify-end items-center">
+                <Link to={`${order.id}/detail`} className="btn btn-sm btn-circle btn-ghost shadow" viewTransition>
+                  <FaEye size={24} />
+                </Link>
+                <Form method="PUT">
+                  <input type="hidden" name="isProcessed" value={order.isProcessed ? "false" : "true"} />
+                  <button type="submit" name="orderId" value={order.id} className={`btn btn-sm btn-circle btn-ghost shadow btn-${order?.isProcessed ? "warning" : "success"}`}>
+                    {order?.isProcessed ? <GrRevert size={20} /> : <FaCheck size={20} />}
+                  </button>
+                </Form>
+                <Form method="DELETE" onSubmit={handleSbubmit} data-orderid={order.id}>
+                  <input type="hidden" name="status" value={order.status} />
+                  <input type="hidden" name="isProcessed" value={order.isProcessed ? "true" : "false"} />
+                  <input type="hidden" name="date" value={order.createdAt.toISOString()} />
+                  <button type="submit" name="orderId" value={order.id} className="btn btn-sm btn-circle btn-ghost shadow">
+                    <ImBin size={24} className="text-error" />
+                  </button>
+                </Form>
+              </div>
+            </li>
+          ))
+        ) : (
+          <div className="flex gap-4 justify-center items-center">
+            <span>No hay ningún pedido que mostrar.</span>
+          </div>
+        )}
+      </ul>
       {/* <div className="text-center">
                 <Paginator pagination={loaderData?.pagination} />
             </div> */}
