@@ -8,15 +8,14 @@ export function CartItem({ item }: { item: CartItem }) {
 
   return (
 
-    <li className="list-row">
-      <div><img className="size-8 rounded-box" src={item.product?.thumbnail || ""} alt="Imagen de producto" /></div>
-      <div className="text-sm">
+    <li className="list-row items-center">
+      <div><img className="size-9 rounded-box" src={item.product?.thumbnail || ""} alt="Imagen de producto" /></div>
+      <div className="text-xs">
         <div> {item.product?.name}</div>
-        <div className="text-xs uppercase font-semibold opacity-60">{item.price?.info?.length > 30 ? `${item.price.info.slice(0, 18)}...` : item.price.info}</div>
+        <div className="list-col-wrap text-xs uppercase font-semibold opacity-60">{item.price?.info?.length > 30 ? `${item.price.info.slice(0, 18)}...` : item.price.info}</div>
       </div>
-      <div>
-        <span className="text-center">£{item.price?.amount / 100} </span>
-        <span className="text-center">x {item.quantity}</span>
+      <div className="text-xs">
+        £{item.price?.amount / 100} x {item.quantity}
       </div>
       <div className="flex gap-1.5">
         <fetcher.Form method="post">
