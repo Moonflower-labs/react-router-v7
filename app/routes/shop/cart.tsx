@@ -9,6 +9,7 @@ import { getUserById, getUserDiscount } from "~/models/user.server";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
 import { getCustomerBalance } from "~/integrations/stripe/customer.server";
 import { getSessionContext } from "~/middleware/sessionMiddleware";
+import { CustomAlert } from "~/components/shared/info";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const session = getSessionContext(context)
@@ -71,43 +72,44 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
   const selectedRate = shippingRates?.find((rate) => rate.id === selectedRateId);
 
   return (
-    <div className="bg-base-100 p-10 min-h-[80vh] flex flex-col justify-center items-center rounded-lg">
+    <div className="bg-base-100 p-6 min-h-[80vh] flex flex-col justify-center items-center rounded-lg">
       <h1 className="text-3xl font-semibold py-3">Cesta</h1>
       {cart?.cartItems && cart?.cartItems?.length > 0 ? (
         <>
-          <div className="w-screen overflow-y-auto overflow-x-auto mb-4">
-            <table className="table">
-              <tbody>
-                {cart.cartItems.map(item => (
-                  <Item key={item.id} item={item} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ul className="list rounded-box shadow-md overflow-auto mb-4">
+            <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Mis artículos</li>
+            {cart.cartItems.map(item => (
+              <Item key={item.id} item={item} />
+            ))}
+          </ul>
           <div className="font-bold my-4">Subtotal £{totalAmount / 100}</div>
+        </>
+      ) : (
+        <div>Cesta vacía</div>
+      )}
 
-          <div role="alert" className="alert flex flex-col alert-warning mb-4 md:w-[60%] mx-auto">
-            <div className="flex gap-3 items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="h-6 w-6 shrink-0 stroke-current">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <h3 className="text-lg font-bold">Sobre los gastos postales</h3>
-            </div>
+      <Link to={"/store"} className="link-primary block" viewTransition>
+        {cart?.cartItems && cart?.cartItems?.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
+      </Link>
 
-            <ul className="list list-disc px-3 pb-2">
-              <li className="mb-1.5">
-                Es tu responsabilidad el elegir la opción adecuada para tu destino.
-              </li>
-              <li className="mb-1.5">
-                Para pedidos que <span className="font-bold">solo</span> contengan artículos digitales selecciona la opción gratuita.
-              </li>
-              <li className="mb-1.5">
-                <span className="font-bold">No</span> seleccione la opción gratuita si está comprando artículos físicos o su pedido no se podrá procesar.
-              </li>
-            </ul>
-          </div>
+      <CustomAlert level="warning" className="">
+        <h3 className="text-lg font-bold">Sobre los gastos postales</h3>
+        <ul className="list list-disc px-3 pb-2">
+          <li className="mb-1.5">
+            Es tu responsabilidad el elegir la opción adecuada para tu destino.
+          </li>
+          <li className="mb-1.5">
+            Para pedidos que <span className="font-bold">solo</span> contengan artículos digitales selecciona la opción gratuita.
+          </li>
+          <li className="mb-1.5">
+            <span className="font-bold">No</span> seleccione la opción gratuita si está comprando artículos físicos o su pedido no se podrá procesar.
+          </li>
+        </ul>
+      </CustomAlert>
 
-          {shippingRates && shippingRates.length > 0 ?
+      {cart?.cartItems && cart.cartItems.length > 0 &&
+        <> {/* Shipping rats*/}
+          {shippingRates && shippingRates.length ?
             <select
               id="shipping"
               name="shipping-rate"
@@ -122,7 +124,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               )}
             </select>
             : null}
-
+          {/* Display amounts */}
           <div className="mb-4 mt-3">
             <div className="font-bold">Gastos Postales £{selectedRate?.amount ? selectedRate.amount / 100 : 0}</div>
             {customerBalance > 0 && <div className="font-bold">Crédito disponible £{customerBalance / 100}</div>}
@@ -130,6 +132,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
             {discount > 0 && <div className="font-bold text-success mb-2">Descuento de {discount}% será applicado en Checkout (-£{((totalAmount * discount / 100) / 100).toFixed(2)})</div>}
             <div className="font-bold">Total a Pagar £{Math.max((totalAmount + (selectedRate?.amount ? selectedRate.amount : 0) - (customerBalance ?? 0)), 50) / 100}</div>
           </div>
+          {/* Checkout button */}
           {selectedRateId && (
             <motion.div
               initial={{ opacity: 0, height: 0, y: 0 }}
@@ -141,13 +144,9 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
             </motion.div>
           )}
         </>
-      ) : (
-        <div>Cesta vacía</div>
-      )}
-
-      <Link to={"/store"} className="link-primary block" viewTransition>
-        {cart?.cartItems && cart?.cartItems?.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
-      </Link>
+      }
     </div>
   );
 }
+
+
