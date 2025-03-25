@@ -1,13 +1,6 @@
 import { prisma } from "~/db.server";
 import { type CartItem } from "./cart.server";
-import type {
-  Order,
-  OrderItem,
-  OrderStatus,
-  Price,
-  Product,
-  ShippingRate
-} from "@prisma/client";
+import type { Order, OrderItem, OrderStatus, Price, Product, ShippingRate } from "@prisma/client";
 
 export interface ExtendedOrderItem extends OrderItem {
   price: Price;
@@ -19,12 +12,7 @@ export interface ExtendedOrder extends Order {
   shippingRate: ShippingRate;
 }
 
-export async function createOrder(
-  userId: string,
-  cartId: string,
-  cartItems: CartItem[],
-  shippingId?: string
-) {
+export async function createOrder(userId: string, cartId: string, cartItems: CartItem[], shippingId?: string) {
   const data: any = {
     guest: userId.startsWith("guest-"),
     cartId,
@@ -137,10 +125,7 @@ export async function getOrderCount(status?: OrderStatus) {
   return prisma.order.count({ where: { status } });
 }
 
-export async function getUserOrderCount(
-  userId: string,
-  status: OrderStatus = "Paid"
-) {
+export async function getUserOrderCount(userId: string, status: OrderStatus = "Paid") {
   return prisma.order.count({ where: { userId, status } });
 }
 export function calculateOrderAmount(items: ExtendedOrderItem[]): number {
@@ -180,10 +165,7 @@ export async function deleteOrder(id: string) {
   return prisma.order.delete({ where: { id } });
 }
 
-export async function updateOrderProcessStatus(
-  id: string,
-  isProcessed: boolean
-) {
+export async function updateOrderProcessStatus(id: string, isProcessed: boolean) {
   return prisma.order.update({ where: { id }, data: { isProcessed } });
 }
 

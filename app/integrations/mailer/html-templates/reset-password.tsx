@@ -23,7 +23,7 @@ const baseUrl = process.env.RENDER_URL
     ? process.env.RENDER_URL : `https://laflorblanca-ysjl.onrender.com`
 
 
-export const ResetPasswordLinkEmail = ({
+const ResetPasswordLinkEmail = ({
     resetPasswordLink, email
 }: ResetPasswordLinkEmailProps) => (
     <Html>

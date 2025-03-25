@@ -1,4 +1,3 @@
-import { prisma } from "~/db.server";
 import type { Route } from "./+types/list";
 import { Form } from "react-router";
 import { ImBin } from "react-icons/im";
@@ -7,9 +6,10 @@ import { toast } from "react-toastify";
 import { getUserSubscription } from "~/models/subscription.server";
 import { formatDayTimeEs } from "~/utils/format";
 import { getUserId } from "~/middleware/sessionMiddleware";
+import { deleteUser, getUsers } from "~/models/user.server";
 
 export async function loader({ }: Route.LoaderArgs) {
-  const users = await prisma.user.findMany({ include: { subscription: { include: { plan: true } }, profile: { select: { avatar: true } } } });
+  const users = await getUsers()
   return { users };
 }
 export async function action({ request, context }: Route.ActionArgs) {
@@ -27,7 +27,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (userSubscription?.status === "active") {
     return { success: false, message: "No puedes borrar un usuario con subscripción activa" };
   }
-  const deletedUser = await prisma.user.delete({ where: { id: userId } });
+  const deletedUser = await deleteUser(userId);
   return { success: true, username: deletedUser.username };
 }
 

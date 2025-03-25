@@ -50,7 +50,7 @@ interface AvatarSelectorPops {
     submit: SubmitFunction,
 }
 
-export function AvatarSelector({ avatars, setSelectedAvatar, submit, selectedAvatar }: AvatarSelectorPops) {
+function AvatarSelector({ avatars, setSelectedAvatar, submit, selectedAvatar }: AvatarSelectorPops) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (

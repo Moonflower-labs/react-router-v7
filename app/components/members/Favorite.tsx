@@ -93,5 +93,3 @@ const AnimatedStarButton = ({ favorite, objectId }: AnimatedStarButtonProps) => 
     </button>
   );
 };
-
-export default AnimatedStarButton;

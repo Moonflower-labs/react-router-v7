@@ -142,7 +142,7 @@ export const Toaster = ({ isPaused, closeToast, toastProps, message }: Props) =>
 };
 
 // Utility function to show toast
-export const showToast = (message: string, type = "info" as TypeOptions, options = {}) => {
+const showToast = (message: string, type = "info" as TypeOptions, options = {}) => {
     toast(
         <Toaster message={message} />,
         {

@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import { stripe } from "./stripe.server";
 
-export async function createPaymentIntent({
+async function createPaymentIntent({
   customerId,
   amount,
   orderId,

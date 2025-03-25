@@ -59,7 +59,7 @@ interface CommentFormProps {
   action: string;
 }
 
-export function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
+function CommentForm({ objectId, fieldName, action }: CommentFormProps) {
   const fetcher = useFetcher();
   const formRef = useRef<HTMLFormElement>(null);
 
