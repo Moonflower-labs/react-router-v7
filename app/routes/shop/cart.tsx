@@ -88,27 +88,27 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
         <div>Cesta vacía</div>
       )}
 
-      <Link to={"/store"} className="link-primary block" viewTransition>
+      <Link to={href("/store")} className="link-primary block" viewTransition>
         {cart?.cartItems && cart?.cartItems?.length > 0 ? "Continúa comprando" : "Visita la Tienda"}
       </Link>
 
-      <CustomAlert level="warning" className="">
-        <h3 className="text-lg font-bold">Sobre los gastos postales</h3>
-        <ul className="list list-disc px-3 pb-2">
-          <li className="mb-1.5">
-            Es tu responsabilidad el elegir la opción adecuada para tu destino.
-          </li>
-          <li className="mb-1.5">
-            Para pedidos que <span className="font-bold">solo</span> contengan artículos digitales selecciona la opción gratuita.
-          </li>
-          <li className="mb-1.5">
-            <span className="font-bold">No</span> seleccione la opción gratuita si está comprando artículos físicos o su pedido no se podrá procesar.
-          </li>
-        </ul>
-      </CustomAlert>
-
       {cart?.cartItems && cart.cartItems.length > 0 &&
-        <> {/* Shipping rats*/}
+        <>
+          <CustomAlert level="warning" className="">
+            <h3 className="text-lg font-bold">Sobre los gastos postales</h3>
+            <ul className="list list-disc px-3 pb-2">
+              <li className="mb-1.5">
+                Es tu responsabilidad el elegir la opción adecuada para tu destino.
+              </li>
+              <li className="mb-1.5">
+                Para pedidos que <span className="font-bold">solo</span> contengan artículos digitales selecciona la opción gratuita.
+              </li>
+              <li className="mb-1.5">
+                <span className="font-bold">No</span> seleccione la opción gratuita si está comprando artículos físicos o su pedido no se podrá procesar.
+              </li>
+            </ul>
+          </CustomAlert>
+          {/* Shipping rates*/}
           {shippingRates && shippingRates.length ?
             <select
               id="shipping"
