@@ -1,7 +1,5 @@
 import { prisma } from "~/db.server";
 import { getPrice, getProduct } from "./product.server";
-import { stripe } from "~/integrations/stripe/stripe.server";
-
 import type { CartItem as Item, Price, Product } from "@prisma/client";
 
 export interface CartItem extends Item {
@@ -48,25 +46,15 @@ export function calculateTotalAmount(cartItems: CartItem[], discount: number = 0
   const discountAmount = Math.round((subtotal * discountPercentage) / 100); // Integer discount
   const discountedSubtotal = subtotal - discountAmount;
 
-  // todo: consider return {amount, deductedAmount,}
   // Add shipping rate (default to 0 if undefined)
   return discountedSubtotal + (shippingRate ?? 0);
 }
 
 export async function addShoppingCart(userId: string) {
   if (userId.startsWith("guest-")) {
-    return prisma.cart.create({
-      data: {
-        guest: true,
-        id: userId
-      }
-    });
+    return prisma.cart.create({ data: { guest: true, id: userId } });
   }
-  return prisma.cart.create({
-    data: {
-      id: userId
-    }
-  });
+  return prisma.cart.create({ data: { id: userId } });
 }
 
 export async function addToCart(userId: string, productId: string, priceId: string, quantity: number = 1) {
@@ -106,12 +94,7 @@ export async function addToCart(userId: string, productId: string, priceId: stri
 export async function removeFromCart(userId: string, priceId: string) {
   const cart = await getShoppingCart(userId);
 
-  return prisma.cartItem.deleteMany({
-    where: {
-      cartId: cart?.id,
-      priceId
-    }
-  });
+  return prisma.cartItem.deleteMany({ where: { cartId: cart?.id, priceId } });
 }
 
 //  Merge cart
@@ -135,75 +118,3 @@ export async function deleteCart(cartId: string) {
     return;
   }
 }
-
-// export async function syncStripeProducts() {
-//   try {
-//     // Fetch all products and prices from Stripe
-//     const stripeProducts = await stripe.products.search({
-//       query: "active:'true' AND metadata['app']:'florblanca'"
-//     });
-//     const stripePrices = await stripe.prices.list({ limit: 100 });
-
-//     for (const stripeProduct of stripeProducts.data) {
-//       // Check if the product already exists in Strapi
-//       const existingProduct = await prisma.product.findUnique({
-//         where: { id: stripeProduct.id }
-//       });
-//       if (existingProduct) {
-//         // Update existing product
-//         await prisma.product.update({
-//           where: { id: stripeProduct.id },
-//           data: {
-//             name: stripeProduct.name,
-//             description: stripeProduct.description || "",
-//             thumbnail: stripeProduct.images?.[0]
-//           }
-//         });
-//       } else {
-//         // Create new product
-//         await prisma.product.create({
-//           data: {
-//             id: stripeProduct.id,
-//             name: stripeProduct.name,
-//             description: stripeProduct.description || "",
-//             thumbnail: stripeProduct.images?.[0]
-//           }
-//         });
-//       }
-
-//       // Handle associated prices for the product
-//       const associatedPrices = stripePrices.data.filter(price => price.product === stripeProduct.id);
-
-//       for (const price of associatedPrices) {
-//         // Check if the price already exists in Strapi
-//         const existingPrice = await prisma.price.findUnique({
-//           where: { id: price.id }
-//         });
-
-//         if (existingPrice) {
-//           // Update existing price
-//           await prisma.price.update({
-//             where: { id: price.id },
-//             data: {
-//               amount: price.unit_amount!,
-//               info: price.metadata?.color || price.metadata?.title || price.metadata?.size
-//             }
-//           });
-//         } else {
-//           // Create new price
-//           await prisma.price.create({
-//             data: {
-//               id: price.id,
-//               product: { connect: { id: stripeProduct.id } },
-//               amount: price.unit_amount!,
-//               info: price.metadata?.color || price.metadata?.title || price.metadata?.size || ""
-//             }
-//           });
-//         }
-//       }
-//     }
-//     console.info("Stripe products and prices synced with Prisma.");
-//   } catch (error) {
-//     console.error("Error syncing products:", error);
-//   }
-// }
