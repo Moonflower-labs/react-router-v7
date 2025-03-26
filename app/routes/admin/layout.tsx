@@ -34,7 +34,7 @@ export default function AdminLayout() {
         }}
         initial={false}
         ref={setSidebarRef}
-        className="grid grid-rows-2 grid-flow-col gap-2 p-2 bg-base-200 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit"
+        className="grid grid-rows-2 grid-flow-col gap-2 p-2 bg-base-300/95 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit"
       >
         {!collapsed && (
           <>
