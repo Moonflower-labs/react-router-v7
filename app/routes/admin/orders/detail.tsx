@@ -1,6 +1,6 @@
 import { fetchOrder } from "~/models/order.server";
 import type { Route } from "./+types/detail";
-import { Form } from "react-router";
+import { Form, href, Link } from "react-router";
 import { FaCheck } from "react-icons/fa";
 import { formatDayTimeEs } from "~/utils/format";
 import { CopyToClipBoard } from "~/components/shared/CopyToClipBoard";
@@ -13,6 +13,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function OrderDetail({ loaderData }: Route.ComponentProps) {
   const { order } = loaderData;
+  const email = order?.guest ? order.guestEmail : order?.user?.email
 
   return (
     <div className="mb-6 lg:w-2/3 mx-auto">
@@ -21,15 +22,13 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
       </h2>
       <p className="font-semibold mb-1.5">Payment Intent ID: {order?.paymentIntentId}</p>
       <p className="font-semibold mb-1.5">Actualizado: {formatDayTimeEs(order?.updatedAt as Date)}</p>
-      {order?.guest
-        ? <div className="font-bold mb-4">
-          <p className="text-warning/70">Pedido de invitado</p>
-          <p>Email: {order.guestEmail}</p>
-        </div>
-        : <div className="flex flex-row gap-2 items-center mb-4">
-          <p className="font-semibold">Usuario: {order?.user?.username} / Email: {order?.user?.email}</p>
-          <CopyToClipBoard href={order?.user?.email as string} />
-        </div>}
+      <div className="font-bold mb-4">
+        {order?.guest && <p className="badge badge-warning opacity-70">Pedido de invitado</p>}
+      </div>
+      <div className="flex flex-row gap-2 items-center mb-4">
+        <p className="font-semibold">Usuario: {order?.user?.username} / Email: {email}</p>
+        <CopyToClipBoard href={order?.user?.email as string} />
+      </div>
 
       <div className="flex flex-row gap-4 items-center mb-4">
         <div>
@@ -52,10 +51,11 @@ export default function OrderDetail({ loaderData }: Route.ComponentProps) {
         )}
         <Form method="put" action="/admin/orders" navigate={false}>
           <input type="hidden" name="isProcessed" value={order?.isProcessed ? "false" : "true"} />
-          <button type="submit" name="orderId" value={order?.id} className={`btn btn-sm btn-${order?.isProcessed ? "warning" : "success"}`}>
-            {order?.isProcessed ? <GrRevert size={20} /> : <FaCheck size={20} />}
+          <button type="submit" name="orderId" value={order?.id} className="btn btn-sm btn-circle shadow btn-ghost">
+            {order?.isProcessed ? <GrRevert size={20} className="text-success" /> : <FaCheck size={20} className="text-warning" />}
           </button>
         </Form>
+        <Link to={`${href("/admin/emails/send")}?email=${encodeURIComponent(email!)}&orderId=${encodeURIComponent(order?.id || '')}`} className="btn btn-sm">Email client</Link>
       </div>
       <h3 className="font-bold text-xl mb-4">Artículos:</h3>
       <div className="flex flex-col gap-4 mb-4">

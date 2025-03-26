@@ -35,18 +35,17 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-[200] w-screen bg-base-200/90 backdrop-blur">
+    <header className="sticky top-0 z-[200] w-screen bg-base-300/90 backdrop-blur">
       <div className={`navbar shadow-md z-50 h-full`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
-            <div tabIndex={0} role="button" className={"btn shadow"}>
+            <div tabIndex={0} role="button" className={"btn btn-ghost shadow text-primary"}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-200/90"}>
+            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-300/90 text-base-content"}>
               {user ? (
                 <>
-
                   <li>
                     <Link to={href("/profile")} onClick={handleDropdown} className="flex-grow flex flex-col justify-center items-center w-full mx-auto" viewTransition>
                       <div className="avatar">
@@ -96,12 +95,12 @@ export function Header() {
             </ul>
           </div>
           <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn m-1 shadow">
+            <div tabIndex={0} role="button" className="btn btn-ghost text-primary m-1 shadow">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <ul tabIndex={0} className="dropdown-content bg-base-200 rounded-box mt-2 z-1 w-32 p-2 shadow-2xl">
+              <ul tabIndex={0} className="dropdown-content bg-base-300/90 rounded-box mt-2 z-1 w-32 p-2 shadow-2xl">
                 {themes.map((themeOption) => (
                   <li key={themeOption.value}>
                     <input
