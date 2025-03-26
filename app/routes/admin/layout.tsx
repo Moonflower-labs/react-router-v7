@@ -10,8 +10,10 @@ import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdLocalShipping, MdOutlineClose, MdOutlineMailOutline } from "react-icons/md";
 import { adminAuthMiddleware } from "~/middleware/adminMiddleware";
+import { bgGradient } from "~/components/root/Header";
 
 export const unstable_middleware = [adminAuthMiddleware];
+
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -34,7 +36,7 @@ export default function AdminLayout() {
         }}
         initial={false}
         ref={setSidebarRef}
-        className="grid grid-rows-2 grid-flow-col gap-2 p-2 bg-base-300/95 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit"
+        className={"grid grid-rows-2 grid-flow-col gap-2 p-2 sticky top-[72px] left-1.5 rounded-lg shadow-md overflow-x-auto z-50 w-full max-h-fit" + bgGradient}
       >
         {!collapsed && (
           <>
@@ -61,7 +63,7 @@ export default function AdminLayout() {
       {/* Floating Collapse Button */}
       <motion.button
         onClick={() => setCollapsed(!collapsed)}
-        className={` md:flex fixed left-1 top-[80px] btn btn-sm btn-circle bg-base-200/90 shadow-md z-50`}
+        className={`md:flex fixed left-1 top-[80px] btn btn-sm btn-circle btn-ghost shadow z-50` + bgGradient}
         animate={{ left: collapsed ? 10 : "92%" }}
       >
         {collapsed ?

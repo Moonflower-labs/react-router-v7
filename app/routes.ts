@@ -6,7 +6,7 @@ export default [
   index("routes/welcome/index.tsx"),
   route("about", "routes/welcome/about.tsx"),
   route("plans", "routes/welcome/plans.tsx"),
-  route("gallery", "routes/gallery/index.tsx"),
+  route("gallery/", "routes/gallery/index.tsx"),
   route("gallery/image/:id", "routes/gallery/detail.tsx"),
 
   // Auth

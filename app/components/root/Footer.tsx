@@ -2,22 +2,22 @@ import { RiInstagramLine } from "react-icons/ri";
 import { FaFacebook, FaTelegram } from "react-icons/fa";
 import { GrYoutube } from "react-icons/gr";
 import logo from "./logo.svg"
+import { bgGradient } from "./Header";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="footer justify-center md:justify-normal p-10 bg-base-300">
+    <footer className={"footer footer-horizontal footer-center md:footer-vertical justify-center md:justify-normal p-10 " + bgGradient}>
       <aside>
         <div className="avatar">
           <div className="w-10 rounded">
             <img src={logo} alt="logo" className="transform scale-110" />
           </div>
         </div>
-        <p className="text-primary-content">&copy; La Flor Blanca {year}</p>
-
-        <a className="link link-primary" href="https://moonflowerlabs.vercel.app/" target="_blank" rel="noreferrer">
-          &copy; Moonflower Labs
+        <p>&copy; La Flor Blanca {year}</p>
+        Website built by   <a className="link text-base-content" href="https://moonflowerlabs.vercel.app/" target="_blank" rel="noreferrer">
+          Moonflower Labs
         </a>
       </aside>
       <nav>

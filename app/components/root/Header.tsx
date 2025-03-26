@@ -10,6 +10,10 @@ import { Navbar } from "./Navbar";
 import logo from "./logo.svg"
 import { RiAdminFill } from "react-icons/ri";
 
+
+export const bgGradient = " bg-base-200/80 bg-gradient-to-r from-primary/35 to-primary/60 backdrop-blur "
+
+
 export function Header() {
   const { pathname } = useLocation()
   const isHomePage = pathname === "/"
@@ -35,15 +39,15 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-[200] w-screen bg-base-300/90 backdrop-blur">
+    <header className={"sticky top-0 z-[200] w-screen " + bgGradient}>
       <div className={`navbar shadow-md z-50 h-full`}>
         <div className="navbar-start">
           {/* User navigation */}
           <div className="dropdown">
-            <div tabIndex={0} role="button" className={"btn btn-ghost shadow text-primary"}>
+            <div tabIndex={0} role="button" className={"btn btn-ghost shadow text-base-content"}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-300/90 text-base-content"}>
+            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2" + bgGradient}>
               {user ? (
                 <>
                   <li>
@@ -95,12 +99,12 @@ export function Header() {
             </ul>
           </div>
           <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn btn-ghost text-primary m-1 shadow">
+            <div tabIndex={0} role="button" className="btn btn-ghost text-base-content m-1 shadow">
               <IoColorPalette size={24} />
               <span className="hidden md:block">Theme</span>
             </div>
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <ul tabIndex={0} className="dropdown-content bg-base-300/90 rounded-box mt-2 z-1 w-32 p-2 shadow-2xl">
+              <ul tabIndex={0} className={"dropdown-content rounded-box mt-2 z-1 w-32 p-2 shadow-2xl " + bgGradient}>
                 {themes.map((themeOption) => (
                   <li key={themeOption.value}>
                     <input
@@ -118,11 +122,11 @@ export function Header() {
             </Form>
           </div>
         </div>
-        <div className="navbar-center md:flex-row gap-1.5 text-primary">
+        <div className="navbar-center md:flex-row gap-1.5 text-base-content">
           {!isHomePage ?
             <>
-              <Link to={"/"} onClick={handleDropdown} className="flex hover:bg-base-200 rounded px-2.5 py-1 text-2xl" viewTransition>
-                <span className="hidden md:block me-2">La Flor Blanca</span>
+              <Link to={"/"} onClick={handleDropdown} className="flex gap-2 items-center rounded px-2.5 py-1 " viewTransition>
+                <span className="hidden md:block text-2xl bg-transparent hover:bg-base-300/35 rounded p-1">La Flor Blanca</span>
                 <div className="avatar">
                   <div className="w-10 rounded">
                     <img src={logo} alt="logo" className="transform scale-150" />
@@ -166,7 +170,7 @@ function ShoppingCartIcon({ count }: { count: number }) {
   return (
     <Link to={href("/cart")} className="btn btn-ghost btn-circle" viewTransition>
       <div className="indicator cursor-pointer">
-        <CgShoppingCart className="h-8 w-8 ms-2 text-primary cursor-pointer" />
+        <CgShoppingCart className="h-8 w-8 ms-2 text-base-content cursor-pointer" />
         <AnimatePresence mode="wait">
           {count > 0 && (
             <motion.div
