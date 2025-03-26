@@ -1,7 +1,7 @@
 import { Form, useNavigate } from "react-router";
 import ActionError from "~/components/framer-motion/ActionError";
 import type { Route } from "./+types/create";
-import { useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { prisma } from "~/db.server";
 import { createCategory } from "~/models/category.server";
@@ -39,17 +39,18 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function CreateCategory({ actionData }: Route.ComponentProps) {
-  const formRef = useRef<HTMLFormElement>(null);
   const errors = actionData?.errors;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (actionData?.success && formRef?.current) {
-      toast.success("Categoría creada 👏🏽");
-      formRef.current.reset();
-      navigate(-1);
-    }
-  }, [actionData]);
+  const formRef = useCallback(
+    (node: HTMLFormElement | null) => {
+      if (node && actionData?.success) {
+        toast.success("Categoría creada 👏🏽");
+        node.reset();
+        navigate(-1);
+        console.log("Form reset via callback ref");
+      }
+    }, [actionData]);
 
   return (
     <div className="min-h-screen text-center w-full">

@@ -1,6 +1,6 @@
 import { Form, useNavigation } from "react-router";
 import type { Route } from "./+types/group-send";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ImBin } from "react-icons/im";
 import { renderCustomEmail } from "~/integrations/mailer/html-templates/custom-email";
 import { getUsersByPlan } from "~/models/user.server";
@@ -49,7 +49,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
             console.error(`Some emails failed to send: `, failSends);
             return { success: "Emails sent with some failures", count: recipients.length - failSends.length, failed: failSends.length };
         }
-        //    Promise.all(emailData.recipients.map((user: { email: string, username: string }) => sendCustomEmail(user.email, user.username, emailData.subject, emailData.text, emailData.links)));
 
         return { success: "Email sent successfully!", count: results.length };
     } catch (error) {
@@ -60,12 +59,22 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 };
 
-
+interface LinkField {
+    id: number;
+}
 
 export default function EmailForm({ actionData }: Route.ComponentProps) {
     const { recipients, previewHtml, subject, text, links, success, count, failed } = actionData || {};
-    const [linkFields, setLinkFields] = useState([{ id: Date.now() }]);
+    const [linkFields, setLinkFields] = useState<LinkField[]>([]);
     const navigation = useNavigation();
+
+    const formRef = useCallback((node: HTMLFormElement | null) => {
+        if (node && actionData?.success) {
+            node.reset();
+            setLinkFields([]);
+            console.log("Form reset via callback ref");
+        }
+    }, [actionData]); // Watches actionData changes
 
     function addLinkField() {
         setLinkFields([...linkFields, { id: Date.now() }]);
@@ -85,8 +94,11 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
     return (
         <div className="p-8">
             <h1 className="text-2xl text-center mb-4">Email</h1>
-            <p className="text-center mb-6 px-4">Envía un email en masa a los usuarios de un deterninado plan.</p>
-            <Form method="post" className="max-w-md mx-auto flex flex-col gap-3">
+            <p className="text-center mb-6 px-4">Envía un email a un grupo de usuarios de un plan deterninado.</p>
+            <CustomAlert>
+                <p>No te olvides de seleccionar la sección adecuada.</p>
+            </CustomAlert>
+            <Form method="post" ref={formRef} className="max-w-md mx-auto flex flex-col gap-3">
                 <label className="input input-lg w-full">
                     <span className="label">Asunto</span>
                     <input type="text" name="subject" required />
@@ -105,7 +117,6 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                     </select>
                 </label>
 
-                <h3>Links:</h3>
                 {linkFields.map((field) => (
                     <div key={field.id} className="flex flex-col md:flex-row gap-2">
                         <label className="input input-lg w-full">

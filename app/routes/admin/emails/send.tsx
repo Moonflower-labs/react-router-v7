@@ -30,8 +30,8 @@ export default function Email({ loaderData }: Route.ComponentProps) {
     return (
         <div className="p-8 text-center">
             <CustomAlert level="warning" className="max-w-md">
-                <p className="mb-3">De momento, esto es solo para test</p>
-                <p className="mb-3">En el futuro podrás enviar un email directamente relacionado con un pedido específico.</p>
+                <p>Esto solo es para test, de momento.</p>
+                <p>En el futuro podrás enviar un email directamente relacionado con un pedido específico.</p>
             </CustomAlert>
             <h1 className="text-2xl mb-4">Email</h1>
 
