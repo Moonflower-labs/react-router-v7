@@ -93,7 +93,7 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
     <div className="text-center">
       <h2 className="text-2xl text-primary my-3" ref={ref}>Actualiza tu plan</h2>
       <p className="mb-6">Elige el plan al que deseas cambiar.</p>
-      {!loaderData?.error && <CustomAlert level="error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </CustomAlert>}
+      {loaderData?.error && <CustomAlert level="error">Actualiza el método de pago para continuar. Pincha <Link to="/payments/setup" className="link">aquí.</Link> </CustomAlert>}
       <div className="flex flex-col md:flex-row gap-3 md:w-2/3 mx-auto justify-around mb-4">
         {plans
           .filter((p) => p.name !== subscription?.plan?.name)
