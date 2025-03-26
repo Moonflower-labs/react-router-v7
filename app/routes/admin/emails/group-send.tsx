@@ -5,7 +5,7 @@ import { ImBin } from "react-icons/im";
 import { renderCustomEmail } from "~/integrations/mailer/html-templates/custom-email";
 import { getUsersByPlan } from "~/models/user.server";
 import type { SubscriptionPlan } from "~/integrations/stripe/subscription.server";
-import { sendCustomEmail } from "~/integrations/mailer/utils.server";
+import { sendEmailsInBatches } from "~/integrations/mailer/utils.server";
 import { CustomAlert } from "~/components/shared/info";
 
 
@@ -39,22 +39,31 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
 
     const emailData = JSON.parse(formData.get("emailData") as string);
-    let emails;
+    const { recipients, subject, text, links } = emailData
+
     try {
         // Send email to users
-        emails = await Promise.all(emailData.recipients.map((user: { email: string, username: string }) => sendCustomEmail(user.email, user.username, emailData.subject, emailData.text, emailData.links)));
+        const results = await sendEmailsInBatches(recipients, subject, text, links, 100);
+        const failSends = results.filter((result) => result && 'error' in result);
+        if (failSends.length > 0) {
+            console.error(`Some emails failed to send: `, failSends);
+            return { success: "Emails sent with some failures", count: recipients.length - failSends.length, failed: failSends.length };
+        }
+        //    Promise.all(emailData.recipients.map((user: { email: string, username: string }) => sendCustomEmail(user.email, user.username, emailData.subject, emailData.text, emailData.links)));
+
+        return { success: "Email sent successfully!", count: results.length };
     } catch (error) {
         console.error(error);
         return { error: "Something went wrong" };
 
     }
-    return { success: "Email sent successfully!", count: emails.length };
+
 };
 
 
 
 export default function EmailForm({ actionData }: Route.ComponentProps) {
-    const { recipients, previewHtml, subject, text, links, success, count } = actionData || {};
+    const { recipients, previewHtml, subject, text, links, success, count, failed } = actionData || {};
     const [linkFields, setLinkFields] = useState([{ id: Date.now() }]);
     const navigation = useNavigation();
 
@@ -119,16 +128,10 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
                 {navigation.state === "submitting" && <CustomAlert level="loading">Generando preview...</CustomAlert>}
             </Form>
             {success && <CustomAlert level="success">Emails enviados {count}</CustomAlert>}
+            {failed && <CustomAlert level="warning">Emails fallidos {failed}</CustomAlert>}
             {previewHtml && (
                 <div className="py-8 text-center">
                     <h2 className="font-bold text-2xl">Email Preview</h2>
-                    <>
-                        {console.log(previewHtml)}
-                    </>
-                    {/* <div className="text-start text-base-content !border-0 !border-none !border-spacing-0 !border-collapse"
-                        dangerouslySetInnerHTML={{ __html: previewHtml }}
-                    /> */}
-
 
                     <div
                         className="text-start mx-auto"

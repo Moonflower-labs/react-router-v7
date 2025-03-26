@@ -78,3 +78,25 @@ export async function sendCustomEmail(email: string, username: string, subject: 
     html: await renderCustomEmail({ username, links, text, subject })
   });
 }
+
+export async function sendEmailsInBatches(
+  recipients: { email: string; username: string }[],
+  subject: string,
+  text: string,
+  links: { name: string; url: string }[],
+  batchSize = 100
+) {
+  const batches = [];
+  for (let i = 0; i < recipients.length; i += batchSize) {
+    batches.push(recipients.slice(i, i + batchSize));
+  }
+
+  const results = [];
+  for (const batch of batches) {
+    const batchPromises = batch.map(
+      user => sendCustomEmail(user.email, user.username, subject, text, links).catch(error => ({ error, user })) // Capture errors per user
+    );
+    results.push(...(await Promise.all(batchPromises)));
+  }
+  return results;
+}
