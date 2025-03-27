@@ -1,6 +1,6 @@
 import { Form, useNavigation } from "react-router";
 import type { Route } from "./+types/group-send";
-import { useCallback, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImBin } from "react-icons/im";
 import { renderCustomEmail } from "~/integrations/mailer/html-templates/custom-email";
 import { getUsersByPlan } from "~/models/user.server";
@@ -68,13 +68,13 @@ export default function EmailForm({ actionData }: Route.ComponentProps) {
     const [linkFields, setLinkFields] = useState<LinkField[]>([]);
     const navigation = useNavigation();
 
-    const formRef = useCallback((node: HTMLFormElement | null) => {
-        if (node && actionData?.success) {
-            node.reset();
-            setLinkFields([]);
-            console.log("Form reset via callback ref");
+    const formRef = useRef<HTMLFormElement>(null);
+
+    useEffect(() => {
+        if (actionData?.success && formRef?.current) {
+            formRef.current.reset();
         }
-    }, [actionData]); // Watches actionData changes
+    }, [actionData]);
 
     function addLinkField() {
         setLinkFields([...linkFields, { id: Date.now() }]);
