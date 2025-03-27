@@ -5,6 +5,7 @@ import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import { createPremiumQuestion, getQuestionCount, incrementQuestionCount } from "~/models/question.server";
 import { toast } from "react-toastify";
 import { getUserId } from "~/middleware/sessionMiddleware";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 
 export async function loader({ context }: Route.LoaderArgs) {
@@ -56,10 +57,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data?.success && fetcher.data?.message) {
-        toast.success(fetcher.data?.message);
+        toast.success(<Toaster message={fetcher.data.message} />);
       }
       if (!fetcher.data?.success && fetcher.data?.error) {
-        toast.error(fetcher.data?.error);
+        toast.error(<Toaster message={fetcher.data.error} />);
       }
     }
   }, [fetcher.data]);

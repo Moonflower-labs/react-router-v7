@@ -78,9 +78,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <ToastContainer
           autoClose={6000}
+          customProgressBar={true}
+          closeButton={false}
+          icon={false}
+          className={"!shadow-none !m-0"}
           draggable
           stacked
-          icon={false}
         />
         <Header />
         {children}

@@ -5,6 +5,7 @@ import { createBasicQuestion, editBasicInfo, fetchBasicInfo, getQuestionCount, i
 import { toast } from "react-toastify";
 import ActionError from "~/components/framer-motion/ActionError";
 import { getUserId } from "~/middleware/sessionMiddleware";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 
 export async function loader({ context }: Route.LoaderArgs) {
@@ -160,10 +161,10 @@ const QuestionForm = ({ questionCount }: { questionCount: number }) => {
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data?.success && fetcher.data?.message) {
-        toast.success(fetcher.data?.message);
+        toast.success(<Toaster message={fetcher.data?.message} />);
       }
       if (!fetcher.data?.success && fetcher.data?.error) {
-        toast.error(fetcher.data?.error);
+        toast.error(<Toaster message={fetcher.data?.error} />);
       }
     }
   }, [fetcher.data]);
@@ -262,11 +263,11 @@ const BasicInfo = ({ basicInfo }: { basicInfo: Awaited<ReturnType<typeof fetchBa
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data?.success && fetcher.data?.message) {
-        toast.success(fetcher.data?.message);
+        toast.success(<Toaster message={fetcher.data?.message} />);
         setIsEdit(false)
       }
       if (!fetcher.data?.success && fetcher.data?.error) {
-        toast.error(fetcher.data?.error);
+        toast.error(<Toaster message={fetcher.data?.error} />);
       }
     }
   }, [fetcher.data]);

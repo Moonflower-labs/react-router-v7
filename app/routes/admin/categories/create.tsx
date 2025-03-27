@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { prisma } from "~/db.server";
 import { createCategory } from "~/models/category.server";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 export async function loader() {
   const categories = await prisma.category.findMany();
@@ -45,7 +46,7 @@ export default function CreateCategory({ actionData }: Route.ComponentProps) {
 
   useEffect(() => {
     if (actionData?.success && formRef?.current) {
-      toast.success("Categoría creada 👏🏽");
+      toast.success(<Toaster message="Categoría creada 👏🏽" />);
       formRef.current.reset();
       navigate(-1);
     }

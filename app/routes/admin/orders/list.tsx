@@ -10,6 +10,7 @@ import type { OrderStatus } from "@prisma/client";
 import { GrRevert } from "react-icons/gr";
 import { formatDayTimeEs } from "~/utils/format";
 import { CustomAlert } from "~/components/shared/info";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -77,9 +78,9 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
   useEffect(() => {
     if (actionData?.success) {
       if (actionData?.deleted) {
-        toast.success("Pedido eliminado");
+        toast.success(<Toaster message={"Pedido eliminado"} />);
       } else {
-        toast.success("Estado actualizado!");
+        toast.success(<Toaster message={"Estado actualizado!"} />);
       }
     }
   }, [actionData]);
@@ -114,11 +115,7 @@ export default function ListOrders({ loaderData, actionData }: Route.ComponentPr
         </div>
       </CustomAlert>,
       {
-        autoClose: false,
-        closeButton: false,
-        // containerId: "toastContainer",
-        className: "!p-0 !m-0 !bg- !border-none !shadow-none",
-        style: { padding: 0 }
+        className: "!p-0 !m-0 !bg-base-100 !border-none !shadow-none",
       }
     );
     setToastId(_toastId);

@@ -7,6 +7,7 @@ import { getUserSubscription } from "~/models/subscription.server";
 import { formatDayTimeEs } from "~/utils/format";
 import { getUserId } from "~/middleware/sessionMiddleware";
 import { deleteUser, getUsers } from "~/models/user.server";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 export async function loader({ }: Route.LoaderArgs) {
   const users = await getUsers()
@@ -36,10 +37,10 @@ export default function UserList({ loaderData, actionData }: Route.ComponentProp
 
   useEffect(() => {
     if (actionData?.success && actionData?.username) {
-      toast.success(`Usuario ${actionData?.username} ha sido eliminado`);
+      toast.success(<Toaster message={`Usuario ${actionData?.username} ha sido eliminado`} />);
     }
     if (!actionData?.success && actionData?.message) {
-      toast.error(`${actionData?.message}`);
+      toast.error(<Toaster message={`${actionData?.message}`} />);
     }
   }, [actionData]);
 

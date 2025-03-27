@@ -8,6 +8,7 @@ import { FaEye } from "react-icons/fa";
 import type { Route } from "./+types/list";
 import { deleteSession, getSessions } from "~/utils/chat.server";
 import { CiEdit } from "react-icons/ci";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -47,7 +48,7 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
     useEffect(() => {
         if (actionData?.success) {
             if (actionData?.deleted) {
-                toast.success("Sesión eliminada");
+                toast.success(<Toaster message={"Sesión eliminada"} />);
             }
         }
     }, [actionData]);
@@ -63,7 +64,7 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
             setToastId(null)
         }
         const _toastId = toast.warn(
-            <div>
+            <div className="w-full h-full bg-base-100 p-4 rounded-box overflow-hidden border border-warning/60 text-center">
                 <span>Quieres eliminar esta sesión?</span>
                 <div className="flex justify-center gap-5 mt-3">
                     <button
@@ -81,8 +82,8 @@ export default function ListSessions({ loaderData, actionData }: Route.Component
                 </div>
             </div>,
             {
-                // position: "top-right",
                 autoClose: false,
+                className: "!p-0"
             }
         );
         setToastId(_toastId);

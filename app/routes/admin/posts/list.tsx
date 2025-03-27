@@ -5,9 +5,11 @@ import { formatDayTimeEs } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { ImBin } from "react-icons/im";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { toast, type Id } from "react-toastify";
 import { Paginator } from "~/components/members/Pagination";
+import { Toaster } from "~/components/framer-motion/Toaster";
+import { CustomAlert } from "~/components/shared/info";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -35,12 +37,13 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ListPosts({ loaderData, actionData }: Route.ComponentProps) {
+  const [toastId, setToastId] = useState<Id | null>(null);
   const posts = loaderData?.posts;
   const submit = useSubmit();
 
   useEffect(() => {
     if (actionData?.success) {
-      toast.success("Post eliminado");
+      toast.success(<Toaster message={"Post eliminado"} />);
     }
   }, [actionData]);
 
@@ -48,31 +51,33 @@ export default function ListPosts({ loaderData, actionData }: Route.ComponentPro
     event.preventDefault();
     const form = event.currentTarget;
     const postId = form.postId.value;
+    if (toastId) {
+      toast.dismiss(toastId);
+      setToastId(null)
+    }
 
-    toast.warn(
-      <div>
+    const _toastId = toast.warn(
+      <CustomAlert level="warning" className="!m-0">
         <span>Quieres borrar este post?</span>
         <div className="flex justify-center gap-5 mt-3">
           <button
             onClick={() => {
               toast.dismiss();
-              console.log("Submitting form:", event.target);
               submit({ postId }, { method: "POST" });
             }}
-            className="btn btn-sm btn-primary">
-            Yes
+            className="btn btn-sm btn-warning w-1/2">
+            Aceptar
           </button>
-          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary">
-            No
+          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary btn-outline w-1/2">
+            Cancelar
           </button>
         </div>
-      </div>,
+      </CustomAlert>,
       {
-        position: "top-right",
-        autoClose: false,
-        draggable: false
+        className: "!p-0 !m-0 !bg-base-100 !border-none !shadow-none",
       }
     );
+    setToastId(_toastId);
   };
 
   return (

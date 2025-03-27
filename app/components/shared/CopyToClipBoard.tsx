@@ -1,6 +1,7 @@
 import { useOptimistic, useTransition } from 'react'
 import { TbClipboardCheck, TbClipboard, TbClipboardX } from 'react-icons/tb';
 import { toast } from 'react-toastify';
+import { Toaster } from '../framer-motion/Toaster';
 
 export function CopyToClipBoard({ href }: { href: string }) {
     const [state, setState] = useOptimistic<"idle" | "copied" | "failed">("idle");
@@ -14,7 +15,7 @@ export function CopyToClipBoard({ href }: { href: string }) {
                     try {
                         await navigator.clipboard.writeText(href)
                         setState("copied"); // Set copied state to true
-                        toast.success("Email copiado")
+                        toast.success(<Toaster message={"Email copiado"} />)
 
                     } catch (e) {
                         setState("failed")

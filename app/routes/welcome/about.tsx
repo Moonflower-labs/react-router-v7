@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { YoutubeVideo } from "~/components/shared/YoutubeVideo";
 import ReviewsSection from "./reviews";
 import { getUserId } from "~/middleware/sessionMiddleware";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "La Flor Blanca: About" }, { name: "description", content: "Health and wellbeing" }];
@@ -42,7 +43,7 @@ export default function About({ loaderData }: Route.ComponentProps) {
 
   useEffect(() => {
     if (fetcher?.data?.success && fetcher.state !== "idle" && fetcher?.data?.message) {
-      toast.success(`${fetcher.data.message}`);
+      toast.success(<Toaster message={fetcher.data.message} />);
     }
   }, [fetcher.data]);
 

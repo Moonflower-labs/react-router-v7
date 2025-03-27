@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, useTransition, type Dispatch,
 import { href } from "react-router";
 import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
+import { Toaster } from "~/components/framer-motion/Toaster";
 import type { ChatMessage } from "~/utils/chat.server";
 
 // Custom hook for SSE subscription, visibility, and participants
@@ -66,7 +67,7 @@ export function useChatSubscription(roomId: string, initialMessages: ChatMessage
         // Handle chatExpired event
         if (chatExpired && !hasExpiredRef.current) {
             console.log(JSON.parse(chatExpired))
-            toast.info("Esta sesión ha finalizado. Gracias por participar!")
+            toast.info(<Toaster message={"Esta sesión ha finalizado. Gracias por participar!"} />)
             setIsActiveRoom(false);
             hasExpiredRef.current = true; // Mark as handled
             return;

@@ -8,6 +8,7 @@ import { formatDayTimeEs } from "~/utils/format";
 import { deleteCategory } from "~/models/category.server";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 export async function loader() {
   return prisma.category.findMany();
@@ -31,7 +32,7 @@ export default function CategoryList({ loaderData, actionData }: Route.Component
 
   useEffect(() => {
     if (actionData?.success) {
-      toast.success("Categoría eliminada");
+      toast.success(<Toaster message="Categoría eliminada" />);
     }
   }, [actionData]);
 

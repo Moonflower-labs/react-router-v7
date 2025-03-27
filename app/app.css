@@ -90,7 +90,7 @@ body {
 }
 
 .Toastify__toast {
-  @apply rounded border;
+  @apply rounded border-none bg-transparent;
 }
 
 .scale-hover {

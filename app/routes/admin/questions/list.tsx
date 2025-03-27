@@ -1,12 +1,14 @@
-import { data, Form, Link, Outlet, useNavigate, useSubmit } from "react-router";
+import { data, Form, href, Link, Outlet, useNavigate, useSubmit } from "react-router";
 import type { Route } from "./+types/list";
 import { formatDayTimeEs } from "~/utils/format";
 import { ImBin } from "react-icons/im";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { toast, type Id } from "react-toastify";
 import { Paginator } from "~/components/members/Pagination";
 import { deleteQuestion, getQuestions, type BasicQuestion, type PremiumQuestion } from "~/models/question.server";
 import { FaEye } from "react-icons/fa";
+import { Toaster } from "~/components/framer-motion/Toaster";
+import { CustomAlert } from "~/components/shared/info";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -46,11 +48,12 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
   const questions = loaderData?.questions as (BasicQuestion | PremiumQuestion)[];
   const submit = useSubmit();
   const navigate = useNavigate();
+  const [toastId, setToastId] = useState<Id | null>(null);
   const section = loaderData?.section;
   useEffect(() => {
     if (actionData?.success) {
-      toast.success("Pregunta eliminada");
-      navigate("/admin/questions");
+      toast.success(<Toaster message={"Pregunta eliminada"} />);
+      navigate(href("/admin/questions"));
     }
   }, [actionData]);
 
@@ -59,8 +62,12 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
     const form = event.currentTarget;
     const questionId = form.questionId.value;
 
-    toast.warn(
-      <div>
+    if (toastId) {
+      toast.dismiss(toastId);
+      setToastId(null)
+    }
+    const _toastId = toast.warn(
+      <CustomAlert level="warning" className="!m-0">
         <span>Quieres borrar esta pregunta?</span>
         <div className="flex justify-center gap-5 mt-3">
           <button
@@ -69,20 +76,21 @@ export default function ListQuestions({ loaderData, actionData }: Route.Componen
               console.log("Submitting form:", event.target);
               submit({ questionId }, { method: "POST" });
             }}
-            className="btn btn-sm btn-primary">
-            Yes
+            className="btn btn-sm btn-warning w-1/2">
+            Aceptar
           </button>
-          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary">
-            No
+          <button onClick={() => toast.dismiss()} className="btn btn-sm btn-primary btn-outline w-1/2">
+            Cancelar
           </button>
         </div>
-      </div>,
+      </CustomAlert>,
       {
-        position: "top-right",
-        autoClose: false,
-        draggable: false
+        className: "!p-0 !m-0 !bg-base-100 !border-none !shadow-none",
       }
     );
+    setToastId(_toastId);
+
+
   };
 
   return (
