@@ -47,7 +47,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     doc.moveDown();
     doc.fontSize(14).text(`Gasto Postal £${shippingCost}`, { align: "center" });
     doc.moveDown();
-    doc.fontSize(20).text(`TOTAL £${total + shippingCost}`, { align: "center" });
+    doc.fontSize(20).text(`TOTAL £${(total + shippingCost) / 100}`, { align: "center" });
     doc.end();
 
     // Set response headers for PDF download
