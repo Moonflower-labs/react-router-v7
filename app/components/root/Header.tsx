@@ -11,7 +11,7 @@ import logo from "./logo.svg"
 import { RiAdminFill } from "react-icons/ri";
 
 
-export const bgGradient = "  bg-gradient-to-r from-primary/70 via-primary/55 to-primary/60 backdrop-blur "
+export const bgGradient = "  bg-gradient-to-r from-primary/65 via-primary/55 to-primary/60 backdrop-blur "
 
 
 export function Header() {
