@@ -18,7 +18,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 
-export default function Favorites({ loaderData }: Route.ComponentProps) {
+export default function FavoritesPage({ loaderData }: Route.ComponentProps) {
   const favorites = loaderData?.favorites;
   const fetcher = useFetcher();
   const favPosts = favorites?.filter(favorite => favorite.postId !== null);

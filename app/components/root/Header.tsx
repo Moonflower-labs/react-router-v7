@@ -111,7 +111,7 @@ export function Header() {
                       type="radio"
                       name="theme-buttons"
                       defaultChecked={theme === themeOption.value}
-                      className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+                      className="theme-controller btn btn-sm btn-block btn-ghost justify-start checked:bg-primary"
                       aria-label={themeOption.label}
                       value={themeOption.value}
                     />

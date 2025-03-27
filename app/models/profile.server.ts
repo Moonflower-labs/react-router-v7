@@ -27,6 +27,18 @@ export async function getUserFavorites(userId: string): Promise<Favorite[]> {
   return favorites;
 }
 
+export async function getPaginatedFavoritePosts(userId: string, page: number = 1, pageSize: number = 5) {
+  const favorites = await prisma.favorite.findMany({
+    where: { userId, post: { isNot: null } },
+    include: { post: { select: { id: true, title: true } } },
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * pageSize,
+    take: pageSize
+  });
+
+  return favorites;
+}
+
 export async function updateUserAvatar(userId: string, avatar: string) {
   return prisma.profile.update({
     where: { userId: userId },
