@@ -17,6 +17,7 @@ export async function loader({ context }: Route.LoaderArgs) {
   }
 }
 
+
 export default function Favorites({ loaderData }: Route.ComponentProps) {
   const favorites = loaderData?.favorites;
   const fetcher = useFetcher();
@@ -26,7 +27,10 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
   return (
     <div className="px-3 overflow-x-hidden">
       <h2 className="font-bold text-2xl text-primary text-center py-4">Favoritos</h2>
-      <CustomAlert >Pincha en cada favorito para navegar al post o vídeo.</CustomAlert>
+      <CustomAlert>
+        <p>Pincha en cada favorito para navegar al post o vídeo</p>
+        <p className="flex gap-1.5 items-center">o en  <TbTrash className="text-error" /> para eliminarlo de tus favoritos.</p>
+      </CustomAlert>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="py-6">
           <h2 className="font-semibold text-xl text-primary">Posts</h2>
@@ -36,11 +40,11 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
                 <Link to={href("/members/personality/post/:id", { id: fav?.post?.id! })} className="w-2/3 hover:opacity-80">
                   {fav?.post?.title}
                 </Link>
-                <fetcher.Form method="post" action={`/personality/post/${fav?.post?.id}`} className="text-end w-1/3">
+                <fetcher.Form method="post" action={href("/members/personality/post/:id", { id: fav?.post?.id as string })} className="text-end w-1/3">
                   <input type="hidden" name="id" value={fav?.post?.id} />
                   <input type="hidden" name="action" value={"remove"} />
                   <input type="hidden" name="intent" value="favorite" />
-                  <button type="submit" className="text-accent text-xl" name="id" value={fav?.post?.id}>
+                  <button type="submit" className="text-accent text-xl cursor-pointer hover:bg-base-200 disabled:opacity-80 rounded-full p-1 shadow" disabled={fetcher.state === "submitting"} name="id" value={fav?.post?.id}>
                     <TbTrash className="text-error" />
                   </button>
                 </fetcher.Form>
@@ -62,11 +66,11 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
                   <span className={`text-end badge badge-primary ${fav?.video?.section === "Soul" && "badge-outline"}`}>
                     {fav?.video?.section === "Soul" ? "Alma" : "Espíritu"}
                   </span>
-                  <fetcher.Form method="post" action={`/${fav?.video?.section}/video/${fav?.video?.id}`} className="text-end">
+                  <fetcher.Form method="post" action={`${href("/members")}/${fav?.video?.section}/video/${fav?.video?.id}`} className="text-end">
                     <input type="hidden" name="id" value={fav?.video?.id} />
                     <input type="hidden" name="action" value={"remove"} />
                     <input type="hidden" name="intent" value="favorite" />
-                    <button type="submit" className="text-xl" name="id" value={fav?.video?.id}>
+                    <button type="submit" className="text-xl cursor-pointer hover:bg-base-200 disabled:opacity-80 rounded-full p-1 shadow" disabled={fetcher.state === "submitting"} name="id" value={fav?.video?.id}>
                       <TbTrash className="text-error" />
                     </button>
                   </fetcher.Form>
