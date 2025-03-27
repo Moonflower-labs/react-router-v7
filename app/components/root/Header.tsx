@@ -11,7 +11,7 @@ import logo from "./logo.svg"
 import { RiAdminFill } from "react-icons/ri";
 
 
-export const bgGradient = " bg-base-200/80 bg-gradient-to-r from-primary/35 to-primary/60 backdrop-blur "
+export const bgGradient = "  bg-gradient-to-r from-primary/70 via-primary/55 to-primary/60 backdrop-blur "
 
 
 export function Header() {
@@ -47,7 +47,7 @@ export function Header() {
             <div tabIndex={0} role="button" className={"btn btn-ghost shadow text-base-content"}>
               <AiOutlineUser size={26} />
             </div>
-            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2" + bgGradient}>
+            <ul tabIndex={0} className={"menu menu-sm dropdown-content mt-3 z-[1] rounded-box w-52 p-2 bg-base-300/90 overflow-hidden"}>
               {user ? (
                 <>
                   <li>
@@ -104,7 +104,7 @@ export function Header() {
               <span className="hidden md:block">Theme</span>
             </div>
             <Form method="post" action="/" onChange={e => submit(e.currentTarget, { preventScrollReset: true, navigate: false })}>
-              <ul tabIndex={0} className={"dropdown-content rounded-box mt-2 z-1 w-32 p-2 shadow-2xl " + bgGradient}>
+              <ul tabIndex={0} className={"dropdown-content rounded-box mt-2 z-1 w-32 p-2 shadow-2xl bg-base-300/90"}>
                 {themes.map((themeOption) => (
                   <li key={themeOption.value}>
                     <input
