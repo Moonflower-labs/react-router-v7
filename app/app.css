@@ -83,18 +83,22 @@
   --color-primary-content: oklch(43% 0.078 188.216);
 }
 
+body {
+  font-family: "Faculty Glyphic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.Toastify__toast {
+  @apply rounded border;
+}
+
 .scale-hover {
   @apply hover:scale-110 ease-in duration-200;
 }
 
 .btn-primary:disabled {
   @apply cursor-not-allowed bg-primary/40 text-primary-content;
-}
-
-body {
-  font-family: "Faculty Glyphic", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
 .full-image {
