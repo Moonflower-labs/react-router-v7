@@ -101,7 +101,7 @@ export default function PersonalityDetail({ loaderData }: Route.ComponentProps) 
       <article className="pb-6 pt-16 px-10 md:px-40">
         <h2 className="text-primary font-semibold text-2xl text-center mt-4 mb-3">{post?.title}</h2>
         <div className="mb-4 flex gap-2">
-          {post?.categories?.length &&
+          {post?.categories && post.categories.length > 0 &&
             post.categories.map(category => (
               <div key={category.id} className="badge badge-outline badge-info badge-sm">
                 {category.name}

@@ -82,7 +82,7 @@ export default function SpiritDetail({ loaderData }: Route.ComponentProps) {
         <h2 className="relative text-secondary font-semibold text-2xl text-center mt-4 mb-3">{video?.title}</h2>
         <VideoComponent video={video as unknown as Video} />
         <div className="my-4 flex gap-2">
-          {video?.categories?.length &&
+          {video?.categories?.length > 0 &&
             video.categories.map((category: { id: Key | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => (
               <div key={category.id} className="badge badge-outline badge-info badge-sm">
                 {category.name}

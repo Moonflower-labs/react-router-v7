@@ -87,7 +87,7 @@ export default function SoulDetail({ loaderData }: Route.ComponentProps) {
         <h2 className="relative text-primary font-semibold text-2xl text-center mt-4 mb-3">{video?.title}</h2>
         <VideoComponent video={video as unknown as Video} />
         <div className="my-4 flex gap-2">
-          {video?.categories?.length &&
+          {video?.categories?.length > 0 &&
             video.categories.map(category => (
               <div key={category.id} className="badge badge-outline badge-info badge-sm">
                 {category.name}
