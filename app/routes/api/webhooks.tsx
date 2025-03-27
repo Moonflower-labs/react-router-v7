@@ -53,9 +53,6 @@ export async function action({ request }: Route.ActionArgs) {
     case "customer.subscription.resumed":
       // await handleSubscriptionResumed(event);
       break;
-    // case "invoice.paid":
-    //   await handleInvoicePaid(event)
-    //   break;
 
     default:
       // Unexpected event type

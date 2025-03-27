@@ -1,40 +1,7 @@
-import { Form, useFetcher } from "react-router";
+import { Form } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { GiHeraldicSun } from "react-icons/gi";
-
-export function Rating({ hasRated }: { hasRated: boolean }) {
-  const fetcher = useFetcher();
-
-  const animationProperties = {
-    initial: { opacity: 0, rotateX: 90 },
-    animate: { opacity: 1, rotateX: 0 },
-    exit: { opacity: 0, rotateX: 90 },
-    transition: { duration: 0.4 }
-  };
-
-  return (
-    <AnimatePresence mode="wait">
-      {hasRated ? (
-        <motion.div key={"rated"} {...animationProperties}>
-          <div className="badge badge-outline">Ya has valorado esta respuesta 👍</div>
-        </motion.div>
-      ) : (
-        <motion.div key={"rating"} {...animationProperties}>
-          <fetcher.Form method="post" className="rating rating-md gap-1 my-auto border p-3 rounded-md bg-secondary/15 align-middle">
-            <div>Valora esta respuesta</div>
-            <input type="hidden" name="intent" value="rating" />
-            <input type="radio" name="rating-value" className="mask mask-heart bg-primary" defaultValue={1} />
-            <input type="radio" name="rating-value" className="mask mask-heart bg-primary" defaultValue={2} />
-            <input type="radio" name="rating-value" className="mask mask-heart bg-primary" defaultValue={3} defaultChecked />
-            <button className="btn btn-primary btn-sm">Votar</button>
-          </fetcher.Form>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
 
 
 interface RatingFormProps {

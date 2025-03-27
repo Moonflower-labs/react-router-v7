@@ -86,8 +86,6 @@ const CustomEmail = ({ username, text, subject, links }: CustomEmailProps) => {
 };
 
 
-export default CustomEmail;
-
 
 
 export function renderCustomEmail({ username, text, subject, links }: CustomEmailProps) {

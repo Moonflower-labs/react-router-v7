@@ -2,7 +2,7 @@ import { prisma } from "~/db.server";
 import { type CartItem } from "./cart.server";
 import type { Order, OrderItem, OrderStatus, Price, Product, ShippingRate } from "@prisma/client";
 
-export interface ExtendedOrderItem extends OrderItem {
+interface ExtendedOrderItem extends OrderItem {
   price: Price;
   product: Product;
 }
@@ -167,8 +167,4 @@ export async function deleteOrder(id: string) {
 
 export async function updateOrderProcessStatus(id: string, isProcessed: boolean) {
   return prisma.order.update({ where: { id }, data: { isProcessed } });
-}
-
-export async function updateOrderStatus(id: string, status: OrderStatus) {
-  return prisma.order.update({ where: { id }, data: { status } });
 }

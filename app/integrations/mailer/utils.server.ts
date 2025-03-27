@@ -69,7 +69,7 @@ export async function sendResetPasswordEmail(email: string, resetUrl: string) {
   });
 }
 
-export async function sendCustomEmail(email: string, username: string, subject: string, text: string, links: any) {
+async function sendCustomEmail(email: string, username: string, subject: string, text: string, links: any) {
   return transporter.sendMail({
     from: "admin@thechicnoir.com",
     to: email,

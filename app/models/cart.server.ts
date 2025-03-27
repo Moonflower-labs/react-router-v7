@@ -50,7 +50,7 @@ export function calculateTotalAmount(cartItems: CartItem[], discount: number = 0
   return discountedSubtotal + (shippingRate ?? 0);
 }
 
-export async function addShoppingCart(userId: string) {
+async function addShoppingCart(userId: string) {
   if (userId.startsWith("guest-")) {
     return prisma.cart.create({ data: { guest: true, id: userId } });
   }

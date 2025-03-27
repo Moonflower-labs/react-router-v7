@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 import type { Favorite as PrismaFav, Post, Video } from "@prisma/client";
 
-export type Favorite = PrismaFav & {
+type Favorite = PrismaFav & {
   post?: Post | null | undefined;
   video?: Video | null | undefined;
 };

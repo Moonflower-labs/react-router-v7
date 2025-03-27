@@ -161,32 +161,3 @@ export async function syncStripeShippingRates() {
     console.error("Error while trying to sync Shipping Rates");
   }
 }
-
-// {
-//   id: 'shr_1Ns5zEAEZk4zaxmwyK6CpQxn',
-//   object: 'shipping_rate',
-//   active: true,
-//   created: 1695137836,
-//   delivery_estimate: {
-//     maximum: { unit: 'hour', value: 48 },
-//     minimum: { unit: 'hour', value: 24 }
-//   },
-//   display_name: "FREE, MY PRODUCT DOESN'T NEED A DELIVERY",
-//   fixed_amount: { amount: 0, currency: 'gbp' },
-//   livemode: false,
-//   metadata: { app: 'florblanca' },
-//   tax_behavior: 'unspecified',
-//   tax_code: 'txcd_92010001',
-//   type: 'fixed_amount'
-// }
-
-//   metadata: { app: 'florblanca' },
-// model ShippingRate {
-//     id          String  @id @default(cuid())
-//     displayNmae String
-//     amount      Int
-//     metadata    Json
-//     createdAt   DateTime @default(now())
-
-//     Order Order[]
-//   }

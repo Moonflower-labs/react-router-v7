@@ -102,9 +102,6 @@ const NewOrderEmail = ({ order, username }: NewOrderEmailProps) => {
 };
 
 
-export default NewOrderEmail;
-
-
 
 export function renderNewOrderEmail({ order, username }: NewOrderEmailProps) {
     return render(<NewOrderEmail order={order} username={username} />)

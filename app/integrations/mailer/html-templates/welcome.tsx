@@ -115,9 +115,6 @@ const WelcomeUserEmail = ({ username }: WelcomeUserEmailProps) => {
 };
 
 
-export default WelcomeUserEmail;
-
-
 
 export function renderWelcomeEmail({ username }: WelcomeUserEmailProps) {
   return render(<WelcomeUserEmail username={username} />)

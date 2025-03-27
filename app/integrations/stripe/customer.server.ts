@@ -51,14 +51,14 @@ export async function getCustomerId(userId: string) {
   }
 }
 
-export async function getCustomer(customerId: string) {
-  try {
-    const customer = await stripe.customers.retrieve(customerId);
-    return customer as Stripe.Customer;
-  } catch (e) {
-    return null;
-  }
-}
+// export async function getCustomer(customerId: string) {
+//   try {
+//     const customer = await stripe.customers.retrieve(customerId);
+//     return customer as Stripe.Customer;
+//   } catch (e) {
+//     return null;
+//   }
+// }
 
 export async function deductBalanceUsed(customerId: string, amountUsed: number) {
   // Fetch the current balance

@@ -1,12 +1,6 @@
 import { prisma, type Prisma } from "~/db.server";
 
-import type {
-  Video as PrismaVideo,
-  Like,
-  Category,
-  Favorite,
-  Section
-} from "@prisma/client";
+import type { Section } from "@prisma/client";
 
 export type Video = Prisma.VideoGetPayload<{
   include: { comments: true; likes: true };
@@ -81,11 +75,7 @@ export async function fetchVideo(videoId: string) {
     include: { likes: true; favorites: true; categories: true };
   }>;
 }
-export async function fetchVideoComments(
-  videoId: string,
-  page: number,
-  pageSize: number
-) {
+export async function fetchVideoComments(videoId: string, page: number, pageSize: number) {
   const comments = await prisma.comment.findMany({
     where: { videoId },
     include: {
@@ -134,11 +124,7 @@ export async function fetchVideoComments(
   return { comments, pagination: { totalCount, totalPages, page, pageSize } };
 }
 
-export async function addVideoComment(
-  userId: string,
-  content: string,
-  videoId: string
-) {
+export async function addVideoComment(userId: string, content: string, videoId: string) {
   return prisma.comment.create({
     data: {
       user: { connect: { id: userId } },
@@ -186,9 +172,7 @@ export async function createVideo(
       description,
       section,
       url,
-      categories: categoriesToConnect
-        ? { connect: categoriesToConnect }
-        : undefined,
+      categories: categoriesToConnect ? { connect: categoriesToConnect } : undefined,
       published
     }
   });

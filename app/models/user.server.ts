@@ -11,7 +11,7 @@ export interface User extends PrismaUser {
   subscription?: UserSubscription | null;
 }
 
-export interface UserSubscription extends Subscription {
+interface UserSubscription extends Subscription {
   plan: Plan;
 }
 

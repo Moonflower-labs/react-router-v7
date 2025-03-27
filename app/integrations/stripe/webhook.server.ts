@@ -258,20 +258,6 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
   }
 }
 
-export async function handleInvoicePaid(event: Stripe.Event) {
-  const invoice = event.data.object as Stripe.Invoice;
-  if (invoice.subscription) {
-    const amount = invoice.lines.data[0].amount;
-    const planName = amount <= 0 ? "Personalidad" : amount === 995 ? "Alma" : "Espíritu";
-
-    console.info(`${planName} invoice of £${invoice.amount_paid / 100} has been paid`);
-    //  We DON"t send email here,
-    // for free subscription -> handleSetupIntetSucccessful
-    // for paid or updated subscriptions -> handleSubscriptionUpdated
-  }
-  return;
-}
-
 /**
  *
  * This function determines the update type of a subscription.
