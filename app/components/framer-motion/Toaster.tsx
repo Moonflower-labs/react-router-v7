@@ -21,14 +21,14 @@ const ProgressBar = ({ progress, type }: { progress: number; type: string }) => 
     };
 
     return (
-        <div className="w-full rounded- bg-base-300/50 h-2 overflow-hidden absolute bottom-0 left-0">
-            <div className={`h-full w-full animate-pulse rounded- bg-gradient-to-r ${progressGradients[type]} opacity-50 absolute top-0 left-0`} />
+        <div className="w-full bg-base-300/50 h-2 overflow-hidden absolute bottom-0 left-0">
+            <div className={`h-full w-full animate-pulse rounded- bg-gradient-to-r ${progressGradients[type]} opacity-50 absolute bottom-0 left-0`} />
             {/* Main progress bar */}
             <motion.div
                 initial={{ width: "100%" }}
                 animate={{ width: `${progress * 100}%` }}
                 transition={{ duration: 0.1, ease: "linear" }}
-                className={`h-full rounded- bg-gradient-to-r ${progressGradients[type]} absolute top-0 left-0`}
+                className={`h-full bg-gradient-to-r ${progressGradients[type]} absolute top-0 left-0`}
             />
         </div>
     );
@@ -58,25 +58,6 @@ export const Toaster = ({ isPaused, closeToast, toastProps, message }: Props) =>
     }, [isPaused, duration, closeToast, toastId]);
 
 
-    // // Update progress value (and only update progress inside the interval)
-    // useEffect(() => {
-    //     if (isPaused) return;
-    //     const interval = setInterval(() => {
-    //         setProgress((prev) => Math.max(0, prev - 0.01)); // step down by 1%
-    //     }, duration / 100); // match duration to 100 steps
-
-    //     return () => clearInterval(interval);
-    // }, [isPaused, duration]);
-
-    // // When progress becomes 0, trigger closing the toast.
-    // useEffect(() => {
-    //     if (progress === 0 && !isPaused) {
-    //         // Calling closeToast outside the render logic prevents the setState-from-render warning.
-    //         closeToast?.();
-    //     }
-    // }, [progress, isPaused, closeToast]);
-
-
     const toastVariants = {
         initial: { opacity: 0, y: 50, scale: 0.95 },
         animate: { opacity: 1, y: 0, scale: 1 },
@@ -89,13 +70,13 @@ export const Toaster = ({ isPaused, closeToast, toastProps, message }: Props) =>
         info: "text-info",
         warning: "alert-warning",
     };
+    const borderStyles: any = {
+        success: "border-success/50",
+        error: "boder-error/50",
+        info: "border-info/50",
+        warning: "border-warning/50",
+    };
 
-    // const progressGradients: any = {
-    //     success: "from-green-600 to-green-200",
-    //     error: "from-red-600 to-red-200",
-    //     info: "from-blue-600 to-blue-200",
-    //     warning: "from-yellow-600 to-yellow-200",
-    // };
 
     const type = toastProps?.type || "info";
 
@@ -107,10 +88,10 @@ export const Toaster = ({ isPaused, closeToast, toastProps, message }: Props) =>
             animate="animate"
             exit="exit"
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`alert rounded-none rounded-t-md ${typeStyles[type]} bg-base-100 shadow-xl w-full max-w-md border border-base-200`}
+            className={`alert rounded-md ${typeStyles[type]} absolute inset-0 h-full w-full overflow-hidden bg-base-100 shadow-xl border ${borderStyles[type]}`}
         >
             <button
-                className="absolute top-1 right-1 btn btn-sm btn-ghost btn-circle hover:bg-base-200"
+                className={"absolute top-1 right-1 btn btn-sm btn-ghost btn-circle hover:bg-base-200 text-" + type}
                 onClick={closeToast}
             >
                 ✕
@@ -144,15 +125,12 @@ export const Toaster = ({ isPaused, closeToast, toastProps, message }: Props) =>
 // Utility function to show toast
 const showToast = (message: string, type = "info" as TypeOptions, options = {}) => {
     toast(
-        <Toaster message={message} />,
-        {
-            ...options,
-            type,
-            closeButton: false,
-            className: "p-0 !bg-transparent !border-none bg-pink-500 rounded-xl",
-            icon: false,
-            containerId: "toastContainer",
-        }
+        <Toaster message={message} />, {
+        ...options,
+        type,
+        customProgressBar: true,
+        closeButton: false,
+    }
     );
 };
 

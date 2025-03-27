@@ -13,8 +13,8 @@ import { useEffect } from "react";
 import { getSessionContext, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { getUserById } from "./models/user.server";
+import { Toaster } from "./components/framer-motion/Toaster";
 import "./app.css";
-
 
 
 export const unstable_middleware = [sessionMiddleware, authMiddleware]
@@ -76,7 +76,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ToastContainer draggable stacked />
+        <ToastContainer
+          autoClose={6000}
+          draggable
+          stacked
+          icon={false}
+        />
         <Header />
         {children}
         <Footer />
@@ -99,7 +104,10 @@ export default function App({ loaderData }: Route.ComponentProps) {
   const { toastMessage } = loaderData
   useEffect(() => {
     if (toastMessage) {
-      toast[toastMessage.type as "info" | "success" | "warning" | "error"](toastMessage.message)
+      toast[toastMessage.type as "info" | "success" | "warning" | "error"](<Toaster message={toastMessage.message} />, {
+        customProgressBar: true,
+        closeButton: false,
+      })
     }
   }, [toastMessage])
 
