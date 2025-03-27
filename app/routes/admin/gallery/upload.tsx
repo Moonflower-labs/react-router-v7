@@ -6,6 +6,7 @@ import { MultipartParseError } from "@mjackson/multipart-parser";
 import { useEffect, useState } from "react";
 import { BiUpload } from "react-icons/bi";
 import { toast } from "react-toastify";
+import { Toaster } from "~/components/framer-motion/Toaster";
 
 const MAX_FILE_SIZE = 3000000; // 3MB
 
@@ -60,7 +61,7 @@ export default function Component({ actionData }: Route.ComponentProps) {
     return (
         <main>
             <h1 className="text-3xl text-center font-semibold text-primary pt-4 mb-4">Upload Image</h1>
-            <p className="p-4 text-center">Elige la sesción adecuada, Avatars o Susurros.</p>
+            <p className="p-4 text-center">Elige la sección adecuada, Avatars o Susurros.</p>
             <UploadForm error={actionData?.error} />
             {actionData?.imgSource && (
                 <section className="w-full flex flex-col gap-3 justify-center items-center mb-4">
@@ -84,7 +85,7 @@ function UploadForm({ error }: { error: string | undefined }) {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files?.[0];
             if (file && file.size > MAX_FILE_SIZE) {
-                toast.error("El archivo sobrepasa el límite de 3MB!")
+                toast.error(<Toaster message="El archivo sobrepasa el límite de 3MB!" />)
                 e.target.value = ""
                 return;
             }
