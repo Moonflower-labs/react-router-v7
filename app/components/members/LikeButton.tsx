@@ -102,5 +102,3 @@ const AnimatedHeartButton: React.FC<AnimatedHeartButtonProps> = ({ liked }) => {
     </button>
   );
 };
-
-export default AnimatedHeartButton;
