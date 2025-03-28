@@ -76,7 +76,7 @@ export async function getPaginatedFavoriteVideos(
 ): Promise<PaginatedFavoriteVideos> {
   const favoriteVideos = await prisma.favorite.findMany({
     where: { userId, video: { isNot: null } },
-    include: { video: { select: { id: true, title: true } } },
+    include: { video: { select: { id: true, title: true, section: true } } },
     orderBy: { createdAt: "desc" },
     skip: (page - 1) * pageSize,
     take: pageSize
