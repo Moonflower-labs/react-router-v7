@@ -83,7 +83,7 @@ export async function getPaginatedFavoriteVideos(
   });
 
   const totalCount = await prisma.favorite.count({
-    where: { userId, post: { isNot: null } }
+    where: { userId, video: { isNot: null } }
   });
   const totalPages = Math.ceil(totalCount / pageSize);
 
