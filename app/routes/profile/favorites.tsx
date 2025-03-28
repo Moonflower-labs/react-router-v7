@@ -72,7 +72,7 @@ export default function FavoritesPage({ loaderData }: Route.ComponentProps) {
                   <h2 className="font-semibold text-xl text-primary">Videos</h2>
                   {favoriteVideos?.length ? (
                     favoriteVideos.map(fav => (
-                      <div key={fav?.video?.id} className="flex flex-row justify-between border border-primary/55 rounded-md my-2 p-2 shadow-md">
+                      <div key={fav?.video?.id} className="flex flex-row text-start justify-between border border-primary/55 rounded-md my-2 p-2 shadow-md">
                         <Link to={`${href("/members")}/${fav?.video?.section}/video/${fav?.video?.id}`} className="w-2/3">
                           {fav?.video?.title}
                         </Link>
