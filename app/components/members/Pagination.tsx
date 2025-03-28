@@ -1,12 +1,18 @@
 import { Link, useLocation } from "react-router";
 import type { Pagination } from "~/models/post.server";
 
-export function Paginator({ pagination }: { pagination: Pagination }) {
+/**
+ * 
+ * @param pagination an object{  totalCount: number; totalPages: number; page: number; pageSize: number;}
+ * @param paramName the name to use as a search param, defaults to "page" 
+ * @returns 
+ */
+export function Paginator({ pagination, paramName = "page" }: { pagination: Pagination, paramName?: string }) {
   const { pathname, search } = useLocation();
   const searchParams = new URLSearchParams(search);
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentPage = Number(searchParams.get(paramName)) || 1;
   const createPageURL = (pageNumber: number | string) => {
-    searchParams.set("page", pageNumber.toString());
+    searchParams.set(paramName, pageNumber.toString());
     return `${pathname}?${searchParams.toString()}`;
   };
 
