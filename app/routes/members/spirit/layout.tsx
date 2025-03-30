@@ -20,6 +20,7 @@ const membersAuth: Route.unstable_MiddlewareFunction = async ({ context }) => {
         console.log("Your plan has no access to spirit!")
         throw redirect(href("/plans"), 302);
     }
+    return undefined;
 };
 
 export const unstable_middleware = [membersAuth]

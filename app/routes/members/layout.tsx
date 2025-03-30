@@ -35,7 +35,7 @@ export default function MembersLayout({ }: Route.ComponentProps) {
               to={link.to}
               role="tab"
               className={({ isActive }) =>
-                `btn join-item w-1/3 justify-center items-center border-base-300 shadow-sm ${isActive ? "btn-primary" : ""} transition-all ease-out duration-200`
+                `btn join-item w-1/3 justify-center items-center shadow-sm ${isActive ? "btn-primary" : ""} transition-all ease-out duration-200`
               }
               // preventScrollReset={true}
               viewTransition

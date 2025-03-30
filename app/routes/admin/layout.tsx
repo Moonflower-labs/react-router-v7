@@ -9,10 +9,8 @@ import { href, NavLink, Outlet } from "react-router";
 import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { MdLocalShipping, MdOutlineClose, MdOutlineMailOutline } from "react-icons/md";
-import { adminAuthMiddleware } from "~/middleware/adminMiddleware";
 import { bgGradient } from "~/components/root/Header";
 
-export const unstable_middleware = [adminAuthMiddleware];
 
 
 export default function AdminLayout() {

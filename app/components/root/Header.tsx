@@ -11,7 +11,7 @@ import logo from "./logo.svg"
 import { RiAdminFill } from "react-icons/ri";
 
 
-export const bgGradient = "  bg-gradient-to-r from-primary/65 via-primary/55 to-primary/60 backdrop-blur "
+export const bgGradient = "  bg-gradient-to-r from-primary/75 via-primary/65 to-primary/70 backdrop-blur "
 
 
 export function Header() {
@@ -111,7 +111,7 @@ export function Header() {
                       type="radio"
                       name="theme-buttons"
                       defaultChecked={theme === themeOption.value}
-                      className="theme-controller btn btn-sm btn-block btn-ghost justify-start checked:bg-primary"
+                      className="theme-controller btn btn-sm btn-block btn-ghost justify-start checked:bg-primary checked:text-primary-content"
                       aria-label={themeOption.label}
                       value={themeOption.value}
                     />
@@ -147,21 +147,13 @@ export function Header() {
 }
 
 const themes = [
-  { value: 'florBlanca', label: 'Default' },
-  { value: 'garden', label: 'Garden' },
+  { value: 'florBlanca', label: 'La Flor Blanca' },
   { value: 'pastel', label: 'Pastel' },
   { value: 'valentine', label: 'Valentine' },
-  { value: 'fantasy', label: 'Fantasy' },
   { value: 'lemonade', label: 'Lemonade' },
   { value: 'winter', label: 'Winter' },
-  { value: 'sunset', label: 'Sunset' },
-  { value: 'cyberpunk', label: 'CyberPunk' },
-  { value: 'dracula', label: 'Dracula' },
-  { value: 'cupcake', label: 'Cupcake' },
-  { value: 'coffee', label: 'Coffee' },
-  { value: 'aqua', label: 'Aqua' },
   { value: 'caramellatte', label: 'Caramellatte' },
-  { value: 'abyss', label: 'Abyss' },
+  { value: 'dracula', label: 'Dracula' },
   { value: 'dark', label: 'Dark' },
 ];
 

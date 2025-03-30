@@ -82,6 +82,14 @@
   --color-primary: oklch(77% 0.152 181.912);
   --color-primary-content: oklch(43% 0.078 188.216);
 }
+@plugin "daisyui/theme" {
+  name: "dracula";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-primary: oklch(70% 0.191 22.216);
+  --color-primary-content: oklch(25% 0.092 26.042);
+}
 
 body {
   font-family: "Faculty Glyphic", sans-serif;

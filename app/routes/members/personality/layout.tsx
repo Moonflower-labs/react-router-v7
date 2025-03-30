@@ -22,6 +22,7 @@ const membersAuth: Route.unstable_MiddlewareFunction = async ({ context }) => {
         console.log("You don't have a subscription plan!")
         throw redirect(href("/plans"), 302);
     }
+    return undefined;
 };
 
 export const unstable_middleware = [membersAuth]
