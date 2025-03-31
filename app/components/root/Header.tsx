@@ -147,7 +147,7 @@ export function Header() {
 }
 
 const themes = [
-  { value: 'florBlanca', label: 'La Flor Blanca' },
+  { value: 'florBlanca', label: 'FlorBlanca' },
   { value: 'pastel', label: 'Pastel' },
   { value: 'valentine', label: 'Valentine' },
   { value: 'lemonade', label: 'Lemonade' },
