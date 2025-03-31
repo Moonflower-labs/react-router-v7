@@ -16,9 +16,9 @@ export async function getAllProducts() {
 
 export async function getProduct(productId: string) {
   return prisma.product.findUnique({
-    where: { id: productId },
+    where: { id: productId, active: true },
     include: {
-      prices: true,
+      prices: { where: { active: true } },
       reviews: {
         include: { user: { select: { username: true } } },
         orderBy: { createdAt: "desc" }
