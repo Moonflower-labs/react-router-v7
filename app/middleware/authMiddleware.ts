@@ -9,9 +9,7 @@ const PROTECTED_URLS = [
 
 /**
  * Middleware that provides user protected routes.
- *
  * Configurable by adding routes to the PROTECTED_URLS array
- *
  * Checks for the userId in the context.
  */
 export const authMiddleware: Route.unstable_MiddlewareFunction = async ({ request, context }, next) => {

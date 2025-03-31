@@ -34,10 +34,10 @@ export async function getUserProfile(userId: string) {
 }
 
 /**
- * @param userId id of the user
- * @param page the requested page, defaults to 1
- * @param pageSize the number of items per page, defaults to 5
- * @returns an object { favoritePosts, pagination: { totalCount, totalPages, page, pageSize }}
+ * @param userId The id of the user
+ * @param page The requested page, defaults to 1
+ * @param pageSize The number of items per page, defaults to 5
+ * @returns An object { favoritePosts, pagination: { totalCount, totalPages, page, pageSize }}
  */
 export async function getPaginatedFavoritePosts(
   userId: string,
@@ -64,10 +64,10 @@ export async function getPaginatedFavoritePosts(
 }
 
 /**
- * @param userId id of the user
- * @param page the requested page, defaults to 1
- * @param pageSize the number of items per page, defaults to 5
- * @returns an object { favoriteVideos, pagination: { totalCount, totalPages, page, pageSize }}
+ * @param userId The id of the user
+ * @param page The requested page, defaults to 1
+ * @param pageSize The number of items per page, defaults to 5
+ * @returns An object { favoriteVideos, pagination: { totalCount, totalPages, page, pageSize }}
  */
 export async function getPaginatedFavoriteVideos(
   userId: string,
