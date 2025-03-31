@@ -4,6 +4,7 @@ import { Footer } from "./components/root/Footer";
 import { Header } from "./components/root/Header";
 import { setGuestId } from "~/middleware/sessionMiddleware";
 import { getCartItemsCount } from "./models/cart.server";
+// import { ToastContainer as ToastContainerUnstyled } from "react-toastify/unstyled";// doesn't work
 import { toast, ToastContainer } from "react-toastify";
 import { getUserPrefs, setUserPrefs } from "./cookies/userPref.server";
 import logo from "../app/components/root/logo.svg"
@@ -78,10 +79,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <ToastContainer
           autoClose={6000}
-          customProgressBar={true}
+          customProgressBar
           closeButton={false}
           icon={false}
-          className={"!shadow-none !m-0"}
+          className={"!shadow-none !m-0 !bg-transparent"}
           draggable
           stacked
         />
@@ -116,6 +117,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
   return (
     <HoneypotProvider {...loaderData?.honeypotInputProps}>
+      {/* <ToastExample /> */}
       <Outlet />
     </HoneypotProvider>
   );
