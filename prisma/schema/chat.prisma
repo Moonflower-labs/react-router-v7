@@ -19,13 +19,11 @@ model Room {
 }
 
 model Message {
-  id     String @id @default(uuid())
-  text   String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  Room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  roomId String
-
+  id        String   @id @default(uuid())
+  text      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  Room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roomId    String
   createdAt DateTime @default(now())
 }
