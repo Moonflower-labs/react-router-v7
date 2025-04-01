@@ -15,17 +15,18 @@ interface UserSubscription extends Subscription {
   plan: Plan;
 }
 
-// id, username, email,
-// profile.avatar, subscription.id, plan.name
-
 export async function getUserById(id: User["id"] | undefined) {
   if (!id) return null;
   return await prisma.user.findUnique({
     where: { id },
-    include: {
-      profile: { select: { avatar: true } }, // Only avatar needed
+    select: {
+      id: true,
+      username: true,
+      customerId: true,
+      email: true,
+      profile: { select: { avatar: true } },
       shippingAddress: true,
-      subscription: { include: { plan: { select: { name: true } } } }
+      subscription: { select: { id: true, plan: { select: { name: true } } } }
     }
   });
 }
