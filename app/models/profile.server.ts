@@ -1,5 +1,5 @@
 import { prisma } from "~/db.server";
-import type { Favorite as PrismaFav, Post, Video } from "@prisma/client";
+import type { Favorite as PrismaFav, Post, Video } from "../generated/prisma";
 import type { Pagination } from "./post.server";
 
 type FavoritePost = PrismaFav & {

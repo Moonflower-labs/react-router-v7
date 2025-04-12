@@ -1,6 +1,6 @@
 import { prisma } from "~/db.server";
 
-import type { Product as Prod, Price, ProductReview } from "@prisma/client";
+import type { Product as Prod, Price, ProductReview } from "../generated/prisma";
 
 export interface Product extends Prod {
   prices: Price[];

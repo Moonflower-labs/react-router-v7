@@ -1,6 +1,6 @@
 import { data } from "react-router";
 import { prisma } from "~/db.server";
-import type { Question, PremiumQuestion as PrismaPremiumQuestion } from "@prisma/client";
+import type { Question, PremiumQuestion as PrismaPremiumQuestion } from "../generated/prisma";
 import type { User } from "./user.server";
 
 export interface BasicQuestion extends Question {

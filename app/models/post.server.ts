@@ -8,7 +8,7 @@ import type {
   Favorite,
   Rating,
   Reply as PrismaReply
-} from "@prisma/client";
+} from "../generated/prisma";
 
 export interface Post extends PrismaPost {
   comments?: Comment[];
@@ -140,13 +140,10 @@ export async function fetchPostsWithAverageRating({
   });
 
   // Create a mapping of average ratings by postId
-  const ratingMap = ratings.reduce(
-    (acc, rating) => {
-      acc[rating.postId!] = rating._avg.value || 0;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const ratingMap = ratings.reduce((acc, rating) => {
+    acc[rating.postId!] = rating._avg.value || 0;
+    return acc;
+  }, {} as Record<string, number>);
 
   // Attach average ratings to posts
   const postWithRatings = posts.map(post => ({

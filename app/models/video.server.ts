@@ -1,6 +1,6 @@
 import { prisma, type Prisma } from "~/db.server";
 
-import type { Section } from "@prisma/client";
+import type { Section } from "../generated/prisma";
 
 export type Video = Prisma.VideoGetPayload<{
   include: { comments: true; likes: true };
