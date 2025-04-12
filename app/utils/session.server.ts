@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { createCookieSessionStorage } from "react-router";
 import invariant from "tiny-invariant";
 
