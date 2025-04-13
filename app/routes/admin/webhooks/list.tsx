@@ -2,9 +2,9 @@ import type { Route } from "./+types/list";
 import { data, Form, Link } from "react-router";
 import { deleteWebhookEndpoint, listWebhookEndpoints } from "~/integrations/stripe/webhook.server";
 import { ImBin } from "react-icons/im";
-import { formatDayTimeEs } from "~/utils/format";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
+import { formatDate } from "date-fns";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -39,7 +39,7 @@ export default function Webhooks({ loaderData }: Route.ComponentProps) {
                 endpoints.map((endpoint) => (
                     <div key={endpoint.id} className="card max-w-md border border-primary/20 shadow-md mb-3 lg:w-2/3 mx-auto">
                         <div className="card-body">
-                            <h2 className="card-title">{endpoint.description} {formatDayTimeEs(new Date(endpoint.created * 1000))}</h2>
+                            <h2 className="card-title flex-wrap">{endpoint.description} <span className="">{formatDate(new Date(endpoint.created * 1000), 'd/M/yy H:mm')}</span></h2>
                             <div>API Version: {endpoint.api_version ?? '~'}</div>
                             <div>URL: <span className="text-sm font-bold">{endpoint.url}</span></div>
                             <div className="flex gap-3 items-center">
