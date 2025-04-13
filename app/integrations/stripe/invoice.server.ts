@@ -6,13 +6,9 @@ interface PreviewProps {
   newPriceId: string;
 }
 
-export async function createPreviewInvoice({
-  customerId,
-  subscriptionId,
-  newPriceId
-}: PreviewProps) {
+export async function createPreviewInvoice({ customerId, subscriptionId, newPriceId }: PreviewProps) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const preview = await stripe.invoices.retrieveUpcoming({
+  const preview = await stripe.invoices.createPreview({
     customer: customerId,
     subscription: subscriptionId,
     subscription_details: {

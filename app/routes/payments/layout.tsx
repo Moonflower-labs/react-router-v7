@@ -143,14 +143,14 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         if (!subscriptionId) throw data({ message: "subscriptionId not found in searchParams" }, { status: 400 })
         const subscription = await retrieveSubscription(subscriptionId)
         if (typeof subscription.latest_invoice !== "object") throw data({ message: "subscription invoice not found" }, { status: 400 })
-        const invoice = subscription.latest_invoice;
-        const paymentIntent = invoice?.payment_intent as _Stripe.PaymentIntent;
-        if (!paymentIntent) {
+        const invoice = subscription?.latest_invoice;
+        const clientSecret = invoice?.confirmation_secret?.client_secret;
+        if (!clientSecret) {
           throw redirect(href("/profile/subscription/update"))
         }
         return {
-          subscriptionId, paymentIntentStatus: paymentIntent?.status, clientSecret: paymentIntent?.client_secret,
-          isMissedPayment, amount: paymentIntent?.amount, priceId, img, planName
+          subscriptionId, clientSecret,
+          isMissedPayment, amount: invoice.amount_due, priceId, img, planName
         };
       } else {
         if (!customerId) {

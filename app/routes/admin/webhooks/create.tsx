@@ -39,7 +39,7 @@ export default function CreateEndpoint({ actionData }: Route.ComponentProps) {
         <div>
             <div className="min-h-screen text-center w-full">
                 <h2 className="text-2xl text-primary my-5">Crea un Webhook Endpoint</h2>
-                {actionData?.success && <div className='text-2xl font-semibold'>{actionData?.secret}</div>}
+                {actionData?.success && <div className='text-xl font-semibold my-3'>{actionData?.secret}</div>}
                 <Form method="post" className="w-full md:w-1/2 mx-auto pb-4 flex flex-col">
                     <input type="text" name={"desciption"} className="input input-bordered input-primary w-full mb-4" placeholder="Descripción" />
                     <input type="text" name={"url"} className="input input-bordered input-primary w-full mb-4" placeholder="Full url" />

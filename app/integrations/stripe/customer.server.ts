@@ -39,6 +39,15 @@ export async function createCustomerSession(customerId: string) {
   }
 }
 
+export async function getCustomer(customerId: string) {
+  try {
+    const customer = await stripe.customers.retrieve(String(customerId));
+
+    return customer as Stripe.Customer;
+  } catch (e) {
+    return null;
+  }
+}
 export async function getCustomerId(userId: string) {
   try {
     const user = await getUserById(userId);

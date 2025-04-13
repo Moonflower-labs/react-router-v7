@@ -7,7 +7,7 @@ import { getUserByCustomerId, getUserByEmail, updateUserCustomerId } from "~/mod
 import { sendMissedSubscriptionPaymentEmail, sendOrderEmail, sendSubscriptionEmail } from "../mailer/utils.server";
 import type { ExtendedOrder } from "~/models/order.server";
 import { stripe } from "./stripe.server";
-import { deductBalanceUsed } from "./customer.server";
+import { deductBalanceUsed, getCustomer } from "./customer.server";
 
 export async function getStripeEvent(request: Request) {
   invariant(process.env.WEBHOOK_SIGNING_SECRET, "Please set the WEBHOOK_SIGNING_SECRET env variable");
@@ -42,8 +42,10 @@ export async function createWebhookEndpoint(url: string | null, endpoint: string
     //   "invoice.finalized",
     //   "invoice.finalization_failed"
     // ],
+    // For API versioning add query to filter events https://example.com/webhooks?version=2024-04-10  //2025-03-31.basil
     enabled_events: ["*"],
     url: !url ? `https://laflorblanca.vercel.app/${endpoint}` : `${url}/${endpoint}`,
+    api_version: "2025-03-31.basil",
     description
   });
   return webhookEndpoint;
@@ -156,6 +158,16 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
   // Retrieve the plan and price from stripe to compare changes
   const plan = await stripe.products.retrieve(subscription.items.data[0].plan.product as string);
 
+  // We ensure default_payment_method is linked to the subscription
+  if (!subscription.default_payment_method) {
+    // get customer default_payment_method and add it to the subscription
+    const customer = await getCustomer(String(subscription.customer));
+    if (customer && typeof customer.invoice_settings.default_payment_method === "string") {
+      await stripe.subscriptions.update(subscription.id, {
+        default_payment_method: customer.invoice_settings.default_payment_method
+      });
+    }
+  }
   // Check if plan exists in db or create it
   const existingPlan = await getSubscriptionPlan(plan.id);
   if (!existingPlan) {
@@ -185,7 +197,7 @@ export async function handleSubscriptionUpdated(event: Stripe.Event) {
     case "active": {
       // Handle subscriptions set to cancel
       if (subscription.cancel_at_period_end) {
-        const date = new Date(subscription.current_period_end * 1000);
+        const date = new Date(subscription.items.data[0].current_period_end * 1000);
         console.info(`Subscription ${subscription.id} is pending cancelation on ${date}`);
         //  Update de user subscription
         await prisma.subscription.update({
@@ -275,7 +287,7 @@ function getSubscriptionUpdateType(previousAttributes: any, subscription: Stripe
   if (!previousAttributes || Object.keys(previousAttributes).length === 0) {
     return "new";
   }
-  if (subscription.created === subscription.current_period_start) {
+  if (subscription.created === subscription.items.data[0].current_period_start) {
     return "new";
   }
   // Item price changes -> Upgrade or Downgrade
@@ -293,8 +305,9 @@ function getSubscriptionUpdateType(previousAttributes: any, subscription: Stripe
   // Period changes without item changes -> Renewal
   if (
     (previousAttributes.current_period_start &&
-      previousAttributes.current_period_start !== subscription.current_period_start) ||
-    (previousAttributes.current_period_end && previousAttributes.current_period_end !== subscription.current_period_end)
+      previousAttributes.current_period_start !== subscription.items.data[0].current_period_start) ||
+    (previousAttributes.current_period_end &&
+      previousAttributes.current_period_end !== subscription.items.data[0].current_period_end)
   ) {
     return "renewal";
   }
@@ -496,7 +509,7 @@ export async function handleSetupIntentSucceeded(event: Stripe.Event) {
         ],
         default_payment_method: setupIntent.payment_method as string,
         payment_behavior: "default_incomplete",
-        expand: ["latest_invoice.payment_intent"]
+        expand: ["latest_invoice.payments"]
       });
       console.info(`Free subscription created for ${customerId}`);
       //  Send email with invoice details plan Personalidad

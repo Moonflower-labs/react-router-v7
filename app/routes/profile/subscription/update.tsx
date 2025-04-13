@@ -3,12 +3,12 @@ import { useCallback, useState } from "react";
 import { PLANS, updateStripeAndUserSubscription } from "~/integrations/stripe/subscription.server";
 import type { Route } from "./+types/update";
 import { getUserById } from "~/models/user.server";
-import { formatDayTimeEs } from "~/utils/format";
 import { createPreviewInvoice } from "~/integrations/stripe/invoice.server";
 import { CustomAlert } from "~/components/shared/info";
 import { getSubscription, getUserSubscription } from "~/models/subscription.server";
 import { isSubscriptionDefaultPaymentMethodValid } from "~/integrations/stripe/customer.server";
 import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
+import { formatDate } from "date-fns";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const userId = getUserId(context);
@@ -39,6 +39,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
       try {
         const preview = await createPreviewInvoice({ customerId, subscriptionId, newPriceId });
+
         return { preview };
       } catch (e) {
         console.error(e);
@@ -137,15 +138,14 @@ export default function UpdateSubscriptionPage({ loaderData, actionData }: Route
           >
             <p>INFO </p>
             <p>
-              Fecha de prorrateo <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.subscription_proration_date! * 1000))}</span>
-            </p>
-            <p>
-              Periodo de facturado desde <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.period_start * 1000))}</span> hasta <span className="font-bold">{formatDayTimeEs(new Date(previewInvoice.period_end * 1000))}</span>{" "}
+
+
+              Fecha de prorrateo <span className="font-bold">{formatDate(new Date(previewInvoice.period_start * 1000), 'd/M/yy H:mm')}</span>
             </p>
             {previewInvoice?.lines?.data.map((item) => (
               <div key={item.description}>
                 <p>
-                  PERIODO: desde <span className="font-bold">{formatDayTimeEs(new Date(item.period.start * 1000))}</span> hasta <span className="font-bold">{formatDayTimeEs(new Date(item.period.end * 1000))}</span>{" "}
+                  PERIODO: desde <span className="font-bold">{formatDate(new Date(item.period.start * 1000), 'd/M/yy H:mm')}</span> hasta <span className="font-bold">{formatDate(new Date(item.period.end * 1000), 'd/M/yy H:mm')}</span>{" "}
                 </p>
                 <p>
                   {item?.description} <span className="font-bold">£{item?.amount / 100}</span>

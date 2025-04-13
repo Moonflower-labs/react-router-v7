@@ -4,7 +4,7 @@ import soulImg from "../../icons/plan-soul.svg";
 import spiritImg from "../../icons/plan-spirit.svg";
 import type Stripe from "stripe";
 import { prisma } from "~/db.server";
-import type { Subscription } from "@prisma/client";
+import type { Subscription } from "~/generated/prisma";
 
 export interface SubscriptionPlan {
   name: "Personalidad" | "Alma" | "Espíritu";
@@ -98,7 +98,7 @@ export async function createSubscription({
       ],
       payment_behavior: "default_incomplete",
       payment_settings: { save_default_payment_method: "on_subscription" },
-      expand: ["latest_invoice.payment_intent", "pending_setup_intent"],
+      expand: ["latest_invoice.payments", "pending_setup_intent", "confirmation_secret"],
       metadata: {
         ...metadata
       }
@@ -117,9 +117,8 @@ export async function createSubscription({
       clientSecret:
         subscription.latest_invoice &&
         typeof subscription.latest_invoice !== "string" &&
-        subscription.latest_invoice.payment_intent &&
-        typeof subscription.latest_invoice.payment_intent !== "string"
-          ? subscription.latest_invoice?.payment_intent.client_secret
+        subscription.latest_invoice.confirmation_secret?.client_secret
+          ? subscription.latest_invoice.confirmation_secret?.client_secret
           : null,
       subscriptionId: subscription.id
     };
@@ -134,7 +133,7 @@ export async function createSubscription({
 
 export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ["latest_invoice.payment_intent"]
+    expand: ["latest_invoice.payments"]
   });
   return subscription as Stripe.Subscription;
 }
@@ -171,7 +170,7 @@ export async function updateStripeAndUserSubscription(
     ],
     proration_behavior: "always_invoice",
     proration_date: Math.floor(Date.now() / 1000),
-    expand: ["latest_invoice.payment_intent"],
+    expand: ["latest_invoice.payments"],
     default_payment_method: customer.invoice_settings.default_payment_method as string,
     cancel_at_period_end: false,
     metadata: {
