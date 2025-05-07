@@ -6,14 +6,14 @@ import type { Route } from "./+types/layout";
 import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
-import { updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
+import { retrievePaymentIntent, updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
 import { createOrder, isOrderExist, updateOrderItems, updateOrderPaymentIntent } from "~/models/order.server";
 import { createSetupIntent } from "~/integrations/stripe/setup.server";
 import { getShippinRate } from "~/models/shippingRate";
 import type { Stripe as _Stripe } from "stripe";
 import { differenceInDays } from "date-fns"
 import { getUserById, getUserDiscount } from "~/models/user.server";
-import { getUserId } from "~/middleware/sessionMiddleware";
+import { getSessionContext, getUserId } from "~/middleware/sessionMiddleware";
 
 
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
@@ -141,16 +141,22 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       if (isMissedPayment) {
         // Collect a different payment method to complete the missed payment. 
         if (!subscriptionId) throw data({ message: "subscriptionId not found in searchParams" }, { status: 400 })
-        const subscription = await retrieveSubscription(subscriptionId)
-        if (typeof subscription.latest_invoice !== "object") throw data({ message: "subscription invoice not found" }, { status: 400 })
-        const invoice = subscription?.latest_invoice;
-        const clientSecret = invoice?.confirmation_secret?.client_secret;
-        if (!clientSecret) {
-          throw redirect(href("/profile/subscription/update"))
+        const subscription = await retrieveSubscription(subscriptionId);
+        if (typeof subscription.latest_invoice !== "object") throw data({ message: "subscription invoice not found" }, { status: 400 });
+        // Retrieve the latest invoice payment and intent id
+        const payment = subscription?.latest_invoice?.payments?.data[0].payment;
+        const paymentIntentId = payment?.payment_intent;
+        const paymentIntent = await retrievePaymentIntent(String(paymentIntentId));
+        const paymentIntentStatus = paymentIntent?.status; // requires_confirmation
+        const clientSecret = paymentIntent?.client_secret;
+        if (!clientSecret || paymentIntentStatus !== "requires_confirmation") {
+          const session = getSessionContext(context);
+          session.flash("toastMessage", { type: "error", message: "No payment method found for this subscription. Please update your payment method." });
+          throw redirect(href("/profile"))
         }
         return {
           subscriptionId, clientSecret,
-          isMissedPayment, amount: invoice.amount_due, priceId, img, planName
+          isMissedPayment, amount: paymentIntent?.amount, priceId, img, planName
         };
       } else {
         if (!customerId) {
