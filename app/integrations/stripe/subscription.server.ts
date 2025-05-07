@@ -5,6 +5,7 @@ import spiritImg from "../../icons/plan-spirit.svg";
 import type Stripe from "stripe";
 import { prisma } from "~/db.server";
 import type { Subscription } from "~/generated/prisma";
+import { retrievePaymentIntent } from "./payment.server";
 
 export interface SubscriptionPlan {
   name: "Personalidad" | "Alma" | "Espíritu";
@@ -97,8 +98,10 @@ export async function createSubscription({
         }
       ],
       payment_behavior: "default_incomplete",
-      payment_settings: { save_default_payment_method: "on_subscription" },
-      expand: ["latest_invoice.payments", "pending_setup_intent", "confirmation_secret"],
+      payment_settings: {
+        save_default_payment_method: "on_subscription"
+      },
+      expand: ["latest_invoice.payments", "pending_setup_intent"],
       metadata: {
         ...metadata
       }
@@ -111,21 +114,18 @@ export async function createSubscription({
         subscriptionId: subscription.id
       };
     }
+    const paymentIntentId = (subscription?.latest_invoice as Stripe.Invoice)?.payments?.data[0].payment.payment_intent;
+    const paymentIntent = await retrievePaymentIntent(paymentIntentId as string);
 
     return {
       type: "payment",
-      clientSecret:
-        subscription.latest_invoice &&
-        typeof subscription.latest_invoice !== "string" &&
-        subscription.latest_invoice.confirmation_secret?.client_secret
-          ? subscription.latest_invoice.confirmation_secret?.client_secret
-          : null,
+      clientSecret: paymentIntent.client_secret ?? null,
       subscriptionId: subscription.id
     };
   } catch (e) {
     return {
       error: {
-        message: e instanceof Error ? e?.message : "Error creating a subscription"
+        message: e instanceof Error ? e?.message : "Error creating the subscription"
       }
     };
   }
@@ -133,7 +133,7 @@ export async function createSubscription({
 
 export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ["latest_invoice.payments", "pending_setup_intent"]
+    expand: ["latest_invoice.payments", "pending_setup_intent", "default_payment_method"]
   });
   return subscription as Stripe.Subscription;
 }

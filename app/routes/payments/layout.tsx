@@ -3,7 +3,7 @@ import { data, href, Outlet, redirect, useRouteLoaderData } from "react-router";
 import type { Appearance, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import type { Route } from "./+types/layout";
-import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, type SubscriptionPlan } from "~/integrations/stripe/index.server";
+import { createCustomerSession, createSubscription, getCustomerBalance, getSubscriptionData, retrieveSubscription, stripe, type SubscriptionPlan } from "~/integrations/stripe/index.server";
 import { calculateTotalAmount, getShoppingCart } from "~/models/cart.server";
 import { useEffect, useState } from "react";
 import { retrievePaymentIntent, updateOrCreatePaymentIntent } from "~/integrations/stripe/payment.server";
@@ -137,8 +137,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
       if (!planName) throw data({ message: "Plan name required" }, { status: 400 });
       const { amount, priceId, img } = getSubscriptionData(planName as SubscriptionPlan["name"]);
-
       if (isMissedPayment) {
+        //TODO: attach new payment method to customer and subscription in webhook
         // Collect a different payment method to complete the missed payment. 
         if (!subscriptionId) throw data({ message: "subscriptionId not found in searchParams" }, { status: 400 })
         const subscription = await retrieveSubscription(subscriptionId);
@@ -147,6 +147,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         const payment = subscription?.latest_invoice?.payments?.data[0].payment;
         const paymentIntentId = payment?.payment_intent;
         const paymentIntent = await retrievePaymentIntent(String(paymentIntentId));
+
         const paymentIntentStatus = paymentIntent?.status; // requires_confirmation
         const clientSecret = paymentIntent?.client_secret;
         if (!clientSecret || paymentIntentStatus !== "requires_confirmation") {
@@ -154,11 +155,19 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           session.flash("toastMessage", { type: "error", message: "No payment method found for this subscription. Please update your payment method." });
           throw redirect(href("/profile"))
         }
+        //  Attach metadata to payment intent to identify it in the paymentIntent webhook
+        await stripe.paymentIntents.update(String(paymentIntentId), {
+          metadata: {
+            "missed": "true",
+            "subscriptionId": subscription.id
+          }
+        })
         return {
           subscriptionId, clientSecret,
           isMissedPayment, amount: paymentIntent?.amount, priceId, img, planName
         };
       } else {
+
         if (!customerId) {
           throw data({ message: "customerId required for subscription!" }, { status: 400 })
         }
@@ -171,7 +180,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           };
         }
         // Create a Subscription
-        const { subscriptionId, clientSecret, type } = await createSubscription({ priceId, customerId, metadata: { plan: planName } })
+        const { subscriptionId, clientSecret, type, error } = await createSubscription({ priceId, customerId, metadata: { plan: planName } })
+        console.log(error) // Debug
 
         return {
           clientSecret, subscriptionId, amount, planName, customerSessionSecret, priceId, img, type
