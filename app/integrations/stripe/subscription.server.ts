@@ -133,7 +133,7 @@ export async function createSubscription({
 
 export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ["latest_invoice.payments"]
+    expand: ["latest_invoice.payments", "pending_setup_intent"]
   });
   return subscription as Stripe.Subscription;
 }
