@@ -2,7 +2,7 @@ import { prisma } from "~/db.server";
 
 export async function handleLike(
   action: string,
-  object: string, // Post,video,comment or reply
+  object: "post" | "video" | "comment" | "reply",
   userId: string,
   id: string
 ) {
